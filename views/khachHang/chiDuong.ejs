@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Địa Chỉ Khám Bệnh</title>
+
+  <link rel="stylesheet" href="/css/khachHang/home.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  />
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+    crossorigin="anonymous"
+  />
+
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl/dist/maplibre-gl.css" />
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"
+  ></script>
+
+  <script src="https://unpkg.com/maplibre-gl/dist/maplibre-gl.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mapbox/polyline/src/polyline.js"></script>
+
+  <style>
+    body {
+      background-color: #f5f8fb;
+    }
+
+    .map-page {
+      padding: 80px 0 60px;
+      min-height: 100vh;
+    }
+
+    .map-hero {
+      background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+      color: #fff;
+      border-radius: 24px;
+      padding: 36px;
+      margin-bottom: 30px;
+      box-shadow: 0 12px 30px rgba(13, 110, 253, 0.18);
+    }
+
+    .map-hero h1 {
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .map-hero p {
+      font-size: 17px;
+      margin-bottom: 0;
+      opacity: 0.95;
+    }
+
+    .map-card {
+      background-color: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .map-info {
+      padding: 28px;
+    }
+
+    .map-info h3 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+      color: #374151;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .info-item i {
+      width: 22px;
+      color: #0d6efd;
+      font-size: 18px;
+      margin-top: 4px;
+    }
+
+    .map-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .btn-direction {
+      background-color: #0d6efd;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .btn-direction:hover {
+      background-color: #0b5ed7;
+      color: #fff;
+    }
+
+    .btn-direction:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .map-frame-wrapper {
+      width: 100%;
+      height: 500px;
+      background-color: #e5e7eb;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .status-box {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .status-box.info {
+      background-color: #eef5ff;
+      color: #084298;
+      border: 1px solid #cfe2ff;
+    }
+
+    .status-box.error {
+      background-color: #fff1f2;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+    }
+
+    .status-box.warning {
+      background-color: #fff7e6;
+      color: #7c4a03;
+      border: 1px solid #ffe0a3;
+    }
+
+    @media (max-width: 768px) {
+      .map-page {
+        padding: 100px 12px 40px;
+      }
+
+      .map-hero {
+        padding: 26px;
+      }
+
+      .map-hero h1 {
+        font-size: 27px;
+      }
+
+      .map-frame-wrapper {
+        height: 360px;
+      }
+
+      .map-info {
+        padding: 22px;
+      }
+
+      .map-actions button,
+      .map-actions a {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="main">
+
+    <%- include('./header') %>
+
+    <div class="container map-page">
+
+      <section class="map-hero">
+        <h1>
+          <i class="fa-solid fa-location-dot"></i>
+          Địa chỉ khám bệnh
+        </h1>
+      </section>
+
+      <section class="map-card">
+
+        <div class="row g-0">
+
+          <div class="col-12 col-lg-5">
+            <div class="map-info">
+
+              <h3>Bệnh Viện Đa Khoa Thành Phố Cần Thơ</h3>
+
+              <div class="info-item">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <div>
+                  <strong>Địa chỉ:</strong><br />
+                  Số 04 Châu Văn Liêm, An Lạc, Ninh Kiều, Thành phố Cần Thơ
+                </div>
+              </div>
+
+              <div class="info-item">
+                <i class="fa-solid fa-clock"></i>
+                <div>
+                  <strong>Thời gian khám:</strong><br />
+                  Từ 07:00 đến 17:00
+                </div>
+              </div>
+
+              <div class="map-actions">
+                <button type="button" class="btn-direction" id="btnChiDuong">
+                  <i class="fa-solid fa-route"></i>
+                  Chỉ đường từ vị trí của tôi
+                </button>
+              </div>
+
+              <div id="locationStatus" class="status-box"></div>
+
+            </div>
+          </div>
+
+          <div class="col-12 col-lg-7">
+            <div class="map-frame-wrapper">
+              <div id="map"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <%- include('./footer') %>
+
+  </main>
+
+  <script>
+    const header = document.querySelector(".header");
+
+    function keepHeaderColored() {
+      if (header) {
+        header.classList.add("header--scrolled");
+      }
+    }
+
+    window.addEventListener("scroll", keepHeaderColored);
+
+    window.addEventListener("load", () => {
+      keepHeaderColored();
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      keepHeaderColored();
+    });
+  </script>
+
+  <script>
+    const mapKey = "<%= goongMapKey %>";
+    const apiKey = "<%= goongApiKey %>";
+
+    const hospital = {
+      name: "Bệnh viện Đa khoa Thành phố Cần Thơ",
+      address: "Số 04 Châu Văn Liêm, An Lạc, Ninh Kiều, Thành phố Cần Thơ",
+      lat: 10.0309038,
+      lng: 105.7824343
+    };
+
+    const center = [hospital.lng, hospital.lat];
+    const zoom = 15;
+
+    let userMarker = null;
+
+    const btnChiDuong = document.getElementById("btnChiDuong");
+    const locationStatus = document.getElementById("locationStatus");
+
+    const map = new maplibregl.Map({
+      container: "map",
+      style: `https://tiles.goong.io/assets/goong_map_web.json?api_key=${mapKey}`,
+      zoom: zoom,
+      center: center
+    });
+
+    map.on("load", () => {
+      new maplibregl.Marker({
+        color: "red"
+      })
+        .setLngLat(center)
+        .setPopup(
+          new maplibregl.Popup().setHTML(`
+            <strong>${hospital.name}</strong><br>
+            ${hospital.address}
+          `)
+        )
+        .addTo(map);
+    });
+
+    function showLocationStatus(message, type) {
+      if (!locationStatus) {
+        return;
+      }
+
+      locationStatus.innerHTML = message;
+      locationStatus.className = "status-box show " + type;
+    }
+
+    function resetDirectionButton() {
+      if (!btnChiDuong) {
+        return;
+      }
+
+      btnChiDuong.disabled = false;
+      btnChiDuong.innerHTML = '<i class="fa-solid fa-route"></i> Chỉ đường từ vị trí của tôi';
+    }
+
+    function clearOldRoute() {
+      if (map.getLayer("route-layer")) {
+        map.removeLayer("route-layer");
+      }
+
+      if (map.getSource("route-source")) {
+        map.removeSource("route-source");
+      }
+    }
+
+    function drawRoute(encodedPolyline) {
+      clearOldRoute();
+
+      const routeGeoJson = polyline.toGeoJSON(encodedPolyline);
+
+      map.addSource("route-source", {
+        type: "geojson",
+        data: routeGeoJson
+      });
+
+      map.addLayer({
+        id: "route-layer",
+        type: "line",
+        source: "route-source",
+        layout: {
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        paint: {
+          "line-color": "#0d6efd",
+          "line-width": 6
+        }
+      });
+    }
+
+    function fitMapToRoute(userLngLat) {
+      const bounds = new maplibregl.LngLatBounds();
+
+      bounds.extend(userLngLat);
+      bounds.extend(center);
+
+      map.fitBounds(bounds, {
+        padding: 70,
+        maxZoom: 16
+      });
+    }
+
+    function getRouteFromGoong(latitude, longitude) {
+      const origin = latitude + "," + longitude;
+      const destination = hospital.lat + "," + hospital.lng;
+
+      const apiLink =
+        "https://rsapi.goong.io/v2/direction" +
+        "?origin=" + encodeURIComponent(origin) +
+        "&destination=" + encodeURIComponent(destination) +
+        "&vehicle=car" +
+        "&api_key=" + apiKey;
+
+      fetch(apiLink)
+        .then(response => response.json())
+        .then(data => {
+          if (!data.routes || data.routes.length === 0) {
+            showLocationStatus("Không tìm thấy tuyến đường phù hợp.", "error");
+            resetDirectionButton();
+            return;
+          }
+
+          const route = data.routes[0];
+          const encodedPolyline = route.overview_polyline && route.overview_polyline.points;
+
+          if (!encodedPolyline) {
+            showLocationStatus("Không có dữ liệu đường đi để hiển thị.", "error");
+            resetDirectionButton();
+            return;
+          }
+
+          drawRoute(encodedPolyline);
+
+          const userLngLat = [longitude, latitude];
+
+          if (userMarker) {
+            userMarker.remove();
+          }
+
+          userMarker = new maplibregl.Marker({
+            color: "blue"
+          })
+            .setLngLat(userLngLat)
+            .setPopup(
+              new maplibregl.Popup().setHTML("<strong>Vị trí hiện tại của bạn</strong>")
+            )
+            .addTo(map);
+
+          fitMapToRoute(userLngLat);
+
+          let distanceText = "";
+          let durationText = "";
+
+          if (route.legs && route.legs[0]) {
+            if (route.legs[0].distance && route.legs[0].distance.text) {
+              distanceText = route.legs[0].distance.text;
+            }
+
+            if (route.legs[0].duration && route.legs[0].duration.text) {
+              durationText = route.legs[0].duration.text;
+            }
+          }
+
+          let message = "";
+
+          if (distanceText || durationText) {
+
+            if (distanceText) {
+              message += "Khoảng cách: " + distanceText + ". ";
+            }
+
+            if (durationText) {
+              message += "Thời gian dự kiến: " + durationText + ".";
+            }
+          }
+
+          showLocationStatus(message, "info");
+          resetDirectionButton();
+        })
+        .catch(error => {
+          console.error("Lỗi lấy chỉ đường:", error);
+          showLocationStatus("Không thể lấy chỉ đường từ Goong Map. Vui lòng thử lại.", "error");
+          resetDirectionButton();
+        });
+    }
+
+    function handleDirectionClick() {
+      if (!navigator.geolocation) {
+        showLocationStatus(
+          "Trình duyệt của bạn không hỗ trợ lấy vị trí hiện tại.",
+          "warning"
+        );
+
+        return;
+      }
+
+      btnChiDuong.disabled = true;
+      btnChiDuong.innerHTML = '<i class="fa-solid fa-spinner"></i> Đang lấy vị trí...';
+
+      showLocationStatus(
+        "Đang lấy vị trí hiện tại. Nếu trình duyệt hỏi quyền truy cập vị trí, bạn hãy chọn “Cho phép”.",
+        "info"
+      );
+
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          btnChiDuong.innerHTML = '<i class="fa-solid fa-spinner"></i> Đang tìm đường...';
+
+          getRouteFromGoong(latitude, longitude);
+        },
+        function(error) {
+          let message = "Không thể lấy vị trí hiện tại của bạn.";
+
+          if (error.code === error.PERMISSION_DENIED) {
+            message = "Bạn đã từ chối quyền truy cập vị trí. Vui lòng cấp quyền vị trí cho trình duyệt rồi thử lại.";
+          }
+
+          if (error.code === error.POSITION_UNAVAILABLE) {
+            message = "Không thể xác định vị trí hiện tại. Nếu bạn đang dùng máy tính bàn/laptop, vị trí có thể không chính xác do không có GPS.";
+          }
+
+          if (error.code === error.TIMEOUT) {
+            message = "Quá thời gian lấy vị trí. Vui lòng thử lại.";
+          }
+
+          showLocationStatus(message, "error");
+          resetDirectionButton();
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    if (btnChiDuong) {
+      btnChiDuong.addEventListener("click", handleDirectionClick);
+    }
+  </script>
+</body>
+
+</html>

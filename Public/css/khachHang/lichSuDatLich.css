@@ -1,0 +1,16 @@
+.history-container {
+    margin-top: 120px;
+    /* Đẩy nội dung xuống dưới Header */
+    margin-bottom: 50px;
+    min-height: 60vh;
+}
+
+.card-history {
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: none;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}

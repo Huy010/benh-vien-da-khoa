@@ -1,0 +1,58 @@
+/* --- CẤU TRÚC LAYOUT FORM --- */
+.card-box {
+    max-width: 1000px;
+    /* Mở rộng chút để chứa 2 cột thoải mái hơn */
+    margin: 0 auto;
+}
+
+/* --- TIÊU ĐỀ SECTION --- */
+.section-title {
+    font-size: 16px;
+    color: #1565c0;
+    padding-left: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+/* --- CUSTOMIZE INPUTS --- */
+.form-control,
+.form-select {
+    font-size: 15px;
+    padding: 10px 15px;
+    border-radius: 6px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #1565c0;
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
+/* --- BUTTONS --- */
+.btn-cancel {
+    background-color: #e5e7eb;
+    color: #374151;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-cancel:hover {
+    background-color: #d1d5db;
+    color: #1f2937;
+}
+
+.btn-submit {
+    background-color: #1565c0;
+    color: white;
+    padding: 10px 25px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-submit:hover {
+    background-color: #0d47a1;
+    /* Xanh đậm hơn khi hover */
+    color: white;
+    transform: translateY(-1px);
+}

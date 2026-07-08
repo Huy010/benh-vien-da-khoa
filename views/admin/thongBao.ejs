@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Báo Hệ Thống - Admin Dashboard</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/admin/style.css">
+    <link rel="stylesheet" href="/css/admin/sidebar.css">
+    <link rel="stylesheet" href="/css/admin/dashboard.css">
+    
+    <style>
+        .hover-notification:hover { 
+            background-color: #f8f9fa; 
+            border-left: 4px solid #0d6efd; 
+            padding-left: 1.25rem !important; 
+        }
+
+        .cursor-pointer { 
+            cursor: pointer; 
+            text-decoration: none; 
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px !important;
+            }
+
+            .notification-item {
+                padding: 16px !important;
+            }
+
+            .notification-title {
+                font-size: 16px;
+            }
+
+            .notification-content {
+                font-size: 14px !important;
+            }
+
+            .notification-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 8px;
+            }
+
+            .notification-bottom {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="sound-notification" src="/sounds/thongBao.mp3" preload="auto"></audio>
+
+    <div class="d-flex vh-100 overflow-hidden bg-light">
+        
+        <%- include('./sidebar') %>
+        
+        <div class="main-content flex-grow-1 p-4 overflow-auto">
+
+            <header class="mb-4 pb-3 border-bottom d-flex align-items-center">
+                <div class="text-warning me-3" style="font-size: 2rem;">
+                    <i class="fas fa-bell"></i>
+                </div>
+
+                <h3 class="fw-bold text-dark mb-0">Thông báo hệ thống</h3>
+            </header>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush rounded-4">
+                        
+                        <% if (!thongBaoList || thongBaoList.length === 0) { %>
+
+                            <div class="list-group-item text-center text-muted py-5 border-0">
+                                <i class="fas fa-box-open mb-3" style="font-size: 4rem; color: #dee2e6;"></i>
+                                <h5 class="fw-bold text-secondary">Chưa có thông báo nào</h5>
+                                <p>Hộp thư của bạn hiện đang trống.</p>
+                            </div>
+
+                        <% } else { %>
+                            
+                            <% thongBaoList.forEach(tb => { %>
+
+                                <a 
+                                    onclick="xemChiTietYeuCau('<%= tb.id_yeuCau %>', '<%= tb.id_thongBao %>')" 
+                                    id="thongbao-<%= tb.id_thongBao %>"
+                                    class="list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white' %>"
+                                >
+                                    <div class="notification-header d-flex w-100 justify-content-between align-items-center mb-2">
+
+                                        <h5 
+                                            id="tieuDe-<%= tb.id_thongBao %>" 
+                                            class="notification-title mb-0 <%= tb.trangThaiDoc ? 'text-secondary' : 'text-primary fw-bold' %>"
+                                        >
+                                            <i 
+                                                id="icon-<%= tb.id_thongBao %>" 
+                                                class="<%= tb.trangThaiDoc ? 'fas fa-envelope-open text-muted' : 'fas fa-envelope text-primary' %> me-2"
+                                            ></i> 
+
+                                            <%= tb.tieuDe %>
+                                        </h5>
+
+                                    </div>
+
+                                    <div class="notification-bottom d-flex justify-content-between align-items-center mt-2">
+
+                                        <p 
+                                            id="noiDung-<%= tb.id_thongBao %>"
+                                            class="notification-content mb-0 <%= tb.trangThaiDoc ? 'text-muted' : 'text-dark fw-medium' %>" 
+                                            style="font-size: 1.05rem;"
+                                        >
+                                            <%= tb.noiDung %>
+                                        </p>
+
+                                        <% if (!tb.trangThaiDoc) { %>
+                                            <span 
+                                                id="badge-<%= tb.id_thongBao %>" 
+                                                class="badge bg-danger rounded-pill px-3 py-2 shadow-sm"
+                                            >
+                                                Mới
+                                            </span>
+                                        <% } %>
+
+                                    </div>
+                                </a>
+
+                            <% }) %>
+                            
+                        <% } %>
+
+                    </div>
+                </div>
+                
+                <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+                    <div class="card-footer bg-white border-0 py-3 border-top">
+                        <nav aria-label="Điều hướng trang thông báo">
+                            <ul class="pagination justify-content-center mb-0 flex-wrap">
+
+                                <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                    <a class="page-link" href="?page=<%= currentPage - 1 %>">Trước</a>
+                                </li>
+                                
+                                <% for (let i = 1; i <= totalPages; i++) { %>
+                                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                                    </li>
+                                <% } %>
+
+                                <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                    <a class="page-link" href="?page=<%= currentPage + 1 %>">Tiếp</a>
+                                </li>
+
+                            </ul>
+                        </nav>
+                    </div>
+                <% } %>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        let currentAdminUnreadCount = document.querySelectorAll('[id^="badge-"]').length;
+
+        document.addEventListener('click', function () {
+            const audio = document.getElementById('sound-notification');
+            if (audio) {
+                audio.load();
+            }
+        }, { once: true });
+        function phatAmThanhThongBaoAdmin() {
+            const audio = document.getElementById('sound-notification');
+
+            if (!audio) return;
+
+            audio.currentTime = 0;
+
+            audio.play().catch(function () {
+                console.log('Trình duyệt đã chặn âm thanh vì người dùng chưa tương tác với trang.');
+            });
+        }
+        function capNhatBadgeSidebarSauKhiDoc() {
+            const badgeSidebar = document.querySelector('.badge-thongbao, #badgeThongBao, .notification-badge');
+
+            if (badgeSidebar) {
+                const currentValue = parseInt(badgeSidebar.textContent) || 0;
+                const newValue = Math.max(currentValue - 1, 0);
+
+                if (newValue <= 0) {
+                    badgeSidebar.remove();
+                } else {
+                    badgeSidebar.textContent = newValue;
+                }
+            }
+        }
+
+        function danhDauDaDocGiaoDien(idThongBao) {
+            const item = document.getElementById(`thongbao-${idThongBao}`);
+            if (item) {
+                item.classList.remove('bg-white');
+                item.classList.add('bg-light');
+            }
+
+            const tieuDeEl = document.getElementById(`tieuDe-${idThongBao}`);
+            if (tieuDeEl) {
+                tieuDeEl.classList.remove('text-primary', 'fw-bold');
+                tieuDeEl.classList.add('text-secondary');
+            }
+
+            const noiDungEl = document.getElementById(`noiDung-${idThongBao}`);
+            if (noiDungEl) {
+                noiDungEl.classList.remove('text-dark', 'fw-medium');
+                noiDungEl.classList.add('text-muted');
+            }
+            
+            const iconEl = document.getElementById(`icon-${idThongBao}`);
+            if (iconEl) {
+                iconEl.className = 'fas fa-envelope-open text-muted me-2';
+            }
+            
+            const badge = document.getElementById(`badge-${idThongBao}`);
+            if (badge) {
+                badge.remove();
+
+                if (currentAdminUnreadCount > 0) {
+                    currentAdminUnreadCount--;
+                }
+
+                capNhatBadgeSidebarSauKhiDoc();
+            }
+        }
+
+        async function danhDauDaDocServer(idThongBao) {
+            if (!idThongBao || idThongBao === 'undefined' || idThongBao === 'null') {
+                return;
+            }
+
+            try {
+                await fetch(`/admin/thongBao/danhDauDaDoc/${idThongBao}`, {
+                    method: 'POST'
+                });
+            } catch (error) {
+                console.error('Lỗi đánh dấu đã đọc:', error);
+            }
+        }
+
+        function checkAdminNewNotifications() {
+            fetch('/admin/thongBao/api-dem-moi')
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        const newUnreadCount = data.count;
+
+                        if (newUnreadCount > currentAdminUnreadCount) {
+                            phatAmThanhThongBaoAdmin();
+                        }
+
+                        currentAdminUnreadCount = newUnreadCount;
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Lỗi đồng bộ dữ liệu thông báo Admin:', error);
+                });
+        }
+
+        setInterval(checkAdminNewNotifications, 8000);
+
+        async function xemChiTietYeuCau(idYeuCau, idThongBao) {
+            danhDauDaDocGiaoDien(idThongBao);
+
+            if (!idYeuCau || idYeuCau === 'undefined' || idYeuCau === 'null') {
+                await danhDauDaDocServer(idThongBao);
+
+                return Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Thông báo này không có yêu cầu đổi lịch đi kèm.',
+                    icon: 'info',
+                    confirmButtonText: 'Đóng'
+                }).then(() => window.location.reload());
+            }
+
+            Swal.fire({ 
+                title: 'Đang tải...', 
+                allowOutsideClick: false,
+                didOpen: () => { 
+                    Swal.showLoading(); 
+                } 
+            });
+
+            try {
+                const res = await fetch(`/admin/thongBao/chiTietYeuCau/${idYeuCau}`);
+                const data = await res.json();
+
+                if (!data.success) {
+                    await danhDauDaDocServer(idThongBao);
+                    return Swal.fire('Lỗi', 'Không tìm thấy yêu cầu', 'error')
+                        .then(() => window.location.reload());
+                }
+
+                const y = data.yeuCau;
+
+                const ngayTruc = y.ngayDoiStr || y.ngayMuonDoiStr || 'Không rõ';
+
+                let thongTinChungHtml = `
+                    <div class="text-start p-3 bg-light rounded border mt-3" style="font-size: 1.05rem;">
+                        <p class="mb-2">
+                            <b>Người xin đổi:</b> 
+                            <span class="text-success fw-bold">${y.tenBsYeuCau || 'Không rõ'}</span>
+                        </p>
+
+                        <p class="mb-2">
+                            <b>Ngày trực:</b> 
+                            <span class="text-danger fw-bold">${ngayTruc}</span>
+                        </p>
+
+                        <p class="mb-0">
+                            <b>Trực thay:</b> 
+                            <span class="text-success fw-bold">${y.tenBsThayThe || 'Không rõ'}</span>
+                        </p>
+                `;
+                
+                if (y.tenNguoiDuyet) {
+                    thongTinChungHtml += `
+                        <hr class="my-2 border-secondary opacity-25">
+
+                        <p class="mb-0 mt-2">
+                            <b>Xử lý bởi:</b> 
+                            <span class="text-info fw-bold">${y.tenNguoiDuyet}</span>
+                        </p>
+                    `;
+                }
+                
+                thongTinChungHtml += `</div>`;
+
+                if (y.trangThai !== 'ChoDuyet') {
+                    await danhDauDaDocServer(idThongBao);
+
+                    let statusHtml = '';
+
+                    if (y.trangThai === 'DaDuyet') {
+                        statusHtml = `
+                            <div class="bg-success text-white p-2 text-center rounded mt-3 fw-bold shadow-sm">
+                                <i class="fas fa-check-circle me-1"></i> 
+                                YÊU CẦU ĐÃ ĐƯỢC PHÊ DUYỆT
+                            </div>
+                        `;
+                    } else {
+                        statusHtml = `
+                            <div class="bg-danger text-white p-2 text-center rounded mt-3 fw-bold shadow-sm">
+                                <i class="fas fa-times-circle me-1"></i> 
+                                YÊU CẦU ĐÃ BỊ TỪ CHỐI
+                            </div>
+                        `;
+                    }
+
+                    return Swal.fire({
+                        title: 'Chi tiết đổi lịch',
+                        html: thongTinChungHtml + statusHtml,
+                        icon: 'info',
+                        confirmButtonText: 'Đóng',
+                        confirmButtonColor: '#6c757d'
+                    }).then(() => window.location.reload());
+                }
+
+                if (data.isExpired) {
+                    const expiredHtml = thongTinChungHtml + `
+                        <div class="alert alert-danger mt-3 mb-0 text-start border-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i> 
+                            Ngày xin đổi lịch (<b>${ngayTruc}</b>) đã qua.
+                        </div>
+                    `;
+
+                    return Swal.fire({
+                        title: 'Yêu cầu đã quá hạn',
+                        html: expiredHtml,
+                        icon: 'warning',
+                        confirmButtonText: '<i class="fas fa-times me-1"></i> Huỷ',
+                        confirmButtonColor: '#6c757d'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            xuLyYeuCau(idYeuCau, 'TuChoi', idThongBao, true);
+                        }
+                    });
+                }
+
+                Swal.fire({
+                    title: 'Duyệt yêu cầu đổi lịch',
+                    html: thongTinChungHtml,
+                    icon: 'question',
+                    showDenyButton: true,
+                    showCancelButton: true,
+                    confirmButtonText: '<i class="fas fa-check me-1"></i> Phê duyệt',
+                    denyButtonText: '<i class="fas fa-times me-1"></i> Từ chối',
+                    cancelButtonText: 'Đóng',
+                    confirmButtonColor: '#198754',
+                    denyButtonColor: '#dc3545'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        xuLyYeuCau(idYeuCau, 'DaDuyet', idThongBao, false);
+                    } else if (result.isDenied) {
+                        xuLyYeuCau(idYeuCau, 'TuChoi', idThongBao, false);
+                    } else {
+                        danhDauDaDocServer(idThongBao).then(() => window.location.reload());
+                    }
+                });
+
+            } catch (e) {
+                Swal.fire('Lỗi mạng', 'Không thể kết nối đến máy chủ.', 'error');
+            }
+        }
+
+        function xuLyYeuCau(idYeuCau, hanhDong, idThongBao, isSilent = false) {
+            Swal.fire({ 
+                title: 'Đang xử lý...', 
+                allowOutsideClick: false, 
+                didOpen: () => { 
+                    Swal.showLoading(); 
+                }
+            });
+            
+            fetch('/admin/thongBao/xuLyYeuCau', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json' 
+                },
+                body: JSON.stringify({ 
+                    idYeuCau, 
+                    hanhDong 
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    danhDauDaDocServer(idThongBao).then(() => {
+                        if (isSilent) {
+                            window.location.reload();
+                        } else {
+                            Swal.fire('Thành công', data.message, 'success')
+                                .then(() => window.location.reload());
+                        }
+                    });
+                } else {
+                    Swal.fire('Lỗi', data.message, 'error');
+                }
+            })
+            .catch(() => {
+                Swal.fire('Lỗi', 'Đã xảy ra lỗi trong quá trình xử lý.', 'error');
+            });
+        }
+    </script>
+
+</body>
+<audio id="sound-notification" src="/sounds/thongBao.mp3" preload="auto"></audio>
+</html>

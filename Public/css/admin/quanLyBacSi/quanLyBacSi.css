@@ -1,0 +1,53 @@
+/* Rút gọn văn bản cột Chi Tiết (Cột số 5) */
+/* Sửa bộ chọn để phù hợp với class .custom-table mới */
+.custom-table tbody td:nth-child(5) {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Căn giữa và tạo khoảng cách cho nút thao tác */
+.action-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Các icon thao tác */
+.btn-icon {
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+.btn-icon:hover {
+    transform: scale(1.15);
+}
+
+/* Hiệu ứng mượt mà khi load trang */
+.animate-fade-in {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive cơ bản cho nút Thêm Bác Sĩ */
+@media (max-width: 576px) {
+    .btn-add {
+        width: 100%;
+        text-align: center;
+        display: block;
+    }
+}

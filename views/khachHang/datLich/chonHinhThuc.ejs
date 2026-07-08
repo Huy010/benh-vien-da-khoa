@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chọn hình thức đặt lịch</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/khachHang/home.css">
+
+    <style>
+        .choice-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border-radius: 20px;
+            border: 2px solid #e9ecef;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .choice-card:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .choice-card:hover .btn-outline-primary {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+
+        .choice-card:hover .btn-outline-success {
+            background-color: #198754;
+            color: #fff;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .icon-box {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            margin: 0 auto 20px auto;
+        }
+
+        .icon-box-success {
+            background: rgba(25, 135, 84, 0.12);
+        }
+
+        .icon-box-primary {
+            background: rgba(13, 110, 253, 0.12);
+        }
+
+        .choice-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .choice-desc {
+            color: #6c757d;
+            line-height: 1.6;
+            min-height: 78px;
+        }
+
+        .info-list {
+            text-align: left;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #495057;
+            font-size: 0.96rem;
+            line-height: 1.5;
+        }
+
+        .info-list i {
+            margin-top: 4px;
+            min-width: 18px;
+        }
+
+        .price-note {
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-top: auto;
+            margin-bottom: 18px;
+        }
+
+        .price-note-success {
+            background: rgba(25, 135, 84, 0.08);
+            color: #146c43;
+            border: 1px solid rgba(25, 135, 84, 0.18);
+        }
+
+        .price-note-primary {
+            background: rgba(13, 110, 253, 0.08);
+            color: #084298;
+            border: 1px solid rgba(13, 110, 253, 0.18);
+        }
+
+        .badge-choice {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            margin: 0 auto 15px auto;
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .badge-choice-success {
+            background: rgba(25, 135, 84, 0.12);
+            color: #198754;
+        }
+
+        .badge-choice-primary {
+            background: rgba(13, 110, 253, 0.12);
+            color: #0d6efd;
+        }
+
+        .note-box {
+            max-width: 900px;
+            margin: 35px auto 0 auto;
+            border-radius: 18px;
+            border: 1px solid rgba(13, 110, 253, 0.15);
+            background: #ffffff;
+            padding: 20px 24px;
+        }
+
+        .note-box i {
+            color: #0d6efd;
+        }
+
+        @media (max-width: 768px) {
+            .choice-desc {
+                min-height: auto;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <%- include('../header') %>
+
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold text-primary">Đăng ký khám bệnh</h2>
+                <p class="text-muted fs-5 mb-0">
+                    Vui lòng chọn hình thức khám phù hợp với nhu cầu của bạn
+                </p>
+            </div>
+
+            <div class="row justify-content-center g-4">
+
+                <div class="col-md-6 col-lg-5">
+                    <div class="card h-100 choice-card text-center p-4" onclick="window.location.href='/datLichThuong'">
+                        <div class="card-body d-flex flex-column">
+
+                            <div class="icon-box icon-box-success text-success">
+                                🩺
+                            </div>
+
+                            <h4 class="choice-title">Khám thường</h4>
+
+                            <p class="choice-desc">
+                                Phù hợp khi bạn muốn đặt lịch khám nhanh theo chuyên khoa.
+                                Hệ thống sẽ sắp xếp bác sĩ phù hợp theo ngày và khung giờ bạn chọn.
+                            </p>
+
+                            <button type="button"
+                                class="btn btn-outline-primary mt-2 rounded-pill px-4 py-2 fw-bold w-100">
+                                Chọn khám thường
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-5">
+                    <div class="card h-100 choice-card text-center p-4"
+                        onclick="window.location.href='/datLichChuyenGia'">
+                        <div class="card-body d-flex flex-column">
+
+                            <div class="icon-box icon-box-primary text-primary">
+                                👨‍⚕️
+                            </div>
+
+                            <h4 class="choice-title">Khám chuyên gia</h4>
+
+                            <p class="choice-desc">
+                                Phù hợp khi bạn muốn được khám với bác sĩ/chuyên gia cụ thể,
+                                có thể xem thông tin bác sĩ trước khi đặt lịch.
+                            </p>
+                            <button type="button"
+                                class="btn btn-outline-primary mt-2 rounded-pill px-4 py-2 fw-bold w-100">
+                                Chọn khám chuyên gia
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <%- include('../footer') %>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

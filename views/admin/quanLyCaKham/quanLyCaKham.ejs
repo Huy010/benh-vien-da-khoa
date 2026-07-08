@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Ca Khám & Lịch Trực</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="/css/admin/sidebar.css">
+    <link rel="stylesheet" href="/css/admin/style.css">
+    <link rel="stylesheet" href="/css/admin/quanLyCaKham/quanLyCaKham.css">
+</head>
+<body>
+
+    <div class="d-flex vh-100 overflow-hidden" style="background-color: #f4f6f9;">
+        
+        <%- include('../sidebar') %>
+        
+        <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto">
+            
+            <div class="card-box bg-white p-4 rounded shadow-sm border-0">
+                
+                <div class="card-header-title">
+                    <h2>Quản Lý Lịch Trực Bác Sĩ</h2>
+                </div>
+
+                <div class="week-navigator d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3 mb-4 p-3 border rounded">
+                    
+                    <div class="week-controls d-flex align-items-center justify-content-center gap-2 w-100 w-lg-auto">
+                        <button type="button" class="btn-import" onclick="changeWeek(-7)">
+                            <i class="fas fa-chevron-left"></i> <span class="d-none d-sm-inline">Tuần trước</span>
+                        </button>
+                        
+                        <div class="date-input-wrapper mx-2">
+                            <div class="week-info">
+                                <i class="far fa-clock"></i> <%= typeof weekLabel !== 'undefined' ? weekLabel : 'Đang tải...' %>
+                            </div>
+                            <input type="text" name="week" id="weekInput" 
+                                   value="<%= typeof currentInputVal !== 'undefined' ? currentInputVal : '' %>" 
+                                   class="file-input-custom datepicker mx-auto d-block" 
+                                   style="padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px; width: 140px; cursor: pointer;" 
+                                   placeholder="Chọn ngày">
+                            <small style="color: #666; font-size: 11px; margin-top: 3px; display: block; text-align: center;">(Chọn ngày)</small>
+                        </div>
+
+                        <button type="button" class="btn-import" onclick="changeWeek(7)">
+                            <span class="d-none d-sm-inline">Tuần sau</span> <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <form action="/admin/importExcel" method="POST" enctype="multipart/form-data" class="upload-section m-0 w-100 w-lg-auto justify-content-center flex-nowrap">
+                         <input type="file" name="excelFile" class="file-input-custom flex-grow-1 flex-lg-grow-0" accept=".xlsx, .xls" required style="max-width: 200px;">
+                         <button type="submit" class="btn-import text-nowrap"><i class="fas fa-upload"></i> Import</button>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="custom-table w-100">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">NGÀY TRỰC</th>
+                                <th style="width: 25%;">CHUYÊN KHOA</th>
+                                <th style="width: 30%;">BÁC SĨ TRỰC</th>
+                                <th style="width: 15%; text-align: center;">THAO TÁC</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (typeof weekData !== 'undefined' && weekData.length > 0) { %>
+                                <% weekData.forEach((dayGroup) => { %>
+                                    <% dayGroup.shifts.forEach((shift, index) => { %>
+                                        <tr>
+                                            <% if (index === 0) { %>
+                                                <td rowspan="<%= dayGroup.shifts.length %>" style="font-weight: 600; vertical-align: middle; background-color: #f9f9f9; border-right: 2px solid #eee;">
+                                                    <i class="far fa-calendar-alt"></i> <br class="d-md-none"> <%= dayGroup.dateDisplay %>
+                                                </td>
+                                            <% } %>
+
+                                            <td><span class="badge-khoa"><%= shift.khoa %></span></td>
+                                            
+                                            <td style="font-weight: bold; color: var(--primary-color);">
+                                                <%= shift.tenBacSi %>
+                                            </td>
+
+                                            <td class="action-cols text-center">
+                                                <div class="action-btn-container"> 
+                                                    <% 
+                                                        let today = new Date();
+                                                        today.setHours(0,0,0,0);
+                                                        let shiftDate = new Date(shift.ngay); 
+                                                        shiftDate.setHours(0,0,0,0);
+                                                    %>
+
+                                                    <% if (shiftDate >= today) { %>
+                                                        <button type="button" class="btn-edit-icon" 
+                                                                data-bs-toggle="modal" data-bs-target="#editModal"
+                                                                onclick="prepareEditModal('<%= shift.id %>', '<%= shift.idKhoa %>', '<%= shift.tenBacSi %>', '<%= shift.khoa %>')">
+                                                            <i class="fas fa-edit"></i> Sửa
+                                                        </button>
+                                                    <% } else { %>
+                                                        <span style="color: #999; font-size: 12px;"><i class="fas fa-lock"></i> Đã khóa</span>
+                                                    <% } %>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 30px; color: #888;">
+                                        Không có lịch trực nào trong tuần này.
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold" id="editModalLabel" style="font-size: 18px;">Đổi Bác Sĩ Trực</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="/admin/updateCaTruc" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="id_caKham" id="modalIdCaKham">
+                        
+                        <div class="form-group mb-3">
+                            <label class="fw-bold mb-1">Chuyên khoa:</label>
+                            <input type="text" id="modalTenKhoa" class="form-control" style="background: #f5f5f5;" readonly>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="fw-bold mb-1">Bác sĩ hiện tại:</label>
+                            <input type="text" id="modalTenBacSiCu" class="form-control" style="background: #f5f5f5;" readonly>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="fw-bold mb-1" style="color: #1565c0;">Chọn Bác sĩ thay thế:</label>
+                            <select name="id_bacSiMoi" id="modalSelectBacSi" class="form-select" required>
+                                <option value="">Đang tải danh sách...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-top-0">
+                        <button type="button" class="btn-cancel" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn-save">Lưu Thay Đổi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            flatpickr(".datepicker", {
+                locale: "vn",
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "d/m/Y",
+                allowInput: true,
+                onChange: function(selectedDates, dateStr, instance) {
+                    if (dateStr) {
+                        window.location.href = `/admin/quanLyCaKham?week=${dateStr}`;
+                    }
+                }
+            });
+        });
+
+        function changeWeek(offsetDays) {
+            const input = document.getElementById('weekInput');
+            let currentDate = new Date();
+            if (input.value) {
+                const parts = input.value.split('-');
+                if (parts.length === 3) {
+                    currentDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                }
+            }
+            currentDate.setDate(currentDate.getDate() + offsetDays);
+            const y = currentDate.getFullYear();
+            const m = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const d = String(currentDate.getDate()).padStart(2, '0');
+            window.location.href = `/admin/quanLyCaKham?week=${y}-${m}-${d}`;
+        }
+
+        async function prepareEditModal(idCaKham, idKhoa, tenBacSi, tenKhoa) {
+            document.getElementById('modalIdCaKham').value = idCaKham;
+            document.getElementById('modalTenBacSiCu').value = tenBacSi;
+            document.getElementById('modalTenKhoa').value = tenKhoa;
+            
+            const selectBox = document.getElementById('modalSelectBacSi');
+            selectBox.innerHTML = '<option value="">Đang tải danh sách...</option>';
+
+            if (!idKhoa || idKhoa === 'null') {
+                selectBox.innerHTML = '<option value="">Khoa không hợp lệ</option>';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/admin/api/get-bacsi-by-khoa/${idKhoa}`);
+                const data = await res.json();
+                const doctors = data.data ? data.data : data;
+
+                selectBox.innerHTML = '';
+                if (!Array.isArray(doctors) || doctors.length === 0) {
+                    selectBox.innerHTML = '<option value="">Không có bác sĩ khác</option>';
+                    return;
+                }
+
+                doctors.forEach(doc => {
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.text = doc.hoTen;
+                    if(doc.hoTen === tenBacSi) option.selected = true;
+                    selectBox.appendChild(option);
+                });
+            } catch (err) {
+                selectBox.innerHTML = '<option>Lỗi tải dữ liệu</option>';
+            }
+        }
+    </script>
+
+    <% if (typeof msg !== 'undefined' && msg) { %>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var messageContent = decodeURIComponent("<%= msg %>");
+                var isError = messageContent.toLowerCase().includes("lỗi") || 
+                              messageContent.toLowerCase().includes("không thể") ||
+                              messageContent.toLowerCase().includes("error");
+
+                Swal.fire({
+                    icon: isError ? 'error' : 'success',
+                    title: isError ? 'Thông báo' : 'Thành công',
+                    text: messageContent,
+                    confirmButtonColor: '#1565c0'
+                });
+            });
+        </script>
+    <% } %>
+</body>
+</html>

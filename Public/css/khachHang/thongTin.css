@@ -1,0 +1,55 @@
+/* ===== PAGE BACKGROUND ===== */
+body {
+    background: #f4f6f9;
+}
+
+/* ===== MAIN WRAPPER ===== */
+.history-wrapper {
+    padding: 120px 15px 60px;
+    /* chừa header fixed */
+}
+
+/* ===== CARD ===== */
+.history-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 28px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== TITLE ===== */
+.history-title {
+    font-weight: 700;
+    font-size: 22px;
+    border-left: 6px solid #0d6efd;
+    padding-left: 12px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+/* ===== TEXT ===== */
+.history-card p {
+    text-align: justify;
+    line-height: 1.7;
+    margin-bottom: 14px;
+}
+
+.history-card h6 {
+    font-weight: 700;
+    margin-top: 18px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width:768px) {
+    .history-wrapper {
+        padding: 100px 10px 40px;
+    }
+
+    .history-card {
+        padding: 18px;
+    }
+
+    .history-title {
+        font-size: 18px;
+    }
+}

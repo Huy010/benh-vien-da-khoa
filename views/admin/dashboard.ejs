@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Quản Lý - Admin Dashboard</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="/css/admin/style.css">
+    <link rel="stylesheet" href="/css/admin/sidebar.css">
+    <link rel="stylesheet" href="/css/admin/dashboard.css">
+</head>
+<body>
+
+    <div class="d-flex vh-100 overflow-hidden bg-light">
+        
+        <%- include('./sidebar') %>
+        
+        <div class="main-content flex-grow-1 p-4 overflow-auto">
+            <header class="mb-4 pb-3 border-bottom">
+                <h3 class="fw-bold text-dark mb-0">Xin chào, <%= tenAdmin %></h3>
+            </header>
+
+            <div class="row g-4">
+                
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        <div class="card-body text-center p-4 d-flex flex-column">
+                            <div class="text-primary mb-3" style="font-size: 2.5rem;"><i class="fas fa-calendar-check"></i></div>
+                            <h4 class="card-title fw-bold">Ca Khám</h4>
+                            <p class="card-text text-muted mb-4">Sắp xếp và quản lý lịch khám</p>
+                            <a href="/admin/quanLyCaKham" class="btn btn-outline-primary mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        <div class="card-body text-center p-4 d-flex flex-column">
+                            <div class="text-success mb-3" style="font-size: 2.5rem;"><i class="fas fa-clinic-medical"></i></div>
+                            <h4 class="card-title fw-bold">Phòng Khám</h4>
+                            <p class="card-text text-muted mb-4">Thông tin các phòng ban</p>
+                            <a href="/admin/quanLyPhongKham" class="btn btn-outline-success mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        <div class="card-body text-center p-4 d-flex flex-column">
+                            <div class="text-info mb-3" style="font-size: 2.5rem;"><i class="fas fa-user-md"></i></div>
+                            <h4 class="card-title fw-bold">Bác Sĩ</h4>
+                            <p class="card-text text-muted mb-4">Danh sách và thông tin bác sĩ</p>
+                            <a href="/admin/quanLyBacSi" class="btn btn-outline-info mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        <div class="card-body text-center p-4 d-flex flex-column">
+                            <div class="text-warning mb-3" style="font-size: 2.5rem;"><i class="fas fa-users"></i></div>
+                            <h4 class="card-title fw-bold">Người Dùng</h4>
+                            <p class="card-text text-muted mb-4">Quản lý tài khoản bệnh nhân</p>
+                            <a href="/admin/quanLyNguoiDung" class="btn btn-outline-warning mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm hover-card">
+                        <div class="card-body text-center p-4 d-flex flex-column">
+                            <div class="text-danger mb-3" style="font-size: 2.5rem;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4 class="card-title fw-bold">Thống Kê</h4>
+                            <p class="card-text text-muted mb-4">Theo dõi lượt khám và doanh thu</p>
+                            <a href="/admin/thongKe" class="btn btn-outline-danger mt-auto rounded-pill w-100 fw-medium">
+                                Truy cập
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

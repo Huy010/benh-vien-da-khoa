@@ -1,0 +1,44 @@
+kham-benh-gia-huy/
+│
+├── public/                 # Chứa file tĩnh (CSS, JS, Ảnh)
+│   ├── css/
+│   │   ├── style.css       # CSS chung
+│   │   ├── admin.css       # CSS riêng cho trang quản lý
+│   │   └── doctor.css      # CSS riêng cho bác sĩ
+│   ├── js/                 # JS xử lý giao diện (Frontend)
+│   └── images/
+│
+├── config/
+│   └── db.js               # Cấu hình kết nối MySQL
+│
+├── controllers/            # Xử lý logic (Backend)
+│   ├── clientController.js # Xử lý đặt lịch, xem trang chủ
+│   ├── adminController.js  # Xử lý thêm/sửa/xóa bác sĩ
+│   ├── doctorController.js # Xử lý xem lịch hẹn, khám bệnh
+│   └── authController.js   # Xử lý Đăng nhập/Đăng xuất chung
+│
+├── routes/                 # Định nghĩa đường dẫn
+│   ├── index.js            # Route cho Khách hàng (Trang chủ)
+│   ├── admin.js            # Route cho Quản lý (/quanly)
+│   └── doctor.js           # Route cho Bác sĩ (/bacsi)
+│
+├── views/                  # Giao diện HTML (EJS/Handlebars)
+│   ├── layouts/            # Các phần chung (Header, Footer)
+│   │   └── main-layout.ejs
+│   │
+│   ├── client/             # Giao diện Khách hàng
+│   │   ├── home.ejs        # Trang đặt lịch (Trang chủ)
+│   │   └── success.ejs     # Trang báo đặt thành công
+│   │
+│   ├── admin/              # Giao diện Quản lý
+│   │   ├── login.ejs       # Form đăng nhập Admin
+│   │   ├── dashboard.ejs   # Bảng điều khiển chung
+│   │   └── doctors.ejs     # Trang quản lý bác sĩ
+│   │
+│   └── doctor/             # Giao diện Bác sĩ
+│       ├── login.ejs       # Form đăng nhập Bác sĩ
+│       └── schedule.ejs    # Xem lịch làm việc
+│
+├── app.js                  # File chạy chính của server
+├── package.json
+└── .env                    # Lưu mật khẩu DB, cấu hình bảo mật

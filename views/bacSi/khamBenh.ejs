@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Bệnh</title>
+    
+    <link rel="stylesheet" href="/css/bacSi/sidebar.css">
+    <link rel="stylesheet" href="/css/bacSi/style.css">
+    <link rel="stylesheet" href="/css/bacSi/khamBenh.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <%- include('sidebar', { page: page }) %>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="page-title">Tiếp Nhận Khám Bệnh</h3>
+                <p class="text-muted ms-3 mb-0">
+                    <i class="fa-regular fa-calendar-days"></i> Ngày: <strong><%= todayStr %></strong>
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="current-patient-card p-5 text-center" id="current-patient-container">
+                    </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                        <ul class="nav nav-tabs nav-fill" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active fw-bold text-primary" data-bs-toggle="tab" data-bs-target="#waiting" type="button" role="tab">
+                                    <i class="fa-solid fa-users me-1"></i> Chờ khám (<span id="count-waiting">0</span>)
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link fw-bold text-danger" data-bs-toggle="tab" data-bs-target="#absent" type="button" role="tab">
+                                    <i class="fa-solid fa-clock-rotate-left me-1"></i> Đến trễ (<span id="count-absent">0</span>)
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card-body p-3 bg-light">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active queue-container" id="waiting" role="tabpanel">
+                                </div>
+
+                            <div class="tab-pane fade queue-container" id="absent" role="tabpanel">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="patient-data" data-patients='<%- JSON.stringify(typeof danhSachCho !== "undefined" ? danhSachCho : []) %>' style="display: none;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const patientDataElem = document.getElementById('patient-data');
+        let allPatients = JSON.parse(patientDataElem.dataset.patients || "[]");
+        
+        // Khởi tạo localStorage để lưu vết "Vắng mặt" theo ngày
+        const todayDateStr = "<%= todayStr %>"; 
+        let savedState = JSON.parse(localStorage.getItem('absentState') || "{}");
+        
+        // Nếu qua ngày mới thì reset lại danh sách vắng mặt
+        if (savedState.date !== todayDateStr) {
+            savedState = { date: todayDateStr, absentIds: [] };
+            localStorage.setItem('absentState', JSON.stringify(savedState));
+        }
+        let absentIds = savedState.absentIds;
+
+        let currentPatient = null;
+        let waitingQueue = [];
+        let absentQueue = [];
+
+        // Phân loại danh sách từ Database kết hợp với localStorage
+        allPatients.forEach(p => {
+            if (absentIds.includes(p.id_lichHen)) {
+                absentQueue.push(p);
+            } else {
+                waitingQueue.push(p);
+            }
+        });
+
+        // Lấy người đầu tiên trong hàng chờ lên làm người đang khám
+        if (waitingQueue.length > 0) {
+            currentPatient = waitingQueue.shift();
+        }
+
+        function renderUI() {
+            renderCurrent();
+            renderWaiting();
+            renderAbsent();
+            document.getElementById('count-waiting').innerText = waitingQueue.length;
+            document.getElementById('count-absent').innerText = absentQueue.length;
+        }
+
+        function renderCurrent() {
+            const container = document.getElementById('current-patient-container');
+            if (!currentPatient) {
+                container.innerHTML = `
+                    <div class="py-5 text-muted">
+                        <i class="fa-solid fa-mug-hot fs-1 mb-3"></i>
+                        <h4>Không có bệnh nhân nào trong hàng đợi</h4>
+                    </div>`;
+                return;
+            }
+            container.innerHTML = `
+                <h5 class="text-uppercase text-muted fw-bold mb-4">Bệnh Nhân Tiếp Theo</h5>
+                <div class="stt-circle">${currentPatient.stt}</div>
+                <h2 class="fw-bold text-dark mb-2">${currentPatient.hoTen}</h2>
+                <p class="text-muted fs-5 mb-4">
+                    Mã khám: <strong>LH-${currentPatient.id_lichHen}</strong> | Giờ hẹn: ${currentPatient.gioHen} <br>
+                    ${currentPatient.gioiTinh} - ${currentPatient.tuoi} tuổi
+                </p>
+                <hr class="w-50 mx-auto mb-4">
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="/bacsi/khamBenh/chiTiet/${currentPatient.id_lichHen}" class="btn btn-primary btn-lg px-4 fw-bold shadow-sm">
+                        <i class="fa-solid fa-stethoscope me-2"></i> Bắt đầu khám
+                    </a>
+                    <button onclick="markAbsent()" class="btn btn-danger btn-lg px-4 fw-bold shadow-sm">
+                        <i class="fa-solid fa-user-xmark me-2"></i> Vắng mặt
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderWaiting() {
+            const container = document.getElementById('waiting');
+            if (waitingQueue.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted mt-4">Hàng đợi trống</p>';
+                return;
+            }
+            let html = '';
+            waitingQueue.forEach(p => {
+                html += `
+                    <div class="queue-item" style="cursor: pointer;" onclick="swapPatient(${p.id_lichHen})">
+                        <div class="d-flex align-items-center">
+                            <div class="queue-stt">${p.stt}</div>
+                            <div class="queue-info">
+                                <h6>${p.hoTen}</h6>
+                                <small><i class="fa-regular fa-clock"></i> ${p.gioHen} - ${p.gioiTinh}/${p.tuoi} tuổi</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderAbsent() {
+            const container = document.getElementById('absent');
+            if (absentQueue.length === 0) {
+                container.innerHTML = '<p class="text-center text-muted mt-4">Không có bệnh nhân trễ</p>';
+                return;
+            }
+            let html = '';
+            absentQueue.forEach(p => {
+                html += `
+                    <div class="queue-item absent">
+                        <div class="d-flex align-items-center">
+                            <div class="queue-stt text-danger">${p.stt}</div>
+                            <div class="queue-info">
+                                <h6 class="text-danger">${p.hoTen}</h6>
+                                <small>Mã LH-${p.id_lichHen}</small>
+                            </div>
+                        </div>
+                        <button onclick="callAgain(${p.id_lichHen})" class="btn btn-sm btn-outline-danger">Gọi lại</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function swapPatient(id_lichHen) {
+            const index = waitingQueue.findIndex(p => p.id_lichHen === id_lichHen);
+            if (index !== -1) {
+                const selectedPatient = waitingQueue[index];
+                if (currentPatient) waitingQueue.push(currentPatient);
+                
+                currentPatient = selectedPatient;
+                waitingQueue.splice(index, 1);
+                waitingQueue.sort((a, b) => a.stt - b.stt);
+                renderUI();
+            }
+        }
+
+        function markAbsent() {
+            if (currentPatient) {
+                absentQueue.push(currentPatient);
+                absentIds.push(currentPatient.id_lichHen);
+                localStorage.setItem('absentState', JSON.stringify({ date: todayDateStr, absentIds }));
+
+                currentPatient = waitingQueue.length > 0 ? waitingQueue.shift() : null;
+                renderUI();
+            }
+        }
+
+        function callAgain(id_lichHen) {
+            const index = absentQueue.findIndex(p => p.id_lichHen === id_lichHen);
+            if (index !== -1) {
+                const patient = absentQueue[index];
+                absentQueue.splice(index, 1);
+                
+                absentIds = absentIds.filter(id => id !== id_lichHen);
+                localStorage.setItem('absentState', JSON.stringify({ date: todayDateStr, absentIds }));
+                
+                if (currentPatient) {
+                    waitingQueue.push(currentPatient);
+                    waitingQueue.sort((a, b) => a.stt - b.stt);
+                }
+                currentPatient = patient;
+                renderUI();
+            }
+        }
+        
+        // Hàm lấy danh sách bệnh nhân mới
+        function fetchLatestQueue() {
+            fetch('/bacsi/kham-benh/api/danh-sach')
+                .then(res => res.json())
+                .then(response => {
+                    if (response.success) {
+                        const incomingPatients = response.data;
+                        
+                        // Nếu Server đã phạt ai đó "DenTre", họ sẽ biến mất khỏi incomingPatients
+                        // Ta cần dọn dẹp localStorage để loại bỏ những người không còn hợp lệ
+                        const incomingIds = incomingPatients.map(p => p.id_lichHen);
+                        absentIds = absentIds.filter(id => incomingIds.includes(id));
+                        localStorage.setItem('absentState', JSON.stringify({ date: todayDateStr, absentIds }));
+
+                        // Cập nhật lại hàng đợi
+                        waitingQueue = incomingPatients.filter(p => !absentIds.includes(p.id_lichHen));
+                        absentQueue = incomingPatients.filter(p => absentIds.includes(p.id_lichHen));
+
+                        // Xử lý currentPatient
+                        if (currentPatient && !incomingIds.includes(currentPatient.id_lichHen)) {
+                            // Nếu currentPatient vừa bị server xóa (do quá giờ), ta ép bỏ
+                            currentPatient = null;
+                        }
+
+                        if (!currentPatient && waitingQueue.length > 0) {
+                            currentPatient = waitingQueue.shift();
+                        } else if (currentPatient) {
+                            waitingQueue = waitingQueue.filter(p => p.id_lichHen !== currentPatient.id_lichHen);
+                        }
+                        
+                        renderUI();
+                    }
+                })
+                .catch(err => console.error("Lỗi tự cập nhật hàng đợi:", err));
+        }
+
+        // AJAX Polling: Cứ mỗi 5 giây (5000ms), gọi API lấy danh sách mới. 
+        setInterval(fetchLatestQueue, 5000);        
+
+        // Chạy lần đầu
+        renderUI();
+    </script>
+</body>
+</html>

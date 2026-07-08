@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử khám bệnh</title>
+
+    <link rel="stylesheet" href="/css/bacSi/sidebar.css">
+    <link rel="stylesheet" href="/css/bacSi/style.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+
+    <style>
+        body {
+            background-color: #f5f7fb;
+        }
+
+        .main-content {
+            padding: 25px;
+        }
+
+        .page-title {
+            font-weight: 800;
+            color: #1565c0;
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .filter-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eef2f7;
+        }
+
+        .table-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eef2f7;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: #0d6efd;
+            color: white;
+            font-size: 14px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .badge-success-soft {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .patient-name {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .empty-box {
+            background: #ffffff;
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .empty-box i {
+            font-size: 48px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .btn-detail {
+            border-radius: 999px;
+            font-weight: 700;
+            padding: 6px 13px;
+        }
+
+        .pagination .page-link {
+            border-radius: 10px;
+            margin: 0 3px;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+        .pagination .active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+        }
+
+        .badge-id {
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 999px;
+        }
+
+        @media (max-width: 992px) {
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 1100px;
+            }
+
+            .filter-actions {
+                width: 100%;
+            }
+
+            .filter-actions button,
+            .filter-actions a {
+                width: 100%;
+            }
+
+            .filter-card form .col-md-4,
+            .filter-card form .col-md-8 {
+                width: 100%;
+            }
+
+            .pagination {
+                gap: 6px;
+            }
+
+            .pagination .page-link {
+                min-width: 42px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <%- include('sidebar', { page: page }) %>
+
+    <div class="main-content">
+
+        <div class="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <h3 class="page-title mb-1">Lịch Sử Khám Bệnh</h3>
+                <p class="text-muted ms-3 mb-0">
+                    Danh sách các bệnh nhân mà bạn đã khám và hoàn thành.
+                </p>
+            </div>
+        </div>
+
+        <div class="filter-card mb-4">
+            <form action="/bacsi/lichSuKhamBenh" method="GET" class="row g-3 align-items-end">
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-muted">
+                        <i class="fa-solid fa-calendar-check"></i> Chọn ngày khám
+                    </label>
+
+                    <input
+                        type="text"
+                        id="chonNgay"
+                        name="ngay"
+                        class="form-control fw-bold text-primary"
+                        placeholder="Chọn ngày khám"
+                        value="<%= selectedDate || '' %>"
+                        autocomplete="off"
+                    >
+                </div>
+
+                <div class="col-md-8 d-flex gap-2 filter-actions flex-wrap">
+
+                    <button type="submit" class="btn btn-primary fw-bold px-4">
+                        <i class="fa-solid fa-filter"></i> Lọc theo ngày
+                    </button>
+
+                    <a href="/bacsi/lichSuKhamBenh" class="btn btn-outline-secondary fw-bold px-4">
+                        <i class="fa-solid fa-rotate-left"></i> Xem tất cả
+                    </a>
+
+                </div>
+            </form>
+        </div>
+
+        <% if (!lichDaKham || lichDaKham.length === 0) { %>
+
+            <div class="empty-box">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <h5 class="fw-bold">Chưa có ca khám hoàn thành</h5>
+
+                <% if (selectedDate) { %>
+                    <p class="mb-0">
+                        Không tìm thấy ca khám hoàn thành trong ngày
+                        <b><%= selectedDate %></b>.
+                    </p>
+                <% } else { %>
+                    <p class="mb-0">
+                        Hiện tại chưa có lịch hẹn nào được cập nhật trạng thái hoàn thành.
+                    </p>
+                <% } %>
+            </div>
+
+        <% } else { %>
+
+            <div class="table-card">
+
+                <div class="table-responsive rounded-4">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead>
+                            <tr>
+                                <th class="text-center">STT</th>
+                                <th>Mã lịch</th>
+                                <th>Ngày khám</th>
+                                <th>Giờ hẹn</th>
+                                <th>Bệnh nhân</th>
+                                <th>Số điện thoại</th>
+                                <th>Chuyên khoa</th>
+                                <!-- <th class="text-center">Trạng thái</th> -->
+                                <th class="text-center">Chi tiết</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <% lichDaKham.forEach((item, index) => { %>
+
+                                <tr>
+
+                                    <td class="text-center fw-bold">
+                                        <%= (currentPage - 1) * 10 + index + 1 %>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-primary px-3 py-2 badge-id">
+                                            LH-<%= item.id_lichHen %>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-bold text-primary">
+                                            <%= item.ngayKhamStr %>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="fa-regular fa-clock"></i>
+                                            <%= item.gioHenStr %>
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="patient-name">
+                                            <%= item.tenKhachHang %>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <%= item.soDienThoai || 'Chưa có' %>
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-semibold">
+                                            <%= item.tenChuyenKhoa %>
+                                        </span>
+                                    </td>
+
+                                    <!-- <td class="text-center">
+                                        <span class="badge-success-soft">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            Hoàn thành
+                                        </span>
+                                    </td> -->
+
+                                    <td class="text-center">
+
+                                        <button
+                                            type="button"
+                                            class="btn btn-sm btn-outline-primary btn-detail btn-xem-chi-tiet"
+                                            data-item='<%- JSON.stringify(item).replace(/'/g, "&#39;") %>'
+                                        >
+                                            <i class="fa-solid fa-eye"></i> Xem
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+
+                            <% }) %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+            <% if (totalPages > 1) { %>
+
+                <nav class="mt-4">
+
+                    <ul class="pagination justify-content-center flex-wrap">
+
+                        <li class="page-item <%= currentPage <= 1 ? 'disabled' : '' %>">
+                            <a
+                                class="page-link"
+                                href="/bacsi/lichSuKhamBenh?page=<%= currentPage - 1 %><%= selectedDate ? '&ngay=' + selectedDate : '' %>"
+                            >
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+
+                            <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                                <a
+                                    class="page-link"
+                                    href="/bacsi/lichSuKhamBenh?page=<%= i %><%= selectedDate ? '&ngay=' + selectedDate : '' %>"
+                                >
+                                    <%= i %>
+                                </a>
+                            </li>
+
+                        <% } %>
+
+                        <li class="page-item <%= currentPage >= totalPages ? 'disabled' : '' %>">
+                            <a
+                                class="page-link"
+                                href="/bacsi/lichSuKhamBenh?page=<%= currentPage + 1 %><%= selectedDate ? '&ngay=' + selectedDate : '' %>"
+                            >
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </nav>
+
+            <% } %>
+
+        <% } %>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+
+        flatpickr("#chonNgay", {
+            locale: "vn",
+            dateFormat: "d/m/Y",
+            allowInput: true
+        });
+
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return 'Chưa có';
+
+            return String(text)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        function hienThiLoaiKham(loaiKham) {
+            switch (loaiKham) {
+                case 'Thuong':
+                    return 'Thường';
+                case 'ChuyenGia':
+                    return 'Chuyên gia';
+                default:
+                    return loaiKham || 'Chưa có';
+            }
+        }
+
+        function hienThiThanhToan(trangThaiThanhToan) {
+            switch (trangThaiThanhToan) {
+                case 'ChuaThanhToan':
+                    return 'Chưa thanh toán';
+                case 'DaThanhToan':
+                    return 'Đã thanh toán';
+                case 'DaHoanTien':
+                    return 'Đã hoàn tiền';
+                default:
+                    return trangThaiThanhToan || 'Chưa có';
+            }
+        }
+
+        function xemChiTiet(item) {
+            Swal.fire({
+                title: 'Chi tiết ca khám',
+                width: 750,
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#0d6efd',
+                html: `
+                    <div class="text-start">
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Mã lịch hẹn</label>
+                                <div class="form-control bg-light">LH-${escapeHtml(item.id_lichHen)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Bệnh nhân</label>
+                                <div class="form-control bg-light">${escapeHtml(item.tenKhachHang)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Số điện thoại</label>
+                                <div class="form-control bg-light">${escapeHtml(item.soDienThoai)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Ngày khám</label>
+                                <div class="form-control bg-light">${escapeHtml(item.ngayKhamStr)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Giờ hẹn</label>
+                                <div class="form-control bg-light">${escapeHtml(item.gioHenStr)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Chuyên khoa</label>
+                                <div class="form-control bg-light">${escapeHtml(item.tenChuyenKhoa)}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Loại khám</label>
+                                <div class="form-control bg-light">${escapeHtml(hienThiLoaiKham(item.loaiKham))}</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="fw-bold text-muted small">Thanh toán</label>
+                                <div class="form-control bg-light">${escapeHtml(hienThiThanhToan(item.trangThaiThanhToan))}</div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="fw-bold text-muted small">Kết luận / ghi chú của bác sĩ</label>
+                                <div class="form-control bg-light text-start" style="min-height: 100px; white-space: pre-wrap;">${escapeHtml(item.ghiChu)}</div>
+                            </div>
+
+                        </div>
+                    </div>
+                `
+            });
+        }
+
+
+        document.querySelectorAll('.btn-xem-chi-tiet').forEach(button => {
+
+            button.addEventListener('click', function () {
+                const item = JSON.parse(this.dataset.item);
+                xemChiTiet(item);
+            });
+
+        });
+
+    </script>
+
+</body>
+</html>
+```

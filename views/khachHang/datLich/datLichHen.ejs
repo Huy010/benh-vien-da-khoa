@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Đặt lịch khám</title>
+
+  <link rel="stylesheet" href="/css/khachHang/login.css">
+  <link rel="stylesheet" href="/css/khachHang/home.css">
+  <link rel="stylesheet" href="/css/khachHang/datLichHen.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+  <%- include('../header') %>
+
+    <div class="wrapper">
+      <div class="login-card datLich__content" style="max-width:900px">
+
+        <h4 class="fw-bold mb-4 text-primary">🩺 Đăng ký lịch khám</h4>
+
+        <form id="bookingForm" action="/datlichhen" method="POST">
+
+          <input type="hidden" name="ngay" id="hiddenNgay" value="">
+          <input type="hidden" name="gioHen" id="hiddenGio" value="">
+
+          <input type="hidden" name="id_chuyenKhoa" id="hiddenKhoa" value="">
+
+          <div class="mb-4">
+            <label class="fw-bold mb-2">Chuyên khoa</label>
+            <div class="dropdown d-grid">
+              <button
+                class="btn btn-outline-secondary dropdown-toggle text-start d-flex justify-content-between align-items-center"
+                type="button" id="btnDropdownKhoa" data-bs-toggle="dropdown" aria-expanded="false"
+                style="padding: 10px 15px; background: #fff; border: 1px solid #ced4da;">
+                <span id="textChonKhoa">-- Chọn chuyên khoa --</span>
+              </button>
+
+              <ul class="dropdown-menu w-100 dropdown-menu-custom" aria-labelledby="btnDropdownKhoa">
+                <% if(chuyenKhoa && chuyenKhoa.length> 0) { %>
+                  <% chuyenKhoa.forEach(ck=> { %>
+                    <li>
+                      <a class="dropdown-item dropdown-item-custom select-khoa-item" href="javascript:void(0)"
+                        data-id="<%= ck.id_chuyenKhoa %>" data-name="<%= ck.tenChuyenKhoa %>">
+                        <div class="fw-bold text-primary mb-1">
+                          <%= ck.tenChuyenKhoa %>
+                        </div>
+                        <small class="text-muted">
+                          <%= ck.moTa || 'Không có mô tả chi tiết cho chuyên khoa này.' %>
+                        </small>
+                      </a>
+                    </li>
+                    <% }) %>
+                      <% } else { %>
+                        <li><span class="dropdown-item text-muted">Không có chuyên khoa nào</span></li>
+                        <% } %>
+              </ul>
+            </div>
+          </div>
+
+          <label class="fw-bold mb-2">Ngày khám</label>
+          <div class="row g-2 mb-4" id="datesContainer">
+            <% const today=new Date(); for(let i=0;i<7;i++){ const d=new Date(); d.setDate(today.getDate()+i); const
+              yyyy=d.getFullYear(); const mm=String(d.getMonth()+1).padStart(2,'0'); const
+              dd=String(d.getDate()).padStart(2,'0'); const val=`${yyyy}-${mm}-${dd}`; %>
+              <div class="col">
+                <div class="date-box w-100" data-date="<%= val %>">
+                  <div><b>
+                      <%= dd %>/<%= mm %>
+                    </b></div>
+                </div>
+              </div>
+              <% } %>
+          </div>
+
+          <label class="fw-bold mb-2">Giờ khám</label>
+          <div class="row g-2" id="slotContainer">
+            <% ["07:00","08:00","09:00","10:00","13:00","14:00","15:00","16:00"].forEach(t=> {
+              let hour = parseInt(t.split(':')[0]);
+              let nextHour = (hour + 1).toString().padStart(2, '0') + ":00";
+              %>
+              <div class="col-4">
+                <div class="slot disabled" data-time="<%= t %>">
+                  <%= t %> - <%= nextHour %>
+                </div>
+              </div>
+              <% }) %>
+          </div>
+
+          <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-primary px-4" id="submitBtn">Tiếp tục</button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const hiddenKhoa = document.getElementById('hiddenKhoa');
+        const textChonKhoa = document.getElementById('textChonKhoa');
+        const khoaItems = document.querySelectorAll('.select-khoa-item');
+
+        const datesContainer = document.getElementById('datesContainer');
+        const slotContainer = document.getElementById('slotContainer');
+        const bookingForm = document.getElementById('bookingForm');
+
+        const hiddenNgay = document.getElementById('hiddenNgay');
+        const hiddenGio = document.getElementById('hiddenGio');
+
+        const dateBoxes = () => Array.from(document.querySelectorAll('.date-box'));
+        const slotLabels = () => Array.from(document.querySelectorAll('.slot'));
+
+        // Load slots from server API and update UI
+        async function loadSlots() {
+          const id = hiddenKhoa.value; // Lấy từ input hidden thay vì thẻ select
+          const date = hiddenNgay.value;
+
+          if (!id || !date) {
+            slotLabels().forEach(label => {
+              label.classList.add('disabled');
+              label.classList.remove('active');
+              if (hiddenGio.value === label.dataset.time) hiddenGio.value = '';
+              const old = label.querySelector('.slot-note'); if (old) old.remove();
+            });
+            return;
+          }
+
+          try {
+            const url = `/api/slots?ngay=${encodeURIComponent(date)}&id_chuyenKhoa=${encodeURIComponent(id)}`;
+            const res = await fetch(url, { cache: 'no-store' });
+            const data = await res.json();
+
+            if (!data || !data.success) {
+              slotLabels().forEach(l => {
+                l.classList.remove('disabled');
+                l.querySelector('.slot-note')?.remove();
+              });
+              return;
+            }
+
+            const map = {};
+            data.slots.forEach(s => map[s.time] = s);
+
+            slotLabels().forEach(label => {
+              const time = label.dataset.time;
+              const info = map[time];
+              label.querySelector('.slot-note')?.remove();
+
+              if (!info) {
+                label.classList.remove('disabled');
+                if (hiddenGio.value === time) label.classList.add('active');
+                else label.classList.remove('active');
+                return;
+              }
+
+              if (info.disabled) {
+                label.classList.add('disabled');
+                if (hiddenGio.value === time) hiddenGio.value = '';
+                label.classList.remove('active');
+                const note = document.createElement('div'); note.className = 'slot-note'; note.textContent = 'Đã đầy hoặc quá giờ';
+                label.appendChild(note);
+              } else {
+                label.classList.remove('disabled');
+                if (hiddenGio.value === time) label.classList.add('active');
+                else label.classList.remove('active');
+              }
+            });
+
+          } catch (err) {
+            console.error('Lỗi khi gọi /api/slots:', err);
+            slotLabels().forEach(l => {
+              l.classList.remove('disabled');
+              l.querySelector('.slot-note')?.remove();
+            });
+          }
+        }
+
+        /* ========== Handle Chọn Chuyên Khoa ========== */
+        khoaItems.forEach(item => {
+          item.addEventListener('click', function () {
+            const idKhoa = this.getAttribute('data-id');
+            const tenKhoa = this.getAttribute('data-name');
+
+            // Cập nhật giá trị
+            hiddenKhoa.value = idKhoa;
+            textChonKhoa.innerHTML = `<strong>${tenKhoa}</strong>`;
+
+            // Đổi khoa -> Xóa giờ đã chọn & Load lại slots
+            hiddenGio.value = '';
+            slotLabels().forEach(l => l.classList.remove('active'));
+            loadSlots();
+          });
+        });
+
+        /* ========== Handle date clicks ========== */
+        datesContainer.addEventListener('click', (e) => {
+          const label = e.target.closest('.date-box');
+          if (!label) return;
+
+          const dateVal = label.dataset.date;
+          if (!dateVal) return;
+
+          if (label.classList.contains('active')) {
+            label.classList.remove('active');
+            hiddenNgay.value = '';
+          } else {
+            dateBoxes().forEach(l => l.classList.remove('active'));
+            label.classList.add('active');
+            hiddenNgay.value = dateVal;
+          }
+
+          hiddenGio.value = '';
+          slotLabels().forEach(l => l.classList.remove('active'));
+          loadSlots();
+        });
+
+        /* ========== Handle slot clicks ========== */
+        slotContainer.addEventListener('click', (e) => {
+          const label = e.target.closest('.slot');
+          if (!label) return;
+          if (label.classList.contains('disabled')) return;
+
+          const timeVal = label.dataset.time;
+          if (!timeVal) return;
+
+          if (label.classList.contains('active')) {
+            label.classList.remove('active');
+            if (hiddenGio.value === timeVal) hiddenGio.value = '';
+          } else {
+            slotLabels().forEach(l => l.classList.remove('active'));
+            label.classList.add('active');
+            hiddenGio.value = timeVal;
+          }
+        });
+
+        /* ========== Submit validation & AJAX Post ========== */
+        bookingForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const id_chuyenKhoa = hiddenKhoa.value;
+          const ngay = hiddenNgay.value;
+          const gio = hiddenGio.value;
+
+          if (!id_chuyenKhoa || !ngay || !gio) {
+            const missing = [];
+            if (!id_chuyenKhoa) missing.push('Chuyên khoa');
+            if (!ngay) missing.push('Ngày khám');
+            if (!gio) missing.push('Giờ khám');
+
+            Swal.fire({
+              icon: 'warning',
+              title: 'Thiếu thông tin',
+              text: 'Vui lòng chọn: ' + missing.join(', ')
+            });
+            return false;
+          }
+
+          // Lấy tên khoa đang hiển thị trên nút Dropdown
+          const tenKhoa = textChonKhoa.innerText;
+          const submitBtn = document.getElementById('submitBtn');
+          const originalText = submitBtn.innerText;
+
+          try {
+            submitBtn.innerText = 'Đang xử lý...';
+            submitBtn.disabled = true;
+
+            const response = await fetch('/datlichhen', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                id_chuyenKhoa: id_chuyenKhoa,
+                ngay: ngay,
+                gioHen: gio
+              })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.payUrl) {
+              // Hiển thị thông báo đang chuyển hướng
+              Swal.fire({
+                title: 'Đang chuyển đến trang thanh toán...',
+                text: 'Vui lòng đợi trong giây lát',
+                allowOutsideClick: false,
+                didOpen: () => {
+                  Swal.showLoading()
+                }
+              });
+
+              // Chuyển hướng người dùng sang trang QR Code của ZaloPay
+              if (data.payUrl.startsWith('http://') || data.payUrl.startsWith('https://')) {
+                window.location.href = data.payUrl;
+              } else {
+                console.error("URL chuyển hướng không hợp lệ!");
+              }
+
+            } else {
+              Swal.fire('Lỗi', data.msg || 'Đã có lỗi xảy ra, vui lòng thử lại!', 'error');
+              submitBtn.innerText = originalText;
+              submitBtn.disabled = false;
+            }
+
+          } catch (error) {
+            console.error('Lỗi khi submit form:', error);
+            Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ!', 'error');
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+          }
+        });
+
+        loadSlots();
+      });
+    </script>
+
+    <% if (typeof msg !=='undefined' && msg) { %>
+      <script>
+        Swal.fire({
+          icon: 'error',
+          title: 'Thông báo',
+          text: '<%= msg %>',
+          confirmButtonText: 'Đã hiểu'
+        });
+      </script>
+      <% } %>
+        <%- include('../footer') %>
+</body>
+
+</html>

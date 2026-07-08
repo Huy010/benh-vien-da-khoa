@@ -1,0 +1,184 @@
+/* =========================================
+   css/style.css - CSS Dùng Chung Toàn Hệ Thống
+   ========================================= */
+
+/* Font chữ chung */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    /* Màu nền xám nhạt mặc định cho admin */
+}
+
+/* Nền Gradient (Dùng cho Login hoặc các banner) */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Nút bấm thương hiệu dùng chung */
+.btn-brand {
+    background: linear-gradient(to right, #667eea, #764ba2);
+    color: white;
+    border: none;
+    transition: background 0.3s ease, transform 0.2s;
+}
+
+.btn-brand:hover {
+    background: linear-gradient(to right, #5a6fd6, #684191);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-brand:active {
+    transform: translateY(0);
+}
+
+/* Input focus theme chung */
+.form-control-brand:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25);
+}
+
+/* Hiệu ứng xuất hiện chung */
+.animate-fade-in {
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* --- ĐƯỜNG KẺ NGANG CHO BẢNG --- */
+.custom-table {
+    border-collapse: collapse;
+    /* Đảm bảo các đường kẻ dính liền nhau */
+}
+
+.custom-table th,
+.custom-table td {
+    border-bottom: 1px solid #e5e7eb !important;
+    /* Màu xám nhạt cho đường kẻ ngang */
+    padding: 12px 15px;
+    /* Giữ khoảng cách cho thoáng chữ */
+}
+
+/* Ẩn đường kẻ ở dòng cuối cùng cho gọn gàng */
+.custom-table tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* --- HIỆU ỨNG HOVER (TÙY CHỌN NHƯNG RẤT KHUYÊN DÙNG) --- */
+/* Khi rẽ chuột vào dòng nào, dòng đó sẽ đổi màu nền nhẹ giúp dễ đọc hơn */
+.custom-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f8f9fa;
+    /* Màu xám rất nhạt khi di chuột vào */
+}
+
+/* =========================================================
+   ĐỒNG BỘ THEME MÀU CHỦ ĐẠO (XANH DƯƠNG - TRẮNG)
+   Dựa trên giao diện Form Thêm Bác Sĩ / Phân Công
+========================================================= */
+
+:root {
+    --primary-color: #1565C0;
+    /* Xanh dương chủ đạo của form */
+    --primary-hover: #0D47A1;
+    /* Xanh đậm khi di chuột */
+    --bg-light: #f8f9fa;
+    --border-color: #e5e7eb;
+}
+
+/* 1. ĐỒNG BỘ TIÊU ĐỀ TRANG (Có gạch dọc màu xanh bên trái giống form) */
+.card-header-title h2,
+.main-content h1,
+.main-content h2 {
+    color: var(--primary-color) !important;
+    font-weight: bold;
+    font-size: 1.5rem;
+    border-left: 5px solid var(--primary-color);
+    padding-left: 12px;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+/* 2. ĐỒNG BỘ NÚT BẤM CHÍNH (Nút Thêm mới, Lưu) */
+.btn-add {
+    background-color: var(--primary-color) !important;
+    color: #ffffff !important;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    /* Bo góc nhẹ giống nút Lưu Bác Sĩ */
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-add:hover {
+    background-color: var(--primary-hover) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* 3. TÂN TRANG BẢNG DỮ LIỆU ĐỂ HỢP VỚI THEME MỚI */
+.custom-table {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    /* Giữ góc bo cho bảng */
+}
+
+/* Đổi màu chữ của Tiêu đề cột (Header) sang màu Xanh chủ đạo */
+.custom-table thead th {
+    background-color: #ffffff;
+    color: var(--primary-color);
+    font-weight: 700;
+    border-bottom: 2px solid var(--primary-color) !important;
+    padding: 15px 12px;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+/* Tinh chỉnh lại màu nền và viền các dòng */
+.custom-table tbody td {
+    border-bottom: 1px solid var(--border-color) !important;
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+/* Tô sáng nhẹ khi di chuột vào dòng */
+.custom-table tbody tr {
+    transition: background-color 0.2s ease;
+    background-color: #ffffff;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f0f4f8;
+    /* Màu xanh xám cực nhạt */
+}
+
+/* Nút Sửa / Xóa trong bảng */
+.action-wrapper .btn-edit {
+    color: var(--primary-color);
+}
+
+.action-wrapper .btn-delete {
+    color: #dc3545;
+    /* Đỏ cho nút xóa */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

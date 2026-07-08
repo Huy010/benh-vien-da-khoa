@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập Bác Sĩ</title>
+<!-- Bootstrap + FontAwesome giống admin -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- CSS dùng chung + style admin -->
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/admin/login.css">
+
+</head>
+
+<body class="d-flex justify-content-center align-items-center vh-100 bg-gradient-primary">
+
+<div class="card login-container border-0 shadow-lg">
+    <div class="card-body p-4 p-md-5">
+        <h2 class="text-center text-dark mb-4 fw-bold">Đăng Nhập Bác Sĩ</h2>
+
+        <form action="/bacsi/login" method="POST">
+            
+            <div class="mb-3">
+                <label for="tenDangNhap" class="form-label text-secondary fw-medium">Tài khoản</label>
+                <input type="text" 
+                       class="form-control form-control-brand px-3 py-2" 
+                       id="tenDangNhap" 
+                       name="tenDangNhap" 
+                       placeholder="Nhập tên đăng nhập..." 
+                       required>
+            </div>
+
+            <div class="mb-4">
+                <label for="matKhau" class="form-label text-secondary fw-medium">Mật khẩu</label>
+                <input type="password" 
+                       class="form-control form-control-brand px-3 py-2" 
+                       id="matKhau" 
+                       name="matKhau" 
+                       placeholder="Nhập mật khẩu..." 
+                       required>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- SweetAlert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Nhận message từ server
+    const serverMessage = "<%= typeof message !== 'undefined' ? message : '' %>";
+
+    if (serverMessage.trim() !== "") {
+
+        const lowerMsg = serverMessage.toLowerCase();
+        const isError = lowerMsg.includes("lỗi") || lowerMsg.includes("error");
+
+        Swal.fire({
+            icon: isError ? 'error' : 'success',
+            title: isError ? 'Đăng nhập thất bại' : 'Thành công',
+            text: serverMessage,
+            confirmButtonColor: '#667eea',
+            confirmButtonText: 'OK'
+        });
+    }
+</script>
+
+</body>
+</html>

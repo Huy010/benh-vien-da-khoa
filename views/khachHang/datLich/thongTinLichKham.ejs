@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Lịch Khám</title>
+
+    <link rel="stylesheet" href="/css/khachHang/login.css">
+    <link rel="stylesheet" href="/css/khachHang/home.css">
+    <link rel="stylesheet" href="/css/khachHang/thongTinLichKham.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<%- include('../header') %>
+
+<div class="wrapper" style="padding-top: 100px; padding-bottom: 50px;">
+    <div class="login-card datLich__content mx-auto" style="max-width: 600px; padding: 20px;">
+        
+        <div class="text-center mb-4">
+            <h4 class="fw-bold text-success"><i class="fas fa-check-circle me-2"></i>Thanh Toán Thành Công</h4>
+            <p class="text-muted">Lịch khám của bạn đã được xác nhận</p>
+        </div>
+
+        <div id="ticket-container" class="ticket-wrapper mb-4">
+            <div class="ticket-header">
+                <h5 class="mb-0 fw-bold text-uppercase" style="letter-spacing: 1px;">Vé Khám Bệnh Điện Tử</h5>
+                <small class="opacity-75">Vui lòng xuất trình vé này tại quầy lễ tân</small>
+            </div>
+            
+            <div class="ticket-body">
+                <div class="text-center mb-4">
+                    <span class="badge bg-primary fs-6 py-2 px-4 rounded-pill shadow-sm">
+                        Mã vé: LH-<%= data.id_lichHen %>
+                    </span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-user-injured me-2 text-primary"></i>Bệnh nhân:</span>
+                    <span class="info-value"><%= data.hoTen %></span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-stethoscope me-2 text-primary"></i>Chuyên khoa:</span>
+                    <span class="info-value text-primary"><%= data.tenChuyenKhoa %></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-calendar-alt me-2 text-primary"></i>Ngày khám:</span>
+                    <span class="info-value"><%= data.ngayFormat %></span>
+                </div>
+
+                <div class="info-row">
+                    <span class="info-label"><i class="fas fa-clock me-2 text-primary"></i>Giờ có mặt:</span>
+                    <span class="info-value text-danger fs-5"><%= data.gioHenChinhXac %></span>
+                </div>
+
+                <hr class="text-muted my-3">
+
+                <div class="info-row mb-0">
+                    <span class="info-label"><i class="fas fa-money-check-alt me-2 text-primary"></i>Đã thanh toán:</span>
+                    <span class="info-value text-success fs-5"><%= data.donGia.toLocaleString() %> đ</span>
+                </div>
+            </div>
+
+            <div class="ticket-footer">
+                <i class="fas fa-hospital me-1"></i> Bệnh Viện Đa Khoa Thành Phố Cần Thơ<br>
+                <small>Hotline hỗ trợ: 1900 xxxx</small>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+            <button id="btnDownload" class="btn btn-success btn-lg fw-bold rounded-pill shadow-sm">
+                <i class="fas fa-download me-2"></i>Tải ảnh vé về máy
+            </button>  
+        </div>
+
+    </div>
+</div>
+<%- include('../footer') %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.getElementById('btnDownload').addEventListener('click', function() {
+        const ticketElement = document.getElementById('ticket-container');
+        const btn = this;
+        const originalText = btn.innerHTML;
+        
+        // Hiệu ứng loading
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang lưu ảnh...';
+        btn.disabled = true;
+
+        // Cuộn trang lên một chút để đảm bảo vé nằm trọn trong Viewport
+        ticketElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        setTimeout(() => {
+            html2canvas(ticketElement, { 
+                scale: 2, 
+                useCORS: true,
+                backgroundColor: null 
+            }).then(canvas => {
+                const image = canvas.toDataURL("image/png");
+                
+                // Tải xuống
+                const link = document.createElement('a');
+                link.download = `VeKham_LH-${"<%= data.id_lichHen %>"}.png`;
+                link.href = image;
+                link.click();
+
+                // Trả lại nút và báo thành công
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã lưu thành công!',
+                    text: 'Vé khám đã được lưu vào thư viện ảnh/thư mục Download của bạn.',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+
+            }).catch(err => {
+                console.error("Lỗi khi tải ảnh:", err);
+                Swal.fire('Lỗi', 'Không thể tạo ảnh, vui lòng chụp màn hình thủ công!', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }, 500);
+    });
+</script>
+
+</body>
+</html>

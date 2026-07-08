@@ -1,0 +1,88 @@
+<header class="header header--scrolled">
+  <div class="header__content--unfixed">
+    <nav class="header--unfixed">
+      <a class="header__logo--unfixed" href="/trangchu">
+        <img src="/images/khachHang/logo.png" alt="Logo" class="logo" />
+      </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <div class="header__nav-menu" id="headerNavMenu">
+        <ul class="header__list--unfixed">
+          <li class="header__listItem--unfixed">
+            <a href="/thongTin">Thông tin</a>
+          </li>
+
+          <li class="header__listItem--unfixed">
+            <a href="/chiDuong">Địa chỉ khám bệnh</a>
+          </li>
+
+          <li class="header__listItem--unfixed">
+            <a href="/datLichHen">Đặt lịch khám bệnh</a>
+          </li>
+
+          <% if (user && user.id) { %>
+            <li class="header__listItem--unfixed">
+              <a href="/lichSuDatLichKham">Lịch sử đặt lịch khám</a>
+            </li>
+
+            <li class="header__listItem--unfixed">
+              <a href="/thayDoiThongTin">Thay đổi thông tin</a>
+            </li>
+          <% } %>
+        </ul>
+
+        <% if (page !== 'login') { %>
+          <div class="header__button--unfixed">
+            <% const isLoggedIn = user && user.id && user.name && String(user.name).trim() !== ''; %>
+
+            <% if (isLoggedIn) { %>
+              <div class="user-info">
+                <span class="header__user-greeting text-light fw-bold">
+                  Xin chào, <%= user.name %>
+                </span>
+
+                <a href="/logout" class="btn btn-danger btn-sm mt-2 mt-md-0">
+                  Đăng xuất
+                </a>
+              </div>
+            <% } else { %>
+              <div class="auth-buttons">
+                <a href="/login" class="btn btn-light">
+                  Đăng nhập
+                </a>
+              </div>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const navMenu = document.getElementById('headerNavMenu');
+
+    if (menuBtn && navMenu) {
+      menuBtn.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+
+        const icon = menuBtn.querySelector('i');
+
+        if (icon) {
+          if (navMenu.classList.contains('active')) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-xmark');
+          } else {
+            icon.classList.remove('fa-xmark');
+            icon.classList.add('fa-bars');
+          }
+        }
+      });
+    }
+  });
+</script>

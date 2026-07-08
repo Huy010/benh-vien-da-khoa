@@ -1,0 +1,552 @@
+<footer class="footer">
+  <div class="container footer__container">
+    <div class="row gy-4">
+      <!-- Cột 1 -->
+      <div class="col-md-4">
+        <h5 class="footer__title">BỆNH VIỆN ĐA KHOA THÀNH PHỐ CẦN THƠ</h5>
+
+        <p class="footer__text">
+          <i class="fa-solid fa-location-dot"></i>
+          Địa chỉ: Số 04 Châu Văn Liêm, P. Ninh Kiều, TP. Cần Thơ
+        </p>
+
+        <p class="footer__text">
+          <i class="fa-solid fa-phone"></i>
+          Điện thoại: (0292) 3 821 236
+        </p>
+
+        <p class="footer__text">
+          <i class="fa-solid fa-fax"></i>
+          Fax: (0292) 3 821 236
+        </p>
+
+        <p class="footer__text">
+          <i class="fa-solid fa-envelope"></i>
+          Email: bvdkhoa_tpct@cantho.gov.vn
+        </p>
+      </div>
+
+      <!-- Cột 2 -->
+      <div class="col-md-2">
+        <h6 class="footer__heading">Dịch vụ</h6>
+        <ul class="footer__list">
+          <li><a href="#">Khám tổng quát</a></li>
+          <li><a href="#">Đặt lịch khám</a></li>
+          <li><a href="#">Cấp cứu 24/7</a></li>
+          <li><a href="#">Xét nghiệm</a></li>
+        </ul>
+      </div>
+
+      <!-- Cột 3 -->
+      <div class="col-md-2">
+        <h6 class="footer__heading">Hỗ trợ</h6>
+        <ul class="footer__list">
+          <li><a href="#">Hướng dẫn</a></li>
+          <li><a href="#">Bảo hiểm y tế</a></li>
+          <li><a href="#">Câu hỏi thường gặp</a></li>
+          <li><a href="#">Liên hệ</a></li>
+        </ul>
+      </div>
+
+      <!-- Cột 4 logo + mạng xã hội -->
+      <div class="footer__social col-md-4">
+        <img src="/images/khachHang/logo.png" class="social__logo mb-3" />
+
+        <div class="social__icon">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+          <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <hr class="footer__line" />
+
+    <p class="footer__copyright text-center">
+      © 2026 Bệnh Viện Đa Khoa Thành Phố Cần Thơ. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+<!-- ================= CHATBOX KHÁCH HÀNG ================= -->
+<div class="customer-chatbot" id="customerChatbot">
+  <div class="customer-chatbot__header">
+    <div class="customer-chatbot__title">
+      <div class="customer-chatbot__avatar">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+
+      <div>
+        <div class="customer-chatbot__name">ChatBot</div>
+        <div class="customer-chatbot__status">Online</div>
+      </div>
+    </div>
+
+    <button class="customer-chatbot__close" id="customerChatbotClose" type="button">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
+  <div class="customer-chatbot__body" id="customerChatbotBody">
+    <div class="customer-chatbot__message-row customer-chatbot__message-row--bot">
+      <div class="customer-chatbot__bot-icon">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+
+      <div class="customer-chatbot__message customer-chatbot__message--bot">
+        Xin chào 👋<br />
+        Tôi có thể hỗ trợ gì cho bạn?
+      </div>
+    </div>
+  </div>
+
+  <form class="customer-chatbot__form" id="customerChatbotForm">
+    <input type="text" id="customerChatbotInput" placeholder="Nhập tin nhắn..." autocomplete="off" />
+
+    <button type="submit">
+      <i class="fa-solid fa-arrow-up"></i>
+    </button>
+  </form>
+</div>
+
+<button class="customer-chatbot-toggle" id="customerChatbotToggle" type="button">
+  <i class="fa-solid fa-comment-dots"></i>
+</button>
+
+<style>
+  .customer-chatbot-toggle {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    width: 58px;
+    height: 58px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7b3ff2, #9b5cf6);
+    color: #ffffff;
+    font-size: 24px;
+    box-shadow: 0 12px 28px rgba(123, 63, 242, 0.35);
+    cursor: pointer;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.25s ease;
+  }
+
+  .customer-chatbot-toggle:hover {
+    transform: translateY(-3px);
+  }
+
+  .customer-chatbot {
+    position: fixed;
+    right: 28px;
+    bottom: 100px;
+    width: 360px;
+    height: 540px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 20px 45px rgba(88, 50, 160, 0.28);
+    z-index: 99998;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+  }
+
+  .customer-chatbot.customer-chatbot--active {
+    display: flex;
+  }
+
+  .customer-chatbot__header {
+    height: 66px;
+    padding: 0 18px;
+    background: linear-gradient(135deg, #7740e8, #9a5cf6);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .customer-chatbot__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .customer-chatbot__avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #7740e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .customer-chatbot__name {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .customer-chatbot__status {
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
+  .customer-chatbot__status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    display: inline-block;
+    background: #35e779;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
+  .customer-chatbot__close {
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .customer-chatbot__body {
+    flex: 1;
+    padding: 20px 16px;
+    background: #faf8ff;
+    overflow-y: auto;
+  }
+
+  .customer-chatbot__message-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .customer-chatbot__message-row--user {
+    justify-content: flex-end;
+  }
+
+  .customer-chatbot__bot-icon {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    border-radius: 50%;
+    background: #7b3ff2;
+    color: #ffffff;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .customer-chatbot__message {
+    max-width: 78%;
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-line;
+    text-align: left;
+  }
+
+  .customer-chatbot__message--bot {
+    background: #ffffff;
+    color: #333333;
+    border-radius: 4px 16px 16px 16px;
+    box-shadow: 0 6px 18px rgba(100, 60, 200, 0.08);
+  }
+
+  .customer-chatbot__message--user {
+    background: linear-gradient(135deg, #7740e8, #9a5cf6);
+    color: #ffffff;
+    border-radius: 16px 4px 16px 16px;
+    box-shadow: 0 6px 18px rgba(100, 60, 200, 0.18);
+  }
+
+  .customer-chatbot__form {
+    height: 70px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-top: 1px solid #eeeeee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .customer-chatbot__form input {
+    flex: 1;
+    height: 44px;
+    border: 2px solid #7b3ff2;
+    border-radius: 25px;
+    padding: 0 16px;
+    outline: none;
+    font-size: 14px;
+    color: #333333;
+  }
+
+  .customer-chatbot__form input::placeholder {
+    color: #999999;
+    font-style: italic;
+  }
+
+  .customer-chatbot__form button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7740e8, #9a5cf6);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    .customer-chatbot {
+      right: 12px;
+      left: 12px;
+      bottom: 88px;
+      width: auto;
+      height: 520px;
+    }
+
+    .customer-chatbot-toggle {
+      right: 18px;
+      bottom: 18px;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const chatbot = document.getElementById("customerChatbot");
+    const toggleBtn = document.getElementById("customerChatbotToggle");
+    const closeBtn = document.getElementById("customerChatbotClose");
+    const form = document.getElementById("customerChatbotForm");
+    const input = document.getElementById("customerChatbotInput");
+    const body = document.getElementById("customerChatbotBody");
+
+    const CHAT_USER_ID = "<%= user && user.id ? user.id : '' %>";
+    const IS_LOGGED_IN = CHAT_USER_ID !== "";
+
+    const CHAT_STORAGE_KEY = IS_LOGGED_IN
+      ? "customer_chatbot_messages_user_" + CHAT_USER_ID
+      : null;
+
+    const CHAT_OPEN_KEY = IS_LOGGED_IN
+      ? "customer_chatbot_open_user_" + CHAT_USER_ID
+      : null;
+
+    localStorage.removeItem("customer_chatbot_messages");
+    localStorage.removeItem("customer_chatbot_open");
+
+    if (!chatbot || !toggleBtn || !closeBtn || !form || !input || !body) {
+      return;
+    }
+
+    loadChatFromStorage();
+    restoreChatboxOpenState();
+
+    toggleBtn.addEventListener("click", function () {
+      chatbot.classList.toggle("customer-chatbot--active");
+
+      const isOpen = chatbot.classList.contains("customer-chatbot--active");
+
+      if (IS_LOGGED_IN && CHAT_OPEN_KEY) {
+        localStorage.setItem(CHAT_OPEN_KEY, isOpen ? "true" : "false");
+      }
+
+      if (isOpen) {
+        toggleBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      } else {
+        toggleBtn.innerHTML = '<i class="fa-solid fa-comment-dots"></i>';
+      }
+    });
+
+    closeBtn.addEventListener("click", function () {
+      chatbot.classList.remove("customer-chatbot--active");
+      toggleBtn.innerHTML = '<i class="fa-solid fa-comment-dots"></i>';
+
+      if (IS_LOGGED_IN && CHAT_OPEN_KEY) {
+        localStorage.setItem(CHAT_OPEN_KEY, "false");
+      }
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const message = input.value.trim();
+
+      if (message === "") {
+        return;
+      }
+
+      addUserMessage(message, true);
+      input.value = "";
+
+      fetch("/chatbot/message", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: message,
+        }),
+      })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          addBotMessage(data.reply || "Không nhận được phản hồi từ server.", true);
+        })
+        .catch(function (error) {
+          console.error("Chatbot fetch error:", error);
+          addBotMessage("Không thể kết nối đến server chatbot.", true);
+        });
+    });
+
+    function loadChatFromStorage() {
+      const messages = getStoredMessages();
+
+      if (messages.length === 0) {
+        const defaultMessage =
+          "Xin chào 👋\nTôi có thể hỗ trợ gì cho bạn hôm nay?";
+
+        body.innerHTML = "";
+
+        if (IS_LOGGED_IN) {
+          addBotMessage(defaultMessage, true);
+        } else {
+          addBotMessage(defaultMessage, false);
+        }
+
+        return;
+      }
+
+      body.innerHTML = "";
+
+      messages.forEach(function (item) {
+        if (item.sender === "user") {
+          addUserMessage(item.message, false);
+        } else {
+          addBotMessage(item.message, false);
+        }
+      });
+
+      scrollToBottom();
+    }
+
+    function restoreChatboxOpenState() {
+      if (!IS_LOGGED_IN || !CHAT_OPEN_KEY) {
+        chatbot.classList.remove("customer-chatbot--active");
+        toggleBtn.innerHTML = '<i class="fa-solid fa-comment-dots"></i>';
+        return;
+      }
+
+      const isOpen = localStorage.getItem(CHAT_OPEN_KEY);
+
+      if (isOpen === "true") {
+        chatbot.classList.add("customer-chatbot--active");
+        toggleBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      } else {
+        chatbot.classList.remove("customer-chatbot--active");
+        toggleBtn.innerHTML = '<i class="fa-solid fa-comment-dots"></i>';
+      }
+    }
+
+    function addUserMessage(message, shouldSave) {
+      const row = document.createElement("div");
+      row.className =
+        "customer-chatbot__message-row customer-chatbot__message-row--user";
+
+      const messageBox = document.createElement("div");
+      messageBox.className =
+        "customer-chatbot__message customer-chatbot__message--user";
+      messageBox.textContent = message;
+
+      row.appendChild(messageBox);
+      body.appendChild(row);
+
+      if (shouldSave) {
+        saveMessage("user", message);
+      }
+
+      scrollToBottom();
+    }
+
+    function addBotMessage(message, shouldSave) {
+      const row = document.createElement("div");
+      row.className =
+        "customer-chatbot__message-row customer-chatbot__message-row--bot";
+
+      const icon = document.createElement("div");
+      icon.className = "customer-chatbot__bot-icon";
+      icon.innerHTML = '<i class="fa-solid fa-robot"></i>';
+
+      const messageBox = document.createElement("div");
+      messageBox.className =
+        "customer-chatbot__message customer-chatbot__message--bot";
+      messageBox.textContent = message;
+
+      row.appendChild(icon);
+      row.appendChild(messageBox);
+      body.appendChild(row);
+
+      if (shouldSave) {
+        saveMessage("bot", message);
+      }
+
+      scrollToBottom();
+    }
+
+    function getStoredMessages() {
+      if (!IS_LOGGED_IN || !CHAT_STORAGE_KEY) {
+        return [];
+      }
+
+      const data = localStorage.getItem(CHAT_STORAGE_KEY);
+
+      if (!data) {
+        return [];
+      }
+
+      try {
+        const messages = JSON.parse(data);
+
+        if (Array.isArray(messages)) {
+          return messages;
+        }
+
+        return [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveMessage(sender, message) {
+      if (!IS_LOGGED_IN || !CHAT_STORAGE_KEY) {
+        return;
+      }
+
+      const messages = getStoredMessages();
+
+      messages.push({
+        sender: sender,
+        message: message,
+        time: new Date().toISOString(),
+      });
+
+      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    }
+
+    function scrollToBottom() {
+      body.scrollTop = body.scrollHeight;
+    }
+  });
+</script>

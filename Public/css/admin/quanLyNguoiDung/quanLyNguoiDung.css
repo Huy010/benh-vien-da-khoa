@@ -1,0 +1,66 @@
+/* --- CUSTOM BADGE VAI TRÒ (Role Labels) --- */
+.custom-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+/* Màu sắc riêng cho từng vai trò */
+.badge-admin {
+    background-color: #ffebee;
+    color: #c62828;
+    /* Đỏ cho Admin */
+    border: 1px solid #ffcdd2;
+}
+
+.badge-bacsi {
+    background-color: #e3f2fd;
+    color: #1565c0;
+    /* Xanh dương cho Bác sĩ */
+    border: 1px solid #bbdefb;
+}
+
+.badge-khach {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    /* Xanh lá cho Khách hàng */
+    border: 1px solid #c8e6c9;
+}
+
+.table {
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.table th,
+.table td {
+    border-left: none !important;
+    border-right: none !important;
+}
+
+/* Chỉ giữ lại đường kẻ ngang nhạt giữa các dòng */
+.table tbody tr td {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* Xóa đường kẻ ở dòng cuối cùng để bảng trông mượt hơn */
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+.card-box{
+    max-width: 1200px;
+    height: fit-content;
+    /* border-top: 4px solid #1565c0; */
+}
+.truncate-text {
+    max-width: 150px;
+    /* Độ rộng tối đa của cột Liên hệ */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: bottom;
+}

@@ -1,0 +1,45 @@
+/* Badge hiển thị loại phòng */
+.badge-room {
+    color: #2e7d32;
+    background-color: #e8f5e9;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 13px;
+    display: inline-block;
+}
+
+/* Căn giữa các nút thao tác trong bảng */
+.action-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+}
+
+/* Hiệu ứng mượt mà khi load trang */
+.animate-fade-in {
+    opacity: 0;
+    animation: fadeIn 0.6s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive cơ bản cho nút Thêm */
+@media (max-width: 576px) {
+    .btn-add {
+        width: 100%;
+        text-align: center;
+    }
+}

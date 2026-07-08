@@ -1,0 +1,10 @@
+/* =========================================
+   css/admin/login.css - CSS Riêng Cho Login
+   ========================================= */
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    /* Giới hạn form nhỏ gọn ở giữa màn hình */
+    border-radius: 12px;
+}

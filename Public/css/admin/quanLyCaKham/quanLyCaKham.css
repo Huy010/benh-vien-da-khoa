@@ -1,0 +1,183 @@
+/* 2. HEADER TIÊU ĐỀ */
+.card-header-title h2 {
+    color: var(--primary-color);
+    border-left: 5px solid var(--primary-color);
+    padding-left: 15px;
+    margin-bottom: 25px;
+}
+
+/* 3. KHUNG UPLOAD FILE EXCEL */
+.upload-section {
+    background-color: #e3f2fd;
+    border: 2px dashed #90caf9;
+    padding: 10px 15px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.file-input-custom {
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    align-items: center;
+}
+
+.btn-import {
+    background-color: var(--success-color, #28a745);
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-import:hover {
+    background-color: #1b5e20;
+    transform: translateY(-2px);
+}
+
+/* 4. BẢNG DỮ LIỆU */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.custom-table th {
+    background-color: #f8f9fa;
+    color: var(--primary-color);
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+    white-space: nowrap;
+}
+
+.custom-table td {
+    padding: 15px;
+    vertical-align: middle !important;
+    color: var(--text-main);
+    border-bottom: 1px solid #eee;
+}
+
+.action-cols {
+    width: 100px;
+    padding: 5px !important;
+    vertical-align: middle !important;
+}
+
+.action-btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.btn-edit-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background-color: #fff;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-edit-icon:hover {
+    background-color: var(--primary-color);
+    /* color: white; */
+    /* transform: translateY(-1px); */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.badge-khoa {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 13px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.week-info {
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 12px;
+}
+
+/* CSS CHO THANH CHỌN TUẦN */
+.week-navigator {
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Modal Buttons - Bê nguyên từ gốc */
+.btn-cancel {
+    background: #ccc;
+    color: #333;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.btn-save {
+    background: var(--primary-color, #007bff);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #bbb;
+}
+
+.btn-save:hover {
+    opacity: 0.9;
+}
+
+/* --- ÉP CHỮ CANH GIỮA CHO CÁC Ô INPUT DATE/MONTH --- */
+.file-input-custom,
+input.datepicker,
+.form-control.datepicker,
+input.flatpickr-input,
+/* Ép cho thư viện Flatpickr */
+input[type="month"] {
+    text-align: center !important;
+}
+
+/* Responsive nhỏ trên Mobile */
+@media (max-width: 768px) {
+    .upload-section {
+        flex-direction: column;
+        align-items: stretch !important;
+        padding: 15px;
+    }
+
+    .upload-section input[type="file"] {
+        max-width: 100% !important;
+    }
+}

@@ -1,0 +1,123 @@
+/* public/css/khachHang/datLichHen.css */
+
+/* ===== DATE ===== */
+.date-box {
+    position: relative;
+    /* để input absolute bên trong */
+    border: 2px solid #ddd;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: .12s;
+    user-select: none;
+    background: white;
+}
+
+.date-box.active {
+    border-color: #0d6efd;
+    background: #e7f1ff;
+    color: #0d6efd;
+}
+
+/* giữ input radio focusable và có thể được focus bởi browser */
+.date-box input[type="radio"] {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    /* ẩn mắt thường nhưng vẫn focusable */
+    pointer-events: none;
+}
+
+/* ===== SLOT ===== */
+.slot {
+    /* Đảm bảo chiều cao các ô luôn đồng đều */
+    min-height: 70px;
+    /* Bạn có thể tăng giảm một chút (VD: 70px - 90px) cho vừa mắt */
+
+    /* Sử dụng Flexbox để căn giữa nội dung cả chiều ngang lẫn chiều dọc */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    /* Giữ nguyên các thuộc tính cũ của bạn ở dưới (nếu có) */
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Các thuộc tính cho trạng thái khác (chắc bạn đã có sẵn) */
+.slot.disabled {
+    background-color: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    border-color: #dee2e6;
+}
+
+.slot.active {
+    background-color: #0d6efd;
+    color: #fff;
+    border-color: #0d6efd;
+}
+
+/* Chỉnh lại font chữ cho dòng ghi chú nhỏ ở dưới */
+.slot-note {
+    font-size: 12px;
+    margin-top: 6px;
+    color: #666;
+}
+
+/* giữ radio gioHen focusable */
+.slot input[type="radio"] {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.datLich__content {
+    margin-top: 65px;
+    padding: 18px 32px;
+}
+
+.wrapper .mb-4 {
+    margin-bottom: 8px !important;
+}
+
+.wrapper .mt-4 {
+    margin-top: 2px !important;
+}
+
+.dropdown-menu-custom {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.dropdown-item-custom {
+    white-space: normal !important;
+    /* Cho phép rớt dòng nếu mô tả dài */
+    border-bottom: 1px solid #eee;
+    padding: 10px 15px;
+}
+
+.dropdown-item-custom:hover {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item-custom:last-child {
+    border-bottom: none;
+}

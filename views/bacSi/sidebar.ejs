@@ -1,0 +1,77 @@
+<div class="sidebar d-flex flex-column flex-shrink-0 bg-dark-custom">
+    <div class="logo py-4 border-bottom border-secondary text-center">
+        <div class="mb-2 fw-medium" style="font-size: 0.95rem;">
+            <%= typeof user !== 'undefined' ? user.tenChuyenKhoa : 'null' %>
+        </div>
+        <span class="m-0 fs-6 fw-bold text-white text-uppercase tracking-wide">
+            BS. <%= typeof user !== 'undefined' ? user.hoTen : 'null' %>
+        </span>
+    </div>
+
+    <ul class="nav nav-pills flex-column mb-auto w-100 mt-2">
+        <li class="nav-item">
+            <a href="/bacsi/thongBao" class="nav-link rounded-0 py-3 px-4 d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="fa-solid fa-bell me-3"></i> <span class="nav-text">Thông báo</span>
+                </div>
+                <% if (locals.soThongBaoChuaDoc && locals.soThongBaoChuaDoc > 0) { %>
+                    <span id="badge-thongbao-sidebar" class="badge bg-danger rounded-pill">
+                        <%= locals.soThongBaoChuaDoc > 99 ? '99+' : locals.soThongBaoChuaDoc %>
+                    </span>
+                <% } else { %>
+                    <span id="badge-thongbao-sidebar" class="badge bg-danger rounded-pill d-none">0</span>
+                <% } %>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/bacsi/tongQuan" class="nav-link rounded-0 py-3 px-4 d-flex align-items-center">
+                <i class="fa-solid fa-house me-3"></i> <span class="nav-text">Tổng quan</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/bacsi/xemLich" class="nav-link rounded-0 py-3 px-4 d-flex align-items-center">
+                <i class="fa-solid fa-calendar-days me-3"></i> <span class="nav-text">Xem lịch trực</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/bacsi/khamBenh" class="nav-link rounded-0 py-3 px-4 d-flex align-items-center">
+                <i class="fa-solid fa-stethoscope me-3"></i> <span class="nav-text">Khám bệnh</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/bacsi/lichsukhambenh" class="nav-link rounded-0 py-3 px-4 d-flex align-items-center">
+                <i class="fa-solid fa-calendar-days me-3"></i> <span class="nav-text">Lịch sử khám bệnh</span>
+            </a>
+        </li>
+    </ul>
+    
+    <div class="border-top border-secondary mt-auto">
+        <a href="/bacsi/logout" class="nav-link rounded-0 py-3 px-4 text-danger d-flex align-items-center btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i> <span class="nav-text">Đăng xuất</span>
+        </a>
+    </div>
+</div>
+
+<script>
+    async function capNhatSoThongBao() {
+        try {
+            const res = await fetch('/bacsi/thongBao/demChuaDoc');
+            const data = await res.json();
+            const badge = document.getElementById('badge-thongbao-sidebar');
+            
+            if (badge) {
+                if (data.success && data.count > 0) {
+                    badge.innerText = data.count > 99 ? '99+' : data.count;
+                    badge.classList.remove('d-none');
+                } else {
+                    badge.classList.add('d-none');
+                }
+            }
+        } catch (err) {
+            console.error('Lỗi khi tải số lượng thông báo:', err);
+        }
+    }
+
+    // Chạy ngầm mỗi 15 giây
+    setInterval(capNhatSoThongBao, 15000); 
+</script>

@@ -1,0 +1,68 @@
+.ticket-wrapper {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+.ticket-header {
+    background: linear-gradient(135deg, rgb(123, 145, 159), #2c3e50);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.ticket-body {
+    padding: 30px 20px;
+    background-color: #fdfdfd;
+}
+
+.ticket-footer {
+    background-color: #f8f9fa;
+    padding: 15px;
+    text-align: center;
+    border-top: 2px dashed #e9ecef;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    align-items: center;
+}
+
+.info-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.info-value {
+    font-weight: 700;
+    color: #212529;
+    text-align: right;
+}
+
+/* Style cho đoạn răng cưa của vé */
+.ticket-wrapper::before,
+.ticket-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 50px;
+    /* Vị trí răng cưa */
+    width: 30px;
+    height: 30px;
+    background-color: #f0f2f5;
+    /* Màu nền của trang web/wrapper */
+    border-radius: 50%;
+}
+
+.ticket-wrapper::before {
+    left: -15px;
+}
+
+.ticket-wrapper::after {
+    right: -15px;
+}

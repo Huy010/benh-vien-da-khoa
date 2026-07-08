@@ -1,0 +1,61 @@
+/* Tùy chỉnh danh sách thông tin cá nhân */
+.patient-info-list li {
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+    color: #495057;
+}
+
+.w-icon {
+    width: 20px;
+    text-align: center;
+    color: #0d6efd;
+}
+
+/* Tùy chỉnh Vùng Lịch Sử Khám để nó cuộn được nếu quá dài */
+.history-container {
+    max-height: 450px;
+    overflow-y: auto;
+}
+
+/* Tùy chỉnh Scrollbar cho lịch sử */
+.history-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.history-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.history-container::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.history-container::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Giới hạn số dòng của ghi chú cũ để không chiếm quá nhiều chỗ */
+.history-note {
+    display: -webkit-box;
+    /* -webkit-line-clamp: 2; */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Textarea lớn và thoải mái */
+.custom-textarea {
+    resize: none;
+    /* Không cho kéo giãn thủ công vì đã set flex-grow */
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background-color: #fcfcfc;
+    font-size: 1.1rem;
+    line-height: 1.5;
+    padding: 1.2rem;
+}
+
+.custom-textarea:focus {
+    border-color: #86b7fe;
+    background-color: #fff;
+}

@@ -1,0 +1,58 @@
+body {
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-content {
+    margin-left: 250px !important;
+    padding: 30px;
+    min-height: 100vh;
+}
+
+.page-title {
+    border-left: 4px solid #1565c0;
+    padding-left: 10px;
+    color: #1565c0;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* Các Card chức năng */
+.card-dashboard {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-dashboard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.icon-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #e3f2fd;
+    /* Nền xanh siêu nhạt */
+    color: #1565c0;
+    /* Icon màu xanh đậm */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 20px;
+}
+
+.btn-primary {
+    background-color: #1565c0 !important;
+    border-color: #1565c0 !important;
+}
+
+.btn-primary:hover {
+    background-color: #0d47a1 !important;
+}
+

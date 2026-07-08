@@ -1,0 +1,79 @@
+<div class="sidebar d-flex flex-column flex-shrink-0 bg-dark-custom">
+    <div class="logo py-4 border-bottom border-secondary text-center">
+        <h2 class="m-0 fs-4 fw-bold text-white text-uppercase tracking-wide">
+            <span class="d-none d-md-inline">Admin Panel</span>
+            <i class="fas fa-user-shield d-inline d-md-none"></i> 
+        </h2>
+    </div>
+    <ul class="nav nav-pills flex-column mb-auto w-100 mt-2 menu">
+        
+        <li class="nav-item">
+            <a href="/admin/thongBao" class="nav-link rounded-0 py-3 px-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-bell me-2"></i> <span class="nav-text">Thông báo</span>
+                </div>
+                <% if (locals.soThongBaoChuaDoc && locals.soThongBaoChuaDoc > 0) { %>
+                    <span class="badge bg-danger rounded-pill" id="so-thong-bao">
+                        <%= locals.soThongBaoChuaDoc %>
+                    </span>
+                <% } else { %>
+                    <span class="badge bg-danger rounded-pill" id="so-thong-bao" style="display: none;">
+                        0
+                    </span>
+                <% } %>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/trangChu" class="nav-link rounded-0 py-3 px-4"><i class="fas fa-home me-2"></i> <span class="nav-text">Trang chủ</span></a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/quanLyCaKham" class="nav-link rounded-0 py-3 px-4"><i class="fas fa-calendar-check me-2"></i> <span class="nav-text">Quản lý ca khám</span></a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/quanLyPhongKham" class="nav-link rounded-0 py-3 px-4"><i class="fas fa-clinic-medical me-2"></i> <span class="nav-text">Quản lý phòng khám</span></a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/quanLyBacSi" class="nav-link rounded-0 py-3 px-4"><i class="fas fa-user-md me-2"></i> <span class="nav-text">Quản lý bác sĩ</span></a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/quanLyNguoiDung" class="nav-link rounded-0 py-3 px-4"><i class="fas fa-users me-2"></i> <span class="nav-text">Quản lý người dùng</span></a>
+        </li>
+        <li class="nav-item">
+            <a href="/admin/thongKe" class="nav-link rounded-0 py-3 px-4"><i class="fas fa-users me-2"></i> <span class="nav-text">Thống kê</span></a>
+        </li>
+    </ul>
+    
+    <div class="border-top border-secondary mt-auto">
+        <a href="/admin/logout" class="nav-link rounded-0 py-3 px-4 text-danger d-flex align-items-center btn-logout">
+            <i class="fas fa-sign-out-alt me-2"></i> <span class="nav-text">Đăng xuất</span>
+        </a>
+    </div>
+</div>
+
+<script>
+    async function kiemTraThongBaoNgam() {
+        try {
+            const res = await fetch('/admin/thongBao/api-dem-moi');
+            const data = await res.json();
+            
+            if (data.success) {
+                const badge = document.getElementById('so-thong-bao'); 
+                
+                // Chỉ cập nhật nếu thẻ badge tồn tại trên giao diện
+                if (badge) {
+                    if (data.count > 0) {
+                        badge.innerText = data.count;
+                        badge.style.display = 'inline-block'; // Hiện chấm đỏ
+                    } else {
+                        badge.style.display = 'none'; // Ẩn chấm đỏ nếu bằng 0
+                    }
+                }
+            }
+        } catch (error) {
+            console.log('Lỗi chạy ngầm kiểm tra thông báo:', error);
+        }
+    }
+
+    // Cứ 15 giây gọi hàm này 1 lần
+    setInterval(kiemTraThongBaoNgam, 15000); 
+</script>
