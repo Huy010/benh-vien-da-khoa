@@ -7,7 +7,7 @@ const getLogin = (req, res) => {
     req.session.csrfToken = crypto.randomBytes(32).toString("hex");
     
     // 2. Render giao diện và truyền ĐẦY ĐỦ các biến sang EJS
-    res.render('khachHang/taikhoan/login', {
+    res.render('khachHang/taiKhoan/login', {
         page: 'login',
         msg: req.query.msg || "",
         type: req.query.msg ? "success" : "",
