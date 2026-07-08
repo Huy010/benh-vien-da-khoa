@@ -1,6 +1,8 @@
 {
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
-    "start": "node app.js",
     "@google/genai": "^2.8.0",
     "axios": "^1.16.1",
     "crypto-js": "^4.2.0",
