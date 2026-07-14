@@ -7,7 +7,7 @@ const con = mysql.createConnection({
     user:  process.env.USERNAME_TIDB,
     password:  process.env.PASS_TIDB,  
     port: Number(process.env.POST_TIDB),
-    database:  process.env.DBNAME-TIDB
+    database:  process.env.DBNAME_TIDB
 });
 
 //Ket noi database
@@ -21,7 +21,7 @@ con.getConnection((err, connection) =>{
     connection.release();
 })
 
-// 5. Xuất ra cả 'con' và 'query'
+
 module.exports = {
     con: con
 };
