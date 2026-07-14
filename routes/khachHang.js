@@ -17,6 +17,7 @@ const datLichChuyenGia = require("../controllers/khachHang/datLichChuyenGia");
 const thanhToan = require("../controllers/khachHang/thanhToan");
 
 // ================= PUBLIC ROUTES (Ai cũng vào được) =================
+router.get('/', home.getHome);
 router.get('/trangchu', home.getHome);
 router.get('/thongtin', home.getThongTin);
 
