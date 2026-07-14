@@ -3,27 +3,25 @@ const util = require('util');
 
 // 2. Tạo kết nối
 const con = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',  
-    database: 'datlichonline'
+    host:  process.env.HOST_TIDB,
+    user:  process.env.USERNAME_TIDB,
+    password:  process.env.PASS_TIDB,  
+    port: Number(process.env.POST_TIDB),
+    database:  process.env.DBNAME-TIDB
 });
 
-// 3. Thử kết nối
-con.connect(function(err) {
-    if (err) {
-        console.error('Lỗi kết nối databse: ' + err.stack);
+//Ket noi database
+con.getConnection((err, connection) =>{
+    if(err){
+        console.error("Loi ket noi database: ", err);
         return;
     }
-    console.log('--> Đã kết nối MySQL thành công với ID: ' + con.threadId);
-});
 
-// 4. BIẾN ĐỔI HÀM QUERY THÀNH PROMISE
-// Giúp dùng được await query("SELECT...") mà không bị lỗi
-const query = util.promisify(con.query).bind(con);
+    console.log("Ket noi TiDB thanh cong")
+    connection.release();
+})
 
 // 5. Xuất ra cả 'con' và 'query'
 module.exports = {
-    con: con,
-    query: query
+    con: con
 };
