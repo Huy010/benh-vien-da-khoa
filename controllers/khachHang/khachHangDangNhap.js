@@ -1,6 +1,12 @@
-const { con, query } = require('../../config/connectDatabase');
+const con = require('../../config/connectDatabase');
 const escapeHtml = require('escape-html');
 const crypto = require('crypto');
+
+// Tạo hàm query dùng Promise từ biến con
+const query = async (sql, params = []) => {
+    const [rows] = await con.promise().query(sql, params);
+    return rows;
+};
 
 const getLogin = (req, res) => {
     // 1. Tạo token và lưu vào session
