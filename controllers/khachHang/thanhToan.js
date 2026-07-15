@@ -10,24 +10,40 @@ const axios = require('axios');
 const CryptoJS = require('crypto-js');
 const moment = require('moment');
 
-const configZaloPay = {
-    app_id: "2553",
-    key1: "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-    key2: "kLtgPl8YESDmyABkQgeZByOUJsbcpNI2",
+/* ================= CẤU HÌNH URL HỆ THỐNG ================= */
+// Render tự cung cấp RENDER_EXTERNAL_URL, ví dụ:
+// https://benhviendakhoa.onrender.com
+// Khi chạy local, hệ thống tự dùng http://localhost:3000.
+const APP_URL = (
+    process.env.APP_URL ||
+    process.env.RENDER_EXTERNAL_URL ||
+    'http://localhost:3000'
+).replace(/\/+$/, '');
 
-    endpoint: "https://sb-openapi.zalopay.vn/v2/create",
-    refundEndpoint: "https://sb-openapi.zalopay.vn/v2/refund",
-    queryEndpoint: "https://sb-openapi.zalopay.vn/v2/query"
+/* ================= CẤU HÌNH ZALOPAY ================= */
+const configZaloPay = {
+    app_id: process.env.ZALOPAY_APP_ID || '2553',
+    key1: process.env.ZALOPAY_KEY1,
+    key2: process.env.ZALOPAY_KEY2,
+
+    endpoint: 'https://sb-openapi.zalopay.vn/v2/create',
+    refundEndpoint: 'https://sb-openapi.zalopay.vn/v2/refund',
+    queryEndpoint: 'https://sb-openapi.zalopay.vn/v2/query'
 };
 
 /* ================= CẤU HÌNH GỬI MAIL ================= */
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'giahuykg941@gmail.com',
-        pass: 'mpepucgyeludawfd'
-    }
-});
+const gmailUser = process.env.GMAIL_USER;
+const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
+
+const transporter = gmailUser && gmailAppPassword
+    ? nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: gmailUser,
+            pass: gmailAppPassword
+        }
+    })
+    : null;
 
 /* ================= HELPER LOG NGẮN GỌN ================= */
 const logThanhToan = (message) => {
@@ -47,6 +63,21 @@ const logLoi = (message, error = null) => {
         console.error(error.message);
     }
 };
+
+const damBaoCoKey1ZaloPay = () => {
+    if (!configZaloPay.key1) {
+        throw new Error('Thiếu biến môi trường ZALOPAY_KEY1 trên Render.');
+    }
+};
+
+const damBaoCoKey2ZaloPay = () => {
+    if (!configZaloPay.key2) {
+        throw new Error('Thiếu biến môi trường ZALOPAY_KEY2 trên Render.');
+    }
+};
+
+// ZaloPay yêu cầu phần ngày trong app_trans_id theo múi giờ Việt Nam GMT+7.
+const taoTienToNgayVietNam = () => moment().utcOffset(7).format('YYMMDD');
 const capNhatThanhToanThanhCong = async (app_trans_id, zp_trans_id) => {
     const updateResult = await query(
         `
@@ -63,6 +94,8 @@ const capNhatThanhToanThanhCong = async (app_trans_id, zp_trans_id) => {
 };
 
 const queryTrangThaiDonHangZaloPay = async (app_trans_id) => {
+    damBaoCoKey1ZaloPay();
+
     const app_id = String(configZaloPay.app_id);
 
     // Theo API /v2/query:
@@ -87,9 +120,44 @@ const queryTrangThaiDonHangZaloPay = async (app_trans_id) => {
 
     return response.data;
 };
+
+// Dùng khi callback bị trễ hoặc không tới được server.
+// Hàm chủ động hỏi ZaloPay rồi đồng bộ trạng thái vào TiDB.
+const dongBoTrangThaiThanhToan = async (lichHen) => {
+    if (
+        !lichHen ||
+        lichHen.trangThaiThanhToan !== 'ChuaThanhToan' ||
+        !lichHen.maZalo
+    ) {
+        return false;
+    }
+
+    const queryResult = await queryTrangThaiDonHangZaloPay(lichHen.maZalo);
+
+    if (queryResult.return_code === 1 && queryResult.zp_trans_id) {
+        await capNhatThanhToanThanhCong(
+            lichHen.maZalo,
+            queryResult.zp_trans_id
+        );
+
+        lichHen.trangThaiThanhToan = 'DaThanhToan';
+        lichHen.maZalopay = String(queryResult.zp_trans_id);
+
+        logThanhToan(
+            `Đồng bộ trạng thái thành công LH-${lichHen.id_lichHen}, ZP-${queryResult.zp_trans_id}`
+        );
+
+        return true;
+    }
+
+    return false;
+};
+
 /* ================= HELPER: TẠO LỊCH HẸN & THANH TOÁN ================= */
 const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gioHen, id_khachHang, loaiKham = 'Thuong') => {
     try {
+        damBaoCoKey1ZaloPay();
+
         let donGia = 0;
 
         const giaKhamData = await query(
@@ -183,7 +251,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
         const id_lichHen_new = insertResult.insertId;
 
         const transID = Math.floor(Math.random() * 1000000);
-        const app_trans_id = `${moment().format('YYMMDD')}_${transID}_${id_lichHen_new}`;
+        const app_trans_id = `${taoTienToNgayVietNam()}_${transID}_${id_lichHen_new}`;
 
         await query(
             `
@@ -206,12 +274,13 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
                 }
             ]),
             embed_data: JSON.stringify({
-                redirecturl: `http://localhost:3000/thongTinLichKham?id=${encodeURIComponent(id_lichHen_new)}`
+                redirecturl: `${APP_URL}/thongTinLichKham?id=${encodeURIComponent(id_lichHen_new)}`
             }),
             amount: Number(donGia),
             description: `Thanh toan phi dat lich kham - Ma Don: #${id_lichHen_new}`,
             bank_code: "",
-            callback_url: "https://jona-intercollege-tammy.ngrok-free.dev/callback"
+            expire_duration_seconds: 900,
+            callback_url: `${APP_URL}/callback`
         };
 
         const dataMac =
@@ -301,6 +370,8 @@ const getLichSu = async (req, res) => {
                 lh.gioHen,
                 lh.trangThai,
                 lh.trangThaiThanhToan,
+                lh.maZalo,
+                lh.maZalopay,
                 nd.hoTen AS tenBacSi,
                 lh.ghiChu
             FROM LichHen lh
@@ -321,6 +392,22 @@ const getLichSu = async (req, res) => {
         const lichSuFormat = [];
 
         for (let item of rows) {
+            // Nếu callback ZaloPay bị mất, trang lịch sử sẽ tự kiểm tra lại
+            // và cập nhật TiDB trước khi hiển thị trạng thái.
+            if (
+                item.trangThaiThanhToan === 'ChuaThanhToan' &&
+                item.maZalo
+            ) {
+                try {
+                    await dongBoTrangThaiThanhToan(item);
+                } catch (syncError) {
+                    logLoi(
+                        `Không đồng bộ được trạng thái LH-${item.id_lichHen}`,
+                        syncError
+                    );
+                }
+            }
+
             const dateObj = new Date(item.ngay);
 
             let gioStr = '';
@@ -585,51 +672,94 @@ const thanhToanLai = async (req, res) => {
             });
         }
 
-        const { id_lichHen, donGia, id_chuyenKhoa } = req.body;
+        damBaoCoKey1ZaloPay();
+
+        const { id_lichHen } = req.body;
         const id_khachHang = req.session.user.id;
 
+        if (!id_lichHen) {
+            return res.json({
+                success: false,
+                msg: 'Thiếu mã lịch hẹn!'
+            });
+        }
+
+        // Không tin donGia hoặc id_chuyenKhoa gửi từ trình duyệt.
+        // Luôn lấy lại dữ liệu thật từ TiDB để tránh sửa giá thanh toán.
+        const lichHenRows = await query(
+            `
+            SELECT id_lichHen, id_chuyenKhoa, donGia, trangThaiThanhToan
+            FROM LichHen
+            WHERE id_lichHen = ?
+              AND id_khachHang = ?
+            LIMIT 1
+            `,
+            [id_lichHen, id_khachHang]
+        );
+
+        if (lichHenRows.length === 0) {
+            return res.json({
+                success: false,
+                msg: 'Không tìm thấy lịch hẹn của bạn!'
+            });
+        }
+
+        const lichHen = lichHenRows[0];
+
+        if (lichHen.trangThaiThanhToan === 'DaThanhToan') {
+            return res.json({
+                success: false,
+                msg: 'Lịch hẹn này đã được thanh toán!'
+            });
+        }
+
         const transID = Math.floor(Math.random() * 1000000);
-        const app_trans_id = `${moment().format('YYMMDD')}_${transID}_${id_lichHen}`;
+        const app_trans_id = `${taoTienToNgayVietNam()}_${transID}_${id_lichHen}`;
 
         await query(
             `
-            UPDATE LichHen 
-            SET maZalo = ? 
+            UPDATE LichHen
+            SET maZalo = ?
             WHERE id_lichHen = ?
+              AND id_khachHang = ?
             `,
-            [app_trans_id, id_lichHen]
+            [app_trans_id, id_lichHen, id_khachHang]
         );
 
         const order = {
             app_id: Number(configZaloPay.app_id),
             app_trans_id: app_trans_id,
-            app_user: "Khach_Hang_" + id_khachHang,
+            app_user: 'Khach_Hang_' + id_khachHang,
             app_time: Date.now(),
             item: JSON.stringify([
                 {
                     id_lichHen: id_lichHen,
-                    id_chuyenKhoa: id_chuyenKhoa
+                    id_chuyenKhoa: lichHen.id_chuyenKhoa
                 }
             ]),
             embed_data: JSON.stringify({
-                redirecturl: `http://localhost:3000/thongTinLichKham?id=${id_lichHen}`
+                redirecturl: `${APP_URL}/thongTinLichKham?id=${encodeURIComponent(id_lichHen)}`
             }),
-            amount: Number(donGia),
+            amount: Number(lichHen.donGia),
             description: `Thanh toan phi dat lich kham - Ma Don: #${id_lichHen}`,
-            bank_code: "",
-            callback_url: "https://jona-intercollege-tammy.ngrok-free.dev/callback"
+            bank_code: '',
+            expire_duration_seconds: 900,
+            callback_url: `${APP_URL}/callback`
         };
 
         const dataMac =
-            configZaloPay.app_id + "|" +
-            order.app_trans_id + "|" +
-            order.app_user + "|" +
-            order.amount + "|" +
-            order.app_time + "|" +
-            order.embed_data + "|" +
+            configZaloPay.app_id + '|' +
+            order.app_trans_id + '|' +
+            order.app_user + '|' +
+            order.amount + '|' +
+            order.app_time + '|' +
+            order.embed_data + '|' +
             order.item;
 
-        order.mac = CryptoJS.HmacSHA256(dataMac, configZaloPay.key1).toString();
+        order.mac = CryptoJS.HmacSHA256(
+            dataMac,
+            configZaloPay.key1
+        ).toString();
 
         logThanhToan(`Tạo thanh toán lại LH-${id_lichHen}, mã ${app_trans_id}`);
 
@@ -656,11 +786,11 @@ const thanhToanLai = async (req, res) => {
         });
 
     } catch (error) {
-        logLoi("Lỗi khi thanh toán lại", error);
+        logLoi('Lỗi khi thanh toán lại', error);
 
         return res.json({
             success: false,
-            msg: 'Lỗi server'
+            msg: error.message || 'Lỗi server'
         });
     }
 };
@@ -670,8 +800,16 @@ const callbackZaloPay = async (req, res) => {
     let result = {};
 
     try {
-        const dataStr = req.body.data;
-        const reqMac = req.body.mac;
+        damBaoCoKey2ZaloPay();
+
+        const dataStr = req.body && req.body.data;
+        const reqMac = req.body && req.body.mac;
+
+        if (!dataStr || !reqMac) {
+            result.return_code = 2;
+            result.return_message = 'missing data or mac';
+            return res.json(result);
+        }
 
         const mac = CryptoJS.HmacSHA256(dataStr, configZaloPay.key2).toString();
 
@@ -716,7 +854,7 @@ const callbackZaloPay = async (req, res) => {
                     : String(data.gioHen).substring(0, 5);
 
                 if (data.email) {
-                    sendSuccessEmail(data.email, data);
+                    await sendSuccessEmail(data.email, data);
                 }
             }
         } else {
@@ -739,7 +877,7 @@ const callbackZaloPay = async (req, res) => {
 /* ================= GỬI EMAIL THÔNG BÁO ================= */
 const sendSuccessEmail = async (email, details) => {
     const mailOptions = {
-        from: '"Phòng Khám Đa Khoa" <giahuykg941@gmail.com>',
+        from: `"Phòng Khám Đa Khoa" <${gmailUser}>`,
         to: email,
         subject: 'Xác nhận thanh toán thành công - Lịch hẹn khám bệnh',
         html: `
@@ -787,6 +925,11 @@ const sendSuccessEmail = async (email, details) => {
         `
     };
 
+    if (!transporter) {
+        console.log('[MAIL] Chưa cấu hình GMAIL_USER hoặc GMAIL_APP_PASSWORD, bỏ qua gửi email.');
+        return;
+    }
+
     try {
         await transporter.sendMail(mailOptions);
         console.log(`[MAIL] Đã gửi xác nhận đến ${email}`);
@@ -798,9 +941,14 @@ const sendSuccessEmail = async (email, details) => {
 /* ================= THÔNG TIN LỊCH KHÁM ================= */
 const getThongTinLichKham = async (req, res) => {
     try {
+        if (!req.session || !req.session.user) {
+            return res.redirect('/login');
+        }
+
+        const id_khachHang = req.session.user.id;
         const id_lichHen = req.query.id;
         const statusZalo = req.query.status;
-        const apptransid = req.query.apptransid;
+        const apptransid = req.query.apptransid || req.query.app_trans_id;
 
         if (!id_lichHen) {
             return res.redirect('/lichSuDatLichKham');
@@ -808,17 +956,16 @@ const getThongTinLichKham = async (req, res) => {
 
         if (statusZalo && statusZalo !== '1') {
             logThanhToan(`Thanh toán chưa hoàn tất LH-${id_lichHen}`);
-
             return res.redirect('/lichSuDatLichKham');
         }
 
-        let infoRows = await query(
+        const infoRows = await query(
             `
-            SELECT 
-                lh.*, 
-                nd.hoTen, 
-                ck.tenChuyenKhoa, 
-                ca.ngay, 
+            SELECT
+                lh.*,
+                nd.hoTen,
+                ck.tenChuyenKhoa,
+                ca.ngay,
                 bs_nd.hoTen AS tenBacSi
             FROM LichHen lh
             JOIN NguoiDung nd ON lh.id_khachHang = nd.id
@@ -827,73 +974,47 @@ const getThongTinLichKham = async (req, res) => {
             LEFT JOIN BacSi bs ON ca.id_bacSi = bs.id
             LEFT JOIN NguoiDung bs_nd ON bs.id = bs_nd.id
             WHERE lh.id_lichHen = ?
+              AND lh.id_khachHang = ?
+            LIMIT 1
             `,
-            [id_lichHen]
+            [id_lichHen, id_khachHang]
         );
 
         if (infoRows.length === 0) {
             return res.redirect('/lichSuDatLichKham');
         }
 
-        let data = infoRows[0];
+        const data = infoRows[0];
 
-        // Nếu redirect báo thành công nhưng DB vẫn chưa thanh toán,
-        // chủ động query trạng thái đơn từ ZaloPay rồi cập nhật DB.
         if (
-            statusZalo === '1' &&
-            data.trangThaiThanhToan === 'ChuaThanhToan'
+            apptransid &&
+            data.maZalo &&
+            apptransid !== data.maZalo
         ) {
-            const appTransIdCanQuery = apptransid || data.maZalo;
+            logLoi(
+                `apptransid trên URL không khớp mã đơn LH-${id_lichHen}. ` +
+                'Hệ thống sẽ dùng mã đã lưu trong TiDB.'
+            );
+        }
 
-            if (appTransIdCanQuery) {
-                try {
-                    const queryResult = await queryTrangThaiDonHangZaloPay(appTransIdCanQuery);
-
-                    if (queryResult.return_code === 1 && queryResult.zp_trans_id) {
-                        await capNhatThanhToanThanhCong(
-                            appTransIdCanQuery,
-                            queryResult.zp_trans_id
-                        );
-
-                        logThanhToan(`Query xác nhận thanh toán thành công LH-${id_lichHen}, ZP-${queryResult.zp_trans_id}`);
-
-                        infoRows = await query(
-                            `
-                            SELECT 
-                                lh.*, 
-                                nd.hoTen, 
-                                ck.tenChuyenKhoa, 
-                                ca.ngay, 
-                                bs_nd.hoTen AS tenBacSi
-                            FROM LichHen lh
-                            JOIN NguoiDung nd ON lh.id_khachHang = nd.id
-                            JOIN ChuyenKhoa ck ON lh.id_chuyenKhoa = ck.id_chuyenKhoa
-                            JOIN CaKham ca ON lh.id_caKham = ca.id_caKham
-                            LEFT JOIN BacSi bs ON ca.id_bacSi = bs.id
-                            LEFT JOIN NguoiDung bs_nd ON bs.id = bs_nd.id
-                            WHERE lh.id_lichHen = ?
-                            `,
-                            [id_lichHen]
-                        );
-
-                        data = infoRows[0];
-                    } else {
-                        logThanhToan(`ZaloPay chưa xác nhận thanh toán LH-${id_lichHen}: ${queryResult.return_message}`);
-
-                        return res.redirect('/lichSuDatLichKham');
-                    }
-
-                } catch (queryError) {
-                    logLoi(`Không query được trạng thái ZaloPay LH-${id_lichHen}`, queryError);
-
-                    return res.redirect('/lichSuDatLichKham');
-                }
+        // Không chỉ tin status=1 trên URL. Luôn hỏi lại ZaloPay bằng maZalo
+        // đã lưu trong TiDB trước khi công nhận thanh toán thành công.
+        if (
+            data.trangThaiThanhToan === 'ChuaThanhToan' &&
+            data.maZalo
+        ) {
+            try {
+                await dongBoTrangThaiThanhToan(data);
+            } catch (queryError) {
+                logLoi(
+                    `Không query được trạng thái ZaloPay LH-${id_lichHen}`,
+                    queryError
+                );
             }
         }
 
-        if (data.trangThaiThanhToan === 'ChuaThanhToan') {
+        if (data.trangThaiThanhToan !== 'DaThanhToan') {
             logThanhToan(`Chặn xem vé chưa thanh toán LH-${id_lichHen}`);
-
             return res.redirect('/lichSuDatLichKham');
         }
 
@@ -905,35 +1026,85 @@ const getThongTinLichKham = async (req, res) => {
 
         logThanhToan(`Hiển thị vé khám LH-${id_lichHen}`);
 
-        res.render('khachHang/datLich/thongTinLichKham', {
+        return res.render('khachHang/datLich/thongTinLichKham', {
             page: 'thongTinLichKham',
             user: req.session.user,
             data: data
         });
 
     } catch (error) {
-        logLoi("Lỗi lấy thông tin lịch khám", error);
-        res.redirect('/');
+        logLoi('Lỗi lấy thông tin lịch khám', error);
+        return res.redirect('/');
     }
 };
 
 /* ================= CRONJOB DỌN DẸP ================= */
 setInterval(async () => {
     try {
-        const sql = `
-            DELETE FROM LichHen 
-            WHERE trangThaiThanhToan = 'ChuaThanhToan' 
-              AND created_at <= (NOW() - INTERVAL 5 MINUTE)
-        `;
+        // ZaloPay khuyến nghị query lại trạng thái khi callback bị mất.
+        // Vì vậy không xóa hàng loạt ngay; kiểm tra từng đơn trước.
+        const pendingRows = await query(
+            `
+            SELECT
+                id_lichHen,
+                maZalo,
+                maZalopay,
+                trangThaiThanhToan,
+                created_at
+            FROM LichHen
+            WHERE trangThaiThanhToan = 'ChuaThanhToan'
+              AND created_at <= (NOW() - INTERVAL 15 MINUTE)
+            ORDER BY created_at ASC
+            LIMIT 100
+            `
+        );
 
-        const result = await query(sql);
+        for (const lichHen of pendingRows) {
+            let duocPhepXoa = !lichHen.maZalo;
 
-        if (result.affectedRows > 0) {
-            console.log(`[DON DEP] Đã xóa ${result.affectedRows} lịch chưa thanh toán quá 5 phút`);
+            if (lichHen.maZalo) {
+                try {
+                    const daThanhToan = await dongBoTrangThaiThanhToan(lichHen);
+
+                    if (daThanhToan) {
+                        continue;
+                    }
+
+                    // Query thành công nhưng ZaloPay chưa ghi nhận thanh toán.
+                    duocPhepXoa = true;
+                } catch (queryError) {
+                    // Không xóa khi không kết nối/query được ZaloPay,
+                    // tránh xóa nhầm một lịch thực tế đã trả tiền.
+                    duocPhepXoa = false;
+                    logLoi(
+                        `Cronjob không query được ZaloPay LH-${lichHen.id_lichHen}`,
+                        queryError
+                    );
+                }
+            }
+
+            if (duocPhepXoa) {
+                const deleteResult = await query(
+                    `
+                    DELETE FROM LichHen
+                    WHERE id_lichHen = ?
+                      AND trangThaiThanhToan = 'ChuaThanhToan'
+                      AND created_at <= (NOW() - INTERVAL 20 MINUTE)
+                    `,
+                    [lichHen.id_lichHen]
+                );
+
+                if (deleteResult.affectedRows > 0) {
+                    console.log(
+                        `[DON DEP] Đã xóa lịch chưa thanh toán quá 20 phút ` +
+                        `LH-${lichHen.id_lichHen}`
+                    );
+                }
+            }
         }
 
     } catch (error) {
-        logLoi("Lỗi cronjob dọn dẹp lịch chưa thanh toán", error);
+        logLoi('Lỗi cronjob dọn dẹp lịch chưa thanh toán', error);
     }
 }, 60000);
 
