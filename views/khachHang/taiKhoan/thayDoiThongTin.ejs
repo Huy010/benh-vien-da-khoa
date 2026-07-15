@@ -57,16 +57,18 @@
                         <label for="hoTen" class="form-label">
                           Họ và tên <span class="text-danger">*</span>
                         </label>
+
                         <input type="text" class="form-control" id="hoTen" name="hoTen"
-                          value="<%= typeof user !== 'undefined' && user.hoTen ? user.hoTen : '' %>" required>
+                          value="<%= typeof profile !== 'undefined' && profile.hoTen ? profile.hoTen : '' %>" required>
                       </div>
 
                       <div class="col-md-6 mt-3 mt-md-0">
                         <label for="soDienThoai" class="form-label">
                           Số điện thoại <span class="text-danger">*</span>
                         </label>
+
                         <input type="text" class="form-control" id="soDienThoai" name="soDienThoai"
-                          value="<%= typeof user !== 'undefined' && user.soDienThoai ? user.soDienThoai : '' %>"
+                          value="<%= typeof profile !== 'undefined' && profile.soDienThoai ? profile.soDienThoai : '' %>"
                           pattern="^0[35789][0-9]{8}$"
                           title="Vui lòng nhập số điện thoại Việt Nam hợp lệ, ví dụ: 0987654321" required>
                       </div>
@@ -75,8 +77,9 @@
                     <div class="row mb-4">
                       <div class="col-md-12">
                         <label for="email" class="form-label">Email</label>
+
                         <input type="email" class="form-control" id="email" name="email"
-                          value="<%= typeof user !== 'undefined' && user.email ? user.email : '' %>">
+                          value="<%= typeof profile !== 'undefined' && profile.email ? profile.email : '' %>">
                       </div>
                     </div>
 
@@ -85,38 +88,64 @@
                     <div class="row mb-3">
                       <div class="col-md-4">
                         <label for="ngaySinh" class="form-label">Ngày sinh</label>
+
                         <input type="text" class="form-control" id="ngaySinh" name="ngaySinh" placeholder="dd/mm/yyyy"
                           pattern="^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/[0-9]{4}$"
                           title="Vui lòng nhập ngày theo định dạng dd/mm/yyyy"
-                          value="<%= typeof user !== 'undefined' && user.ngaySinh ? user.ngaySinh : '' %>">
+                          value="<%= typeof profile !== 'undefined' && profile.ngaySinh ? profile.ngaySinh : '' %>">
                       </div>
 
                       <div class="col-md-4 mt-3 mt-md-0">
                         <label for="gioiTinh" class="form-label">Giới tính</label>
+
                         <select class="form-select" id="gioiTinh" name="gioiTinh">
-                          <option value="" <%=typeof user==='undefined' || !user.gioiTinh ? 'selected' : '' %>>Chọn giới
-                            tính</option>
-                          <option value="Nam" <%=typeof user !=='undefined' && user.gioiTinh==='Nam' ? 'selected' : ''
-                            %>>Nam</option>
-                          <option value="Nu" <%=typeof user !=='undefined' && user.gioiTinh==='Nu' ? 'selected' : '' %>
-                            >Nữ</option>
-                          <option value="Khac" <%=typeof user !=='undefined' && user.gioiTinh==='Khac' ? 'selected' : ''
-                            %>>Khác</option>
+                          <option value="" <%=typeof profile==='undefined' || !profile.gioiTinh ? 'selected' : '' %>>
+                            Chọn giới tính
+                          </option>
+
+                          <option value="Nam" <%=typeof profile !=='undefined' && profile.gioiTinh==='Nam' ? 'selected'
+                            : '' %>>
+                            Nam
+                          </option>
+
+                          <option value="Nu" <%=typeof profile !=='undefined' && profile.gioiTinh==='Nu' ? 'selected'
+                            : '' %>>
+                            Nữ
+                          </option>
+
+                          <option value="Khac" <%=typeof profile !=='undefined' && profile.gioiTinh==='Khac'
+                            ? 'selected' : '' %>>
+                            Khác
+                          </option>
                         </select>
                       </div>
 
                       <div class="col-md-4 mt-3 mt-md-0">
                         <label for="nhomMau" class="form-label">Nhóm máu</label>
+
                         <select class="form-select" id="nhomMau" name="nhomMau">
-                          <option value="" <%=typeof user==='undefined' || !user.nhomMau ? 'selected' : '' %>>Chưa rõ
+                          <option value="" <%=typeof profile==='undefined' || !profile.nhomMau ? 'selected' : '' %>>
+                            Chưa rõ
                           </option>
-                          <option value="A" <%=typeof user !=='undefined' && user.nhomMau==='A' ? 'selected' : '' %>>A
+
+                          <option value="A" <%=typeof profile !=='undefined' && profile.nhomMau==='A' ? 'selected' : ''
+                            %>>
+                            A
                           </option>
-                          <option value="B" <%=typeof user !=='undefined' && user.nhomMau==='B' ? 'selected' : '' %>>B
+
+                          <option value="B" <%=typeof profile !=='undefined' && profile.nhomMau==='B' ? 'selected' : ''
+                            %>>
+                            B
                           </option>
-                          <option value="AB" <%=typeof user !=='undefined' && user.nhomMau==='AB' ? 'selected' : '' %>
-                            >AB</option>
-                          <option value="O" <%=typeof user !=='undefined' && user.nhomMau==='O' ? 'selected' : '' %>>O
+
+                          <option value="AB" <%=typeof profile !=='undefined' && profile.nhomMau==='AB' ? 'selected'
+                            : '' %>>
+                            AB
+                          </option>
+
+                          <option value="O" <%=typeof profile !=='undefined' && profile.nhomMau==='O' ? 'selected' : ''
+                            %>>
+                            O
                           </option>
                         </select>
                       </div>
@@ -125,8 +154,9 @@
                     <div class="row mb-3">
                       <div class="col-md-12">
                         <label for="diaChi" class="form-label">Địa chỉ liên hệ</label>
+
                         <input type="text" class="form-control" id="diaChi" name="diaChi"
-                          value="<%= typeof user !== 'undefined' && user.diaChi ? user.diaChi : '' %>"
+                          value="<%= typeof profile !== 'undefined' && profile.diaChi ? profile.diaChi : '' %>"
                           placeholder="Ví dụ: Ninh Kiều, Cần Thơ...">
                       </div>
                     </div>
@@ -134,8 +164,9 @@
                     <div class="row mb-4">
                       <div class="col-md-12">
                         <label for="tienSuBenhLy" class="form-label">Tiền sử bệnh lý nếu có</label>
+
                         <textarea class="form-control" id="tienSuBenhLy" name="tienSuBenhLy" rows="3"
-                          placeholder="Ghi chú về các bệnh lý nền, dị ứng thuốc..."><%= typeof user !== 'undefined' && user.tienSuBenhLy ? user.tienSuBenhLy : '' %></textarea>
+                          placeholder="Ghi chú về các bệnh lý nền, dị ứng thuốc..."><%= typeof profile !== 'undefined' && profile.tienSuBenhLy ? profile.tienSuBenhLy : '' %></textarea>
                       </div>
                     </div>
 

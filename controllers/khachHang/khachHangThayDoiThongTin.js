@@ -33,16 +33,20 @@ const khachHangThayDoiThongTin = {
                 return res.status(404).send("Không tìm thấy thông tin người dùng.");
             }
 
-            const user = rows[0];
+            const profile = rows[0];
 
             // Format ngày sinh để hiển thị theo dạng ngày/tháng/năm
-            if (user.ngaySinh) {
-                user.ngaySinh = moment(user.ngaySinh).format('DD/MM/YYYY');
+            if (profile.ngaySinh) {
+                profile.ngaySinh = moment(profile.ngaySinh).format('DD/MM/YYYY');
             }
 
             res.render('khachHang/taiKhoan/thayDoiThongTin', {
                 page: 'thayDoiThongTin',
-                user: user,
+
+                // user vẫn dành cho header thông qua res.locals.user
+                // profile dành riêng cho form thay đổi thông tin
+                profile: profile,
+
                 status: req.query.status || '',
                 msg: req.query.msg || ''
             });
@@ -80,16 +84,18 @@ const khachHangThayDoiThongTin = {
 
             // Kiểm tra số điện thoại Việt Nam
             const phoneRegex = /^0[35789]\d{8}$/;
-            if (!phoneRegex.test(soDienThoai)) {
-                return res.redirect('/thayDoiThongTin?status=error&msg=' + encodeURIComponent('Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại 10 số.'));
+
+            if (!phoneRegex.test(soDienThoai.trim())) {
+                return res.redirect('/thayDoiThongTin?status=error&msg=' + encodeURIComponent('Số điện thoại không hợp lệ. Vui lòng nhập số điện thoại Việt Nam 10 số.'));
             }
 
-            // Kiểm tra email nếu có nhập
+            // Kiểm tra email nếu người dùng có nhập
             let safeEmail = null;
+
             if (email && email.trim() !== '') {
                 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-                if (!emailRegex.test(email)) {
+                if (!emailRegex.test(email.trim())) {
                     return res.redirect('/thayDoiThongTin?status=error&msg=' + encodeURIComponent('Email không đúng định dạng.'));
                 }
 
@@ -115,8 +121,8 @@ const khachHangThayDoiThongTin = {
                 safeNgaySinh = parsedDate.format('YYYY-MM-DD');
             }
 
-            const safeGioiTinh = gioiTinh && gioiTinh.trim() !== '' ? gioiTinh : null;
-            const safeNhomMau = nhomMau && nhomMau.trim() !== '' ? nhomMau : null;
+            const safeGioiTinh = gioiTinh && gioiTinh.trim() !== '' ? gioiTinh.trim() : null;
+            const safeNhomMau = nhomMau && nhomMau.trim() !== '' ? nhomMau.trim() : null;
             const safeDiaChi = diaChi && diaChi.trim() !== '' ? diaChi.trim() : null;
             const safeTienSuBenhLy = tienSuBenhLy && tienSuBenhLy.trim() !== '' ? tienSuBenhLy.trim() : null;
 
