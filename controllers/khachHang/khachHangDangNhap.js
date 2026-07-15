@@ -23,7 +23,7 @@ const postLogin = async (req, res) => {
         const { username, password } = req.body;
 
         if (!username || !password) {
-            return res.render('khachHang/taikhoan/login', {
+            return res.render('khachHang/taiKhoan/login', {
                 page: 'login',
                 msg: "Vui lòng nhập đầy đủ thông tin",
                 type: "error"
@@ -40,7 +40,7 @@ const postLogin = async (req, res) => {
         );
 
         if (rows.length === 0) {
-            return res.render('khachHang/taikhoan/login', {
+            return res.render('khachHang/taiKhoan/login', {
                 page: 'login',
                 msg: "Sai tên đăng nhập hoặc mật khẩu",
                 type: "error",
@@ -51,7 +51,7 @@ const postLogin = async (req, res) => {
         const user = rows[0];
 
         if (user.matKhau !== password) {
-            return res.render('khachHang/taikhoan/login', {
+            return res.render('khachHang/taiKhoan/login', {
                 page: 'login',
                 msg: "Sai tên đăng nhập hoặc mật khẩu",
                 type: "error",
@@ -78,7 +78,7 @@ const postLogin = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.render('khachHang/taikhoan/login', {
+        res.render('khachHang/taiKhoan/login', {
             page: 'login',
             msg: "Lỗi server",
             type: "error",
@@ -99,7 +99,7 @@ const logout = (req, res) => {
 };
 
 const getTaoTaiKhoan = (req, res) => {
-    res.render('khachHang/taikhoan/taoTaiKhoan', { page: 'taoTaiKhoan' });
+    res.render('khachHang/taiKhoan/taoTaiKhoan', { page: 'taoTaiKhoan' });
 };
 
 
@@ -127,7 +127,7 @@ const postTaoTaiKhoan = async (req, res) => {
         );
 
         if (check.length > 0) {
-            return res.render('khachHang/taikhoan/taoTaiKhoan', {
+            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Tên đăng nhập đã tồn tại!",
                 type: "error",
                 page: 'taoTaiKhoan'
@@ -143,7 +143,7 @@ const postTaoTaiKhoan = async (req, res) => {
             today.setHours(0, 0, 0, 0);
             // 2. Kiểm tra ngày nhập vào có lớn hơn hoặc bằng ngày hôm nay không
             if (isNaN(inputDate.getTime()) || inputDate >= today) {
-                return res.render('khachHang/taikhoan/taoTaiKhoan', {
+                return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                     msg: "Ngày sinh không hợp lệ! Ngày sinh phải là một ngày trong quá khứ.",
                     page: 'taoTaiKhoan'
                 });
@@ -154,7 +154,7 @@ const postTaoTaiKhoan = async (req, res) => {
         // Định nghĩa khuôn mẫu của email hợp lệ 
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!emailRegex.test(email)) {
-            return res.render('khachHang/taikhoan/taoTaiKhoan', {
+            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Email không đúng định dạng! Vui lòng kiểm tra lại.",
                 page: 'taoTaiKhoan'
             });
@@ -164,7 +164,7 @@ const postTaoTaiKhoan = async (req, res) => {
         const phoneRegex = /^0[35789]\d{8}$/;
 
         if (!phoneRegex.test(soDienThoai)) {
-            return res.render('khachHang/taikhoan/taoTaiKhoan', {
+            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Số điện thoại không đúng định dạng! Vui lòng nhập số điện thoại 10 số hợp lệ.",
                 page: 'taoTaiKhoan'
             });
@@ -176,7 +176,7 @@ const postTaoTaiKhoan = async (req, res) => {
         );
 
         if (checkEmail.length > 0) {
-            return res.render('khachHang/taikhoan/taoTaiKhoan', {
+            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Email này đã được sử dụng. Vui lòng chọn email khác!",
                 page: 'taoTaiKhoan'
             });
@@ -203,7 +203,7 @@ const postTaoTaiKhoan = async (req, res) => {
 
     } catch (err) {
         console.error(err);
-        res.render('khachHang/taikhoan/taoTaiKhoan', {
+        res.render('khachHang/taiKhoan/taoTaiKhoan', {
             msg: err.message,
             page: 'taoTaiKhoan'
         });
