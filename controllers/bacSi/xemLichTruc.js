@@ -1,4 +1,10 @@
-const { con } = require('../../config/connectDatabase');
+const con = require('../../config/connectDatabase');
+
+// Tạo hàm query dùng Promise từ biến con
+const query = async (sql, params = []) => {
+    const [rows] = await con.promise().query(sql, params);
+    return rows;
+};
 
 const getDayOfWeekVN = (dayIndex) => {
     const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];

@@ -4,7 +4,13 @@ const path = require('path');
 const fs = require('fs');
 
 // 1. IMPORT QUAN TRỌNG: Lấy cả con và query từ file connectDatabase
-const { con, query } = require('../../config/connectDatabase');
+const con = require('../../config/connectDatabase');
+
+// Tạo hàm query dùng Promise từ biến con
+const query = async (sql, params = []) => {
+    const [rows] = await con.promise().query(sql, params);
+    return rows;
+};
 
 // --- CẤU HÌNH MULTER RIÊNG CHO LỊCH TRỰC ---
 const storage = multer.diskStorage({

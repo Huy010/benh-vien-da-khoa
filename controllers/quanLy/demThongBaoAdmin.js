@@ -1,4 +1,10 @@
-const { con } = require('../../config/connectDatabase');
+const con = require('../../config/connectDatabase');
+
+// Tạo hàm query dùng Promise từ biến con
+const query = async (sql, params = []) => {
+    const [rows] = await con.promise().query(sql, params);
+    return rows;
+};
 
 const demThongBaoAdmin = async (req, res, next) => {
     if (req.session.user && req.session.user.vaiTro === 'NguoiQuanLy') {
