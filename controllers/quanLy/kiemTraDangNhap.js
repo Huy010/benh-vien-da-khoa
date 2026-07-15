@@ -12,27 +12,43 @@ const getLoginAdmin = (req, res) => {
     res.render('admin/login', { message: '' });
 };
 
-const postLoginAdmin = (req, res) => {
+const postLoginAdmin = async (req, res) => {
     const tenDangNhap = req.body.username;
     const matKhau = req.body.password;
-    
-    con.connect(function(err){
-        if(err) throw err;
-        const sql = "SELECT * FROM NguoiDung WHERE tenDangNhap = ? AND matKhau = ? AND vaiTro = 'NguoiQuanLy'";
-        
-        con.query(sql, [tenDangNhap, matKhau], function(err, result){
-            if(err) throw err;
-            
-            if(result.length > 0){
-                req.session.user = result[0];                 
-                // Đăng nhập thành công -> Chuyển hướng
+
+    try {
+        const sql = `
+        SELECT * 
+        FROM NguoiDung 
+        WHERE tenDangNhap = ? 
+        AND matKhau = ? 
+        AND vaiTro = 'NguoiQuanLy'
+        LIMIT 1
+        `;
+
+        const result = await query(sql, [tenDangNhap, matKhau]);
+
+        if (result.length > 0) {
+            req.session.user = result[0];
+
+            return req.session.save((err) => {
+                if (err) {
+                    console.error("Lỗi lưu session admin:", err);
+                    return res.status(500).send("Lỗi server");
+                }
+
                 res.redirect('/admin/trangchu');
-            } else {
-                // Trả về lỗi chung chung để bảo mật
-                res.render('admin/login', {message: "Sai tên đăng nhập, mật khẩu hoặc bạn không có quyền truy cập!"});
-            }
+            });
+        }
+
+        return res.render('admin/login', {
+            message: "Sai tên đăng nhập, mật khẩu hoặc bạn không có quyền truy cập!"
         });
-    });
+
+    } catch (err) {
+        console.error("Lỗi đăng nhập admin:", err);
+        return res.status(500).send("Lỗi server");
+    }
 };;
 
 // Hàm hiển thị trang Dashboard
@@ -40,15 +56,15 @@ const getDashboard = (req, res) => {
     // 1. Kiểm tra xem người dùng đã đăng nhập (có session) chưa
     if (!req.session.user) {
         // Nếu chưa đăng nhập mà cố tình vào URL dashboard -> Đuổi về trang login
-        return res.redirect('/admin/login'); 
+        return res.redirect('/admin/login');
     }
 
     // 2. Lấy tên từ session
     const tenNguoiDung = req.session.user.hoTen; // Lấy cột tên đăng nhập
 
     // 3. Render trang và truyền biến tenAdmin sang EJS
-    res.render('admin/dashboard', { 
-        tenAdmin: tenNguoiDung 
+    res.render('admin/dashboard', {
+        tenAdmin: tenNguoiDung
     });
 };
 
@@ -60,10 +76,10 @@ const getLogoutAdmin = (req, res) => {
             console.error("Lỗi khi hủy session đăng xuất:", err);
             return res.redirect('/admin/trangChu');
         }
-        
+
         // (Tùy chọn) Xóa luôn cookie lưu ID của session trên trình duyệt cho chắc chắn
-        res.clearCookie('connect.sid'); 
-        
+        res.clearCookie('connect.sid');
+
         // Xóa xong xuôi thì mới đẩy về trang Đăng nhập
         res.redirect('/admin/login');
     });
@@ -74,7 +90,7 @@ const kiemTraDangNhap = (req, res, next) => {
     if (req.session.user && req.session.user.vaiTro === 'NguoiQuanLy') {
         return next();
     }
-    
+
     // Nếu chưa có session -> Đẩy về trang đăng nhập
     res.redirect('/admin/login');
 };
@@ -83,7 +99,7 @@ const kiemTraDangNhap = (req, res, next) => {
 module.exports = {
     getLoginAdmin,
     postLoginAdmin,
-    getDashboard,   
+    getDashboard,
     getLogoutAdmin,
-    kiemTraDangNhap 
+    kiemTraDangNhap
 };
