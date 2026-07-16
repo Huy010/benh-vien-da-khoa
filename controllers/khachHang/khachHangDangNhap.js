@@ -11,13 +11,13 @@ const query = async (sql, params = []) => {
 const getLogin = (req, res) => {
     // 1. Tạo token và lưu vào session
     req.session.csrfToken = crypto.randomBytes(32).toString("hex");
-    
+
     // 2. Render giao diện và truyền ĐẦY ĐỦ các biến sang EJS
     res.render('khachHang/taiKhoan/login', {
         page: 'login',
         msg: req.query.msg || "",
         type: req.query.msg ? "success" : "",
-        csrfToken: req.session.csrfToken 
+        csrfToken: req.session.csrfToken
     });
 };
 
@@ -42,7 +42,7 @@ const postLogin = async (req, res) => {
              WHERE tenDangNhap = ?
              AND vaiTro = 'KhachHang'
              LIMIT 1`,
-             [username]
+            [username]
         );
 
         if (rows.length === 0) {
@@ -105,11 +105,16 @@ const logout = (req, res) => {
 };
 
 const getTaoTaiKhoan = (req, res) => {
+    // 1. Tạo token và lưu vào session
+    req.session.csrfToken = crypto.randomBytes(32).toString("hex");
     res.render('khachHang/taiKhoan/taoTaiKhoan', { page: 'taoTaiKhoan' });
 };
 
 
 const postTaoTaiKhoan = async (req, res) => {
+    if (req.body._csrf !== req.session.csrfToken) {
+        return res.status(403).send("CSRF detected");
+    }
     try {
         const {
             hoTen,

@@ -49,6 +49,7 @@
               <div class="card card-profile">
                 <div class="card-body p-4 p-md-5">
                   <form action="/capNhatThongTin" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
                     <h5 class="text-muted mb-4 border-bottom pb-2">Thông tin tài khoản</h5>
 

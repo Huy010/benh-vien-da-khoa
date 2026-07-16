@@ -1,9 +1,12 @@
 const con = require('../../config/connectDatabase');
 const moment = require('moment');
+const crypto = require('crypto');
 
 const khachHangThayDoiThongTin = {
     // [GET] Render trang thay đổi thông tin
     getThayDoiThongTin: async (req, res) => {
+        // 1. Tạo token và lưu vào session
+        req.session.csrfToken = crypto.randomBytes(32).toString("hex");
         try {
             if (!req.session.user) {
                 return res.redirect('/login');
@@ -62,6 +65,9 @@ const khachHangThayDoiThongTin = {
         try {
             if (!req.session.user) {
                 return res.redirect('/login');
+            }
+            if (req.body._csrf !== req.session.csrfToken) {
+                return res.status(403).send("CSRF detected");
             }
 
             const userId = req.session.user.id;
