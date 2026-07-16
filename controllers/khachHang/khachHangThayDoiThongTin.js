@@ -51,7 +51,8 @@ const khachHangThayDoiThongTin = {
                 profile: profile,
 
                 status: req.query.status || '',
-                msg: req.query.msg || ''
+                msg: req.query.msg || '',
+                csrfToken: req.session.csrfToken
             });
 
         } catch (error) {
