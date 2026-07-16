@@ -107,7 +107,10 @@ const logout = (req, res) => {
 const getTaoTaiKhoan = (req, res) => {
     // 1. Tạo token và lưu vào session
     req.session.csrfToken = crypto.randomBytes(32).toString("hex");
-    res.render('khachHang/taiKhoan/taoTaiKhoan', { page: 'taoTaiKhoan' });
+    res.render('khachHang/taiKhoan/taoTaiKhoan', { 
+        page: 'taoTaiKhoan',
+        csrfToken: req.session.csrfToken 
+    });
 };
 
 
@@ -141,7 +144,8 @@ const postTaoTaiKhoan = async (req, res) => {
             return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Tên đăng nhập đã tồn tại!",
                 type: "error",
-                page: 'taoTaiKhoan'
+                page: 'taoTaiKhoan',
+                csrfToken: req.session.csrfToken
             });
         }
 
@@ -156,7 +160,8 @@ const postTaoTaiKhoan = async (req, res) => {
             if (isNaN(inputDate.getTime()) || inputDate >= today) {
                 return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                     msg: "Ngày sinh không hợp lệ! Ngày sinh phải là một ngày trong quá khứ.",
-                    page: 'taoTaiKhoan'
+                    page: 'taoTaiKhoan',
+                    csrfToken: req.session.csrfToken
                 });
             }
         }
@@ -167,7 +172,8 @@ const postTaoTaiKhoan = async (req, res) => {
         if (!emailRegex.test(email)) {
             return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Email không đúng định dạng! Vui lòng kiểm tra lại.",
-                page: 'taoTaiKhoan'
+                page: 'taoTaiKhoan',
+                csrfToken: req.session.csrfToken
             });
         }
 
@@ -177,7 +183,8 @@ const postTaoTaiKhoan = async (req, res) => {
         if (!phoneRegex.test(soDienThoai)) {
             return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Số điện thoại không đúng định dạng! Vui lòng nhập số điện thoại 10 số hợp lệ.",
-                page: 'taoTaiKhoan'
+                page: 'taoTaiKhoan',
+                csrfToken: req.session.csrfToken
             });
         }
 
@@ -189,7 +196,8 @@ const postTaoTaiKhoan = async (req, res) => {
         if (checkEmail.length > 0) {
             return res.render('khachHang/taiKhoan/taoTaiKhoan', {
                 msg: "Email này đã được sử dụng. Vui lòng chọn email khác!",
-                page: 'taoTaiKhoan'
+                page: 'taoTaiKhoan',
+                csrfToken: req.session.csrfToken
             });
         }
 
@@ -216,7 +224,8 @@ const postTaoTaiKhoan = async (req, res) => {
         console.error(err);
         res.render('khachHang/taiKhoan/taoTaiKhoan', {
             msg: err.message,
-            page: 'taoTaiKhoan'
+            page: 'taoTaiKhoan',
+            csrfToken: req.session.csrfToken
         });
     }
 };
