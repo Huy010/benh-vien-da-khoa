@@ -12,9 +12,7 @@ const khachHangThayDoiThongTin = {
             }
 
             // Tạo CSRF token mới và lưu vào session
-            req.session.csrfToken = crypto
-                .randomBytes(32)
-                .toString('hex');
+            req.session.csrfToken = crypto.randomBytes(32).toString('hex');
 
             const userId = req.session.user.id;
 

@@ -23,8 +23,7 @@ if (!process.env.SESSION_SECRET) {
     );
 }
 
-const isProduction =
-    process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 
 /*
  * Đọc dữ liệu JSON.
@@ -168,9 +167,7 @@ app.locals.upload = upload;
  * Phải đặt sau express-session.
  */
 app.use((req, res, next) => {
-    res.locals.user =
-        req.session.user || null;
-
+    res.locals.user = req.session.user || null;
     res.locals.page = '';
 
     next();

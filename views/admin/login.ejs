@@ -18,7 +18,7 @@
             <h2 class="text-center text-dark mb-4 fw-bold">Đăng Nhập Quản Lý</h2>
 
             <form action="/admin/login" method="POST">
-                
+                <input type="hidden" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
                 <div class="mb-3">
                     <label for="username" class="form-label text-secondary fw-medium">Tài khoản</label>
                     <input type="text" class="form-control form-control-brand px-3 py-2" id="username" name="username" placeholder="Nhập tên đăng nhập..." required>

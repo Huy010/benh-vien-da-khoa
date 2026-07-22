@@ -4,7 +4,7 @@ const kiemTraDangNhapBacSi = (req, res, next) => {
     if (req.session.user && req.session.user.vaiTro === 'BacSi') {
         next(); // Nếu đúng chuẩn Bác sĩ -> Cho phép đi tiếp vào trang
     } else {
-        // Nếu chưa đăng nhập hoặc là Khách hàng/Quản lý -> Đuổi về trang login Bác sĩ
+        // Nếu chưa đăng nhập hoặc là Khách hàng/Quản lý chuyển về trang login Bác sĩ
         res.redirect('/bacsi/login'); 
     }
 };
