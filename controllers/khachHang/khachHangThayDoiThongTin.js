@@ -6,7 +6,7 @@ const khachHangThayDoiThongTin = {
     // [GET] Render trang thay đổi thông tin
     getThayDoiThongTin: async (req, res) => {
         try {
-            // Kiểm tra người dùng đã đăng nhập hay chưa
+            // Kiểm tra người dùng đã đăng nhập
             if (!req.session.user) {
                 return res.redirect('/login');
             }
@@ -19,7 +19,7 @@ const khachHangThayDoiThongTin = {
             const userId = req.session.user.id;
 
             const sql = `
-                SELECT 
+                SELECT
                     nd.id,
                     nd.hoTen,
                     nd.soDienThoai,
@@ -48,27 +48,20 @@ const khachHangThayDoiThongTin = {
 
             const profile = rows[0];
 
-            /*
-             * Input type="date" yêu cầu value có dạng YYYY-MM-DD.
-             * Ví dụ: 2003-08-15.
-             */
+            // Input type="date" cần định dạng YYYY-MM-DD
             if (profile.ngaySinh) {
-                profile.ngaySinh = moment(profile.ngaySinh).format(
-                    'YYYY-MM-DD'
-                );
+                profile.ngaySinh = moment(
+                    profile.ngaySinh
+                ).format('YYYY-MM-DD');
             }
 
             return res.render(
                 'khachHang/taiKhoan/thayDoiThongTin',
                 {
                     page: 'thayDoiThongTin',
-
-                    // profile dùng để hiển thị dữ liệu trong form
                     profile: profile,
-
                     status: req.query.status || '',
                     msg: req.query.msg || '',
-
                     csrfToken: req.session.csrfToken
                 }
             );
@@ -84,7 +77,7 @@ const khachHangThayDoiThongTin = {
         }
     },
 
-    // [POST] Xử lý khi người dùng nhấn "Lưu thay đổi"
+    // [POST] Xử lý khi người dùng nhấn Lưu thay đổi
     postCapNhatThongTin: async (req, res) => {
         try {
             // Kiểm tra đăng nhập
@@ -164,10 +157,7 @@ const khachHangThayDoiThongTin = {
                 safeEmail = email.trim();
             }
 
-            /*
-             * Input type="date" gửi ngày theo dạng YYYY-MM-DD.
-             * Không còn nhận dạng DD/MM/YYYY như trước.
-             */
+            // Kiểm tra ngày sinh
             let safeNgaySinh = null;
 
             if (ngaySinh && ngaySinh.trim() !== '') {
@@ -200,23 +190,38 @@ const khachHangThayDoiThongTin = {
                 safeNgaySinh = parsedDate.format('YYYY-MM-DD');
             }
 
-            // Kiểm tra giá trị giới tính hợp lệ
-            const danhSachGioiTinh = [
-                'Nam',
-                'Nu',
-                'Khac'
-            ];
+            /*
+             * Database sử dụng:
+             * ENUM('Nam', 'Nữ', 'Khác')
+             *
+             * Chuyển cả giá trị cũ Nu, Khac sang đúng giá trị database.
+             */
+            const genderMap = {
+                Nam: 'Nam',
+                'Nữ': 'Nữ',
+                Nu: 'Nữ',
+                'Khác': 'Khác',
+                Khac: 'Khác'
+            };
 
             let safeGioiTinh = null;
 
-            if (
-                gioiTinh &&
-                danhSachGioiTinh.includes(gioiTinh.trim())
-            ) {
-                safeGioiTinh = gioiTinh.trim();
+            if (gioiTinh && gioiTinh.trim() !== '') {
+                const genderValue = gioiTinh.trim();
+
+                safeGioiTinh = genderMap[genderValue];
+
+                if (!safeGioiTinh) {
+                    return res.redirect(
+                        '/thayDoiThongTin?status=error&msg=' +
+                        encodeURIComponent(
+                            'Giới tính không hợp lệ.'
+                        )
+                    );
+                }
             }
 
-            // Kiểm tra giá trị nhóm máu hợp lệ
+            // Kiểm tra nhóm máu
             const danhSachNhomMau = [
                 'A',
                 'B',
@@ -226,11 +231,19 @@ const khachHangThayDoiThongTin = {
 
             let safeNhomMau = null;
 
-            if (
-                nhomMau &&
-                danhSachNhomMau.includes(nhomMau.trim())
-            ) {
-                safeNhomMau = nhomMau.trim();
+            if (nhomMau && nhomMau.trim() !== '') {
+                const bloodType = nhomMau.trim();
+
+                if (!danhSachNhomMau.includes(bloodType)) {
+                    return res.redirect(
+                        '/thayDoiThongTin?status=error&msg=' +
+                        encodeURIComponent(
+                            'Nhóm máu không hợp lệ.'
+                        )
+                    );
+                }
+
+                safeNhomMau = bloodType;
             }
 
             const safeDiaChi =
@@ -275,7 +288,7 @@ const khachHangThayDoiThongTin = {
                 );
             }
 
-            // Cập nhật hoặc thêm mới thông tin bảng KhachHang
+            // Cập nhật hoặc thêm thông tin KhachHang
             const sqlKhachHang = `
                 INSERT INTO KhachHang
                     (
@@ -310,14 +323,10 @@ const khachHangThayDoiThongTin = {
                     ]
                 );
 
-            // Cập nhật lại session để header hiển thị tên mới
+            // Cập nhật session để header hiển thị tên mới
             req.session.user.hoTen = safeHoTen;
             req.session.user.name = safeHoTen;
 
-            /*
-             * Lưu session trước khi redirect để tránh trường hợp
-             * tên mới chưa kịp cập nhật trên môi trường Render.
-             */
             return req.session.save((sessionError) => {
                 if (sessionError) {
                     console.error(
@@ -351,6 +360,19 @@ const khachHangThayDoiThongTin = {
                     '/thayDoiThongTin?status=error&msg=' +
                     encodeURIComponent(
                         'Số điện thoại hoặc Email này đã được sử dụng bởi người khác!'
+                    )
+                );
+            }
+
+            if (
+                error.code === 'WARN_DATA_TRUNCATED' &&
+                error.sqlMessage &&
+                error.sqlMessage.includes('gioiTinh')
+            ) {
+                return res.redirect(
+                    '/thayDoiThongTin?status=error&msg=' +
+                    encodeURIComponent(
+                        'Giá trị giới tính không khớp với cấu hình database.'
                     )
                 );
             }

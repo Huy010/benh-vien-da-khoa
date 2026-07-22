@@ -2,123 +2,321 @@ const con = require('../../config/connectDatabase');
 const escapeHtml = require('escape-html');
 const crypto = require('crypto');
 
-// Tạo hàm query dùng Promise từ biến con
+// Hàm query sử dụng Promise
 const query = async (sql, params = []) => {
     const [rows] = await con.promise().query(sql, params);
     return rows;
 };
 
-const getLogin = (req, res) => {
-    // 1. Tạo token và lưu vào session
-    req.session.csrfToken = crypto.randomBytes(32).toString("hex");
+/**
+ * Tạo CSRF token mới cho từng chức năng.
+ *
+ * Session sẽ có cấu trúc:
+ * req.session.csrfTokens.login
+ * req.session.csrfTokens.register
+ */
+const createCsrfToken = (req, tokenName) => {
+    if (!req.session.csrfTokens) {
+        req.session.csrfTokens = {};
+    }
 
-    // 2. Render giao diện và truyền ĐẦY ĐỦ các biến sang EJS
-    res.render('khachHang/taiKhoan/login', {
-        page: 'login',
-        msg: req.query.msg || "",
-        type: req.query.msg ? "success" : "",
-        csrfToken: req.session.csrfToken
+    const token = crypto
+        .randomBytes(32)
+        .toString('hex');
+
+    req.session.csrfTokens[tokenName] = token;
+
+    return token;
+};
+
+/**
+ * Kiểm tra CSRF token bằng timingSafeEqual.
+ */
+const verifyCsrfToken = (req, tokenName) => {
+    const submittedToken = req.body?._csrf;
+    const sessionToken =
+        req.session?.csrfTokens?.[tokenName];
+
+    if (
+        typeof submittedToken !== 'string' ||
+        typeof sessionToken !== 'string'
+    ) {
+        return false;
+    }
+
+    const submittedBuffer =
+        Buffer.from(submittedToken, 'utf8');
+
+    const sessionBuffer =
+        Buffer.from(sessionToken, 'utf8');
+
+    if (
+        submittedBuffer.length !==
+        sessionBuffer.length
+    ) {
+        return false;
+    }
+
+    return crypto.timingSafeEqual(
+        submittedBuffer,
+        sessionBuffer
+    );
+};
+
+/**
+ * Render trang đăng nhập.
+ *
+ * Quan trọng:
+ * Không gọi req.session.save() trước res.render().
+ * Express-session sẽ tự lưu session khi response kết thúc.
+ */
+const renderLogin = (
+    req,
+    res,
+    {
+        msg = '',
+        type = ''
+    } = {}
+) => {
+    const csrfToken =
+        createCsrfToken(req, 'login');
+
+    return res.render(
+        'khachHang/taiKhoan/login',
+        {
+            page: 'login',
+            msg,
+            type,
+            csrfToken
+        }
+    );
+};
+
+/**
+ * Render trang tạo tài khoản.
+ *
+ * Không gọi req.session.save() trước res.render().
+ */
+const renderTaoTaiKhoan = (
+    req,
+    res,
+    {
+        msg = '',
+        type = ''
+    } = {}
+) => {
+    const csrfToken =
+        createCsrfToken(req, 'register');
+
+    return res.render(
+        'khachHang/taiKhoan/taoTaiKhoan',
+        {
+            page: 'taoTaiKhoan',
+            msg,
+            type,
+            csrfToken
+        }
+    );
+};
+
+// [GET] Trang đăng nhập
+const getLogin = (req, res) => {
+    return renderLogin(req, res, {
+        msg: req.query.msg || '',
+        type: req.query.msg
+            ? 'success'
+            : ''
     });
 };
 
+// [POST] Xử lý đăng nhập
 const postLogin = async (req, res) => {
     try {
-        if (req.body._csrf !== req.session.csrfToken) {
-            return res.status(403).send("CSRF detected");
+
+        // Kiểm tra CSRF
+        if (!verifyCsrfToken(req, 'login')) {
+            return res
+                .status(403)
+                .send('CSRF detected');
         }
-        const { username, password } = req.body;
+
+        const username =
+            typeof req.body.username === 'string'
+                ? req.body.username.trim()
+                : '';
+
+        const password =
+            typeof req.body.password === 'string'
+                ? req.body.password
+                : '';
 
         if (!username || !password) {
-            return res.render('khachHang/taiKhoan/login', {
-                page: 'login',
-                msg: "Vui lòng nhập đầy đủ thông tin",
-                type: "error"
+            return renderLogin(req, res, {
+                msg:
+                    'Vui lòng nhập đầy đủ thông tin',
+                type: 'error'
             });
         }
 
         const rows = await query(
-            `SELECT id, tenDangNhap, matKhau, hoTen, vaiTro
-             FROM NguoiDung
-             WHERE tenDangNhap = ?
-             AND vaiTro = 'KhachHang'
-             LIMIT 1`,
+            `
+                SELECT
+                    id,
+                    tenDangNhap,
+                    matKhau,
+                    hoTen,
+                    vaiTro
+                FROM NguoiDung
+                WHERE tenDangNhap = ?
+                    AND vaiTro = 'KhachHang'
+                LIMIT 1
+            `,
             [username]
         );
 
         if (rows.length === 0) {
-            return res.render('khachHang/taiKhoan/login', {
-                page: 'login',
-                msg: "Sai tên đăng nhập hoặc mật khẩu",
-                type: "error",
-                csrfToken: req.session.csrfToken
+            return renderLogin(req, res, {
+                msg:
+                    'Sai tên đăng nhập hoặc mật khẩu',
+                type: 'error'
             });
         }
 
         const user = rows[0];
 
         if (user.matKhau !== password) {
-            return res.render('khachHang/taiKhoan/login', {
-                page: 'login',
-                msg: "Sai tên đăng nhập hoặc mật khẩu",
-                type: "error",
-                csrfToken: req.session.csrfToken
+            return renderLogin(req, res, {
+                msg:
+                    'Sai tên đăng nhập hoặc mật khẩu',
+                type: 'error'
             });
         }
 
-        req.session.user = {
+        const redirectUrl =
+            req.session.returnTo ||
+            '/trangchu';
+
+        const userSession = {
             id: user.id,
             name: user.hoTen,
+            hoTen: user.hoTen,
             username: user.tenDangNhap,
             vaiTro: user.vaiTro
         };
 
-        const redirectUrl = req.session.returnTo || '/trangchu';
-        delete req.session.returnTo;
+        /*
+         * Tạo session ID mới sau khi đăng nhập
+         * để tránh Session Fixation.
+         */
+        return req.session.regenerate(
+            (regenerateError) => {
+                if (regenerateError) {
+                    console.error(
+                        'Lỗi tạo lại session:',
+                        regenerateError
+                    );
 
-        req.session.save((err) => {
-            if (err) {
-                console.error("Lỗi lưu session:", err);
+                    return res
+                        .status(500)
+                        .send(
+                            'Không thể tạo phiên đăng nhập.'
+                        );
+                }
+
+                req.session.user =
+                    userSession;
+
+                /*
+                 * Ở đây được phép dùng save()
+                 * vì ngay sau đó là redirect.
+                 */
+                return req.session.save(
+                    (saveError) => {
+                        if (saveError) {
+                            console.error(
+                                'Lỗi lưu session đăng nhập:',
+                                saveError
+                            );
+
+                            return res
+                                .status(500)
+                                .send(
+                                    'Đăng nhập thành công nhưng không thể lưu phiên.'
+                                );
+                        }
+
+                        return res.redirect(
+                            redirectUrl
+                        );
+                    }
+                );
             }
-            res.redirect(redirectUrl);
-        });
+        );
+    } catch (error) {
+        console.error(
+            'Lỗi khi đăng nhập:',
+            error
+        );
 
-    } catch (err) {
-        console.error(err);
-        res.render('khachHang/taiKhoan/login', {
-            page: 'login',
-            msg: "Lỗi server",
-            type: "error",
-            csrfToken: req.session.csrfToken
+        return renderLogin(req, res, {
+            msg: 'Lỗi server',
+            type: 'error'
         });
     }
 };
 
+// [GET] Đăng xuất
 const logout = (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.send("Lỗi logout");
+    req.session.destroy((error) => {
+        if (error) {
+            console.error(
+                'Lỗi khi đăng xuất:',
+                error
+            );
+
+            return res.send(
+                'Lỗi logout'
+            );
         }
 
-        res.clearCookie('connect.sid');
-        res.redirect('/trangchu');
+        res.clearCookie(
+            'connect.sid',
+            {
+                path: '/'
+            }
+        );
+
+        return res.redirect(
+            '/trangchu'
+        );
     });
 };
 
+// [GET] Trang tạo tài khoản
 const getTaoTaiKhoan = (req, res) => {
-    // 1. Tạo token và lưu vào session
-    req.session.csrfToken = crypto.randomBytes(32).toString("hex");
-    res.render('khachHang/taiKhoan/taoTaiKhoan', { 
-        page: 'taoTaiKhoan',
-        csrfToken: req.session.csrfToken 
-    });
+    return renderTaoTaiKhoan(
+        req,
+        res
+    );
 };
 
-
-const postTaoTaiKhoan = async (req, res) => {
-    if (req.body._csrf !== req.session.csrfToken) {
-        return res.status(403).send("CSRF detected");
-    }
+// [POST] Xử lý tạo tài khoản
+const postTaoTaiKhoan = async (
+    req,
+    res
+) => {
     try {
+        if (
+            !verifyCsrfToken(
+                req,
+                'register'
+            )
+        ) {
+            return res
+                .status(403)
+                .send('CSRF detected');
+        }
+
         const {
             hoTen,
             username,
@@ -130,103 +328,286 @@ const postTaoTaiKhoan = async (req, res) => {
             diaChi
         } = req.body;
 
-        const safeUsername = escapeHtml(username);
-        const safeHoTen = escapeHtml(hoTen);
-        const safeDiaChi = escapeHtml(diaChi);
+        if (
+            !hoTen ||
+            !username ||
+            !password ||
+            !soDienThoai ||
+            !email
+        ) {
+            return renderTaoTaiKhoan(
+                req,
+                res,
+                {
+                    msg:
+                        'Vui lòng nhập đầy đủ thông tin bắt buộc.',
+                    type: 'error'
+                }
+            );
+        }
 
+        const safeUsername =
+            escapeHtml(
+                username.trim()
+            );
 
-        const check = await query(
-            "SELECT id FROM NguoiDung WHERE tenDangNhap = ?",
-            [safeUsername]
-        );
+        const safeHoTen =
+            escapeHtml(
+                hoTen.trim()
+            );
 
-        if (check.length > 0) {
-            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
-                msg: "Tên đăng nhập đã tồn tại!",
-                type: "error",
-                page: 'taoTaiKhoan',
-                csrfToken: req.session.csrfToken
-            });
+        const safeEmail =
+            email.trim();
+
+        const safeSoDienThoai =
+            soDienThoai.trim();
+
+        const safeDiaChi =
+            diaChi &&
+                diaChi.trim() !== ''
+                ? escapeHtml(
+                    diaChi.trim()
+                )
+                : null;
+
+        // Kiểm tra tên đăng nhập
+        const checkUsername =
+            await query(
+                `
+                    SELECT id
+                    FROM NguoiDung
+                    WHERE tenDangNhap = ?
+                    LIMIT 1
+                `,
+                [safeUsername]
+            );
+
+        if (
+            checkUsername.length > 0
+        ) {
+            return renderTaoTaiKhoan(
+                req,
+                res,
+                {
+                    msg:
+                        'Tên đăng nhập đã tồn tại!',
+                    type: 'error'
+                }
+            );
         }
 
         // Kiểm tra ngày sinh
-        if (ngaySinh) {
-            const inputDate = new Date(ngaySinh);
-            const today = new Date();
+        let safeNgaySinh = null;
 
-            // Đặt mốc thời gian của ngày hôm nay về 00:00:00 để so sánh chính xác theo ngày
-            today.setHours(0, 0, 0, 0);
-            // 2. Kiểm tra ngày nhập vào có lớn hơn hoặc bằng ngày hôm nay không
-            if (isNaN(inputDate.getTime()) || inputDate >= today) {
-                return res.render('khachHang/taiKhoan/taoTaiKhoan', {
-                    msg: "Ngày sinh không hợp lệ! Ngày sinh phải là một ngày trong quá khứ.",
-                    page: 'taoTaiKhoan',
-                    csrfToken: req.session.csrfToken
-                });
+        if (
+            ngaySinh &&
+            ngaySinh.trim() !== ''
+        ) {
+            const inputDate =
+                new Date(
+                    `${ngaySinh.trim()}T00:00:00`
+                );
+
+            const today =
+                new Date();
+
+            today.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+            if (
+                Number.isNaN(
+                    inputDate.getTime()
+                ) ||
+                inputDate >= today
+            ) {
+                return renderTaoTaiKhoan(
+                    req,
+                    res,
+                    {
+                        msg:
+                            'Ngày sinh không hợp lệ! Ngày sinh phải là một ngày trong quá khứ.',
+                        type: 'error'
+                    }
+                );
             }
+
+            safeNgaySinh =
+                ngaySinh.trim();
         }
 
-        // Kiểm tra email có tồn tại chưa
-        // Định nghĩa khuôn mẫu của email hợp lệ 
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(email)) {
-            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
-                msg: "Email không đúng định dạng! Vui lòng kiểm tra lại.",
-                page: 'taoTaiKhoan',
-                csrfToken: req.session.csrfToken
-            });
+        // Kiểm tra email
+        const emailRegex =
+            /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (
+            !emailRegex.test(
+                safeEmail
+            )
+        ) {
+            return renderTaoTaiKhoan(
+                req,
+                res,
+                {
+                    msg:
+                        'Email không đúng định dạng! Vui lòng kiểm tra lại.',
+                    type: 'error'
+                }
+            );
         }
 
-        // Kiểm tra số điện thoại hợp lệ (10 số của Việt Nam)
-        const phoneRegex = /^0[35789]\d{8}$/;
+        // Kiểm tra số điện thoại
+        const phoneRegex =
+            /^0[35789]\d{8}$/;
 
-        if (!phoneRegex.test(soDienThoai)) {
-            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
-                msg: "Số điện thoại không đúng định dạng! Vui lòng nhập số điện thoại 10 số hợp lệ.",
-                page: 'taoTaiKhoan',
-                csrfToken: req.session.csrfToken
-            });
+        if (
+            !phoneRegex.test(
+                safeSoDienThoai
+            )
+        ) {
+            return renderTaoTaiKhoan(
+                req,
+                res,
+                {
+                    msg:
+                        'Số điện thoại không đúng định dạng! Vui lòng nhập số điện thoại Việt Nam 10 số.',
+                    type: 'error'
+                }
+            );
         }
 
-        const checkEmail = await query(
-            "SELECT id FROM NguoiDung WHERE email = ?",
-            [email]
-        );
+        // Kiểm tra email đã tồn tại
+        const checkEmail =
+            await query(
+                `
+                    SELECT id
+                    FROM NguoiDung
+                    WHERE email = ?
+                    LIMIT 1
+                `,
+                [safeEmail]
+            );
 
-        if (checkEmail.length > 0) {
-            return res.render('khachHang/taiKhoan/taoTaiKhoan', {
-                msg: "Email này đã được sử dụng. Vui lòng chọn email khác!",
-                page: 'taoTaiKhoan',
-                csrfToken: req.session.csrfToken
-            });
+        if (
+            checkEmail.length > 0
+        ) {
+            return renderTaoTaiKhoan(
+                req,
+                res,
+                {
+                    msg:
+                        'Email này đã được sử dụng. Vui lòng chọn email khác!',
+                    type: 'error'
+                }
+            );
         }
 
-        const result = await query(
-            `INSERT INTO NguoiDung
-            (tenDangNhap, matKhau, vaiTro, hoTen, soDienThoai, email)
-            VALUES (?, ?, 'KhachHang', ?, ?, ?)`,
-            [safeUsername, password, safeHoTen, soDienThoai, email]
-        );
+        const result =
+            await query(
+                `
+                    INSERT INTO NguoiDung
+                        (
+                            tenDangNhap,
+                            matKhau,
+                            vaiTro,
+                            hoTen,
+                            soDienThoai,
+                            email
+                        )
+                    VALUES
+                        (
+                            ?,
+                            ?,
+                            'KhachHang',
+                            ?,
+                            ?,
+                            ?
+                        )
+                `,
+                [
+                    safeUsername,
+                    password,
+                    safeHoTen,
+                    safeSoDienThoai,
+                    safeEmail
+                ]
+            );
 
-        const newId = result.insertId;
+        const newId =
+            result.insertId;
+
+        /*
+         * Giá trị ENUM trong database:
+         * Nam, Nữ, Khác
+         */
+        const genderMap = {
+            Nam: 'Nam',
+            Nu: 'Nữ',
+            'Nữ': 'Nữ',
+            Khac: 'Khác',
+            'Khác': 'Khác'
+        };
+
+        const safeGioiTinh =
+            gioiTinh &&
+                genderMap[gioiTinh]
+                ? genderMap[gioiTinh]
+                : null;
 
         await query(
-            `INSERT INTO KhachHang
-            (id, ngaySinh, gioiTinh, diaChi)
-            VALUES (?, ?, ?, ?)`,
-            [newId, ngaySinh || null, gioiTinh, safeDiaChi]
+            `
+                INSERT INTO KhachHang
+                    (
+                        id,
+                        ngaySinh,
+                        gioiTinh,
+                        diaChi
+                    )
+                VALUES
+                    (?, ?, ?, ?)
+            `,
+            [
+                newId,
+                safeNgaySinh,
+                safeGioiTinh,
+                safeDiaChi
+            ]
         );
 
-        const thongBao = encodeURIComponent('Tạo tài khoản thành công');
-        res.redirect(`/login?msg=${thongBao}`);
+        if (
+            req.session.csrfTokens
+        ) {
+            delete req.session
+                .csrfTokens
+                .register;
+        }
 
-    } catch (err) {
-        console.error(err);
-        res.render('khachHang/taiKhoan/taoTaiKhoan', {
-            msg: err.message,
-            page: 'taoTaiKhoan',
-            csrfToken: req.session.csrfToken
-        });
+        const thongBao =
+            encodeURIComponent(
+                'Tạo tài khoản thành công'
+            );
+
+        return res.redirect(
+            `/login?msg=${thongBao}`
+        );
+    } catch (error) {
+        console.error(
+            'Lỗi khi tạo tài khoản:',
+            error
+        );
+
+        return renderTaoTaiKhoan(
+            req,
+            res,
+            {
+                msg:
+                    'Có lỗi xảy ra khi tạo tài khoản.',
+                type: 'error'
+            }
+        );
     }
 };
 

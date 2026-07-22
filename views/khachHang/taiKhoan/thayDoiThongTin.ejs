@@ -40,8 +40,8 @@
 
       <div class="content profile-container">
         <div class="container">
-          <div class="row justify-content-center">
 
+          <div class="row justify-content-center">
             <div class="col-lg-9">
 
               <div class="d-flex align-items-center mb-4">
@@ -137,13 +137,13 @@
                             Nam
                           </option>
 
-                          <option value="Nu" <%=typeof profile !=='undefined' && profile.gioiTinh==='Nu' ? 'selected'
-                            : '' %>>
+                          <option value="Nữ" <%=typeof profile !=='undefined' && (profile.gioiTinh==='Nữ' ||
+                            profile.gioiTinh==='Nu' ) ? 'selected' : '' %>>
                             Nữ
                           </option>
 
-                          <option value="Khac" <%=typeof profile !=='undefined' && profile.gioiTinh==='Khac'
-                            ? 'selected' : '' %>>
+                          <option value="Khác" <%=typeof profile !=='undefined' && (profile.gioiTinh==='Khác' ||
+                            profile.gioiTinh==='Khac' ) ? 'selected' : '' %>>
                             Khác
                           </option>
 
@@ -230,8 +230,8 @@
               </div>
 
             </div>
-
           </div>
+
         </div>
       </div>
 
