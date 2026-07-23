@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="/css/bacSi/sidebar.css">
     <link rel="stylesheet" href="/css/bacSi/style.css">
     <link rel="stylesheet" href="/css/bacSi/khamBenh.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
 </head>
 <body>
 
@@ -64,7 +64,7 @@
 
     <div id="patient-data" data-patients='<%- JSON.stringify(typeof danhSachCho !== "undefined" ? danhSachCho : []) %>' style="display: none;"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     
     <script>
         const patientDataElem = document.getElementById('patient-data');
