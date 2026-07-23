@@ -12,16 +12,23 @@
     
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlyphongkham-themphongmoi-ejs-3 { background-color: var(--bg-light, #f4f6f9); }
+.csp-admin-quanlyphongkham-themphongmoi-ejs-2 { max-width: 800px; height: fit-content; }
+.csp-admin-quanlyphongkham-themphongmoi-ejs-1 { background-color: #e9ecef; }
+</style>
 </head>
 <body>
 
-    <div class="d-flex vh-100 overflow-hidden" style="background-color: var(--bg-light, #f4f6f9);">
+    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlyphongkham-themphongmoi-ejs-3">
         
         <%- include('../sidebar') %>
         
         <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto d-flex justify-content-center"> 
             
-            <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 w-100" style="max-width: 800px; height: fit-content;"> 
+            <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 w-100 csp-admin-quanlyphongkham-themphongmoi-ejs-2"> 
                 
                 <div class="card-header-title mb-4">
                     <h2 class="mb-0">Phân Công Vị Trí Mới</h2>
@@ -74,7 +81,7 @@
                         <button type="submit" class="btn btn-add px-4 py-2">
                             <i class="fas fa-save me-2"></i> Lưu Phân Công
                         </button>
-                        <a href="/admin/quanLyPhongKham" class="btn btn-light px-4 py-2 border fw-semibold text-muted" style="background-color: #e9ecef;">
+                        <a href="/admin/quanLyPhongKham" class="btn btn-light px-4 py-2 border fw-semibold text-muted csp-admin-quanlyphongkham-themphongmoi-ejs-1">
                             <i class="fas fa-arrow-left me-1"></i> Quay lại
                         </a>
                     </div>

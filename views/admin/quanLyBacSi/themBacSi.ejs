@@ -9,13 +9,23 @@
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlybacsi-thembacsi-ejs-6 { background-color: var(--bg-light, #f4f6f9); }
+.csp-admin-quanlybacsi-thembacsi-ejs-5 { max-width: 800px; height: fit-content; }
+.csp-admin-quanlybacsi-thembacsi-ejs-4 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-thembacsi-ejs-3 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-thembacsi-ejs-2 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-thembacsi-ejs-1 { background-color: #e9ecef; }
+</style>
 </head>
 <body>
-    <div class="d-flex vh-100 overflow-hidden" style="background-color: var(--bg-light, #f4f6f9);">
+    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlybacsi-thembacsi-ejs-6">
         <%- include('../sidebar') %>
         
         <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto d-flex justify-content-center"> 
-            <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 w-100" style="max-width: 800px; height: fit-content;"> 
+            <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 w-100 csp-admin-quanlybacsi-thembacsi-ejs-5"> 
                 
                 <div class="card-header-title mb-4">
                     <h2 class="mb-0">Thêm Bác Sĩ Mới</h2>
@@ -23,7 +33,7 @@
 
                 <form action="/admin/themBacSi" method="POST" enctype="multipart/form-data">
                     
-                    <h5 class="fw-bold mt-4 mb-3" style="color: var(--primary-color);">1. Thông tin tài khoản</h5>
+                    <h5 class="fw-bold mt-4 mb-3 csp-admin-quanlybacsi-thembacsi-ejs-4">1. Thông tin tài khoản</h5>
                     <div class="row g-3">
                         <div class="col-md-6 form-group">
                             <label class="form-label fw-semibold">Tên đăng nhập <span class="text-danger">*</span></label>
@@ -37,7 +47,7 @@
 
                     <hr class="my-4 text-muted">
 
-                    <h5 class="fw-bold mb-3" style="color: var(--primary-color);">2. Thông tin cá nhân</h5>
+                    <h5 class="fw-bold mb-3 csp-admin-quanlybacsi-thembacsi-ejs-3">2. Thông tin cá nhân</h5>
                     <div class="form-group mb-3">
                         <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
                         <input type="text" name="hoTen" value="" class="form-control" required placeholder="Ví dụ: Nguyễn Văn A">
@@ -61,7 +71,7 @@
 
                     <hr class="my-4 text-muted">
 
-                    <h5 class="fw-bold mb-3" style="color: var(--primary-color);">3. Thông tin chuyên môn</h5>
+                    <h5 class="fw-bold mb-3 csp-admin-quanlybacsi-thembacsi-ejs-2">3. Thông tin chuyên môn</h5>
                     <div class="row g-3 mb-3">
                         <div class="col-md-4 form-group">
                             <label class="form-label fw-semibold">Trình độ</label>
@@ -93,7 +103,7 @@
                         <button type="submit" class="btn btn-add px-4 py-2">
                             Lưu Bác Sĩ
                         </button>
-                        <a href="/admin/quanLyBacSi" class="btn btn-light px-4 py-2 border fw-semibold text-muted" style="background-color: #e9ecef;">
+                        <a href="/admin/quanLyBacSi" class="btn btn-light px-4 py-2 border fw-semibold text-muted csp-admin-quanlybacsi-thembacsi-ejs-1">
                             Hủy bỏ
                         </a>
                     </div>

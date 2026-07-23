@@ -10,10 +10,16 @@
     
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlynguoidung-suanguoidung-ejs-2 { background-color: #f4f6f9; }
+.csp-admin-quanlynguoidung-suanguoidung-ejs-1 { color: var(--primary-color, #2c3e50); }
+</style>
 </head>
 <body>
     
-    <div class="d-flex vh-100 overflow-hidden" style="background-color: #f4f6f9;"> 
+    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlynguoidung-suanguoidung-ejs-2"> 
         
         <%- include('../sidebar') %>
 
@@ -22,7 +28,7 @@
             <div class="card-box bg-white p-4 rounded shadow-sm border-0">
                 
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-2 border-bottom">
-                    <h2 class="mb-0 fw-bold" style="color: var(--primary-color, #2c3e50);">
+                    <h2 class="mb-0 fw-bold csp-admin-quanlynguoidung-suanguoidung-ejs-1">
                         Chỉnh Sửa Người Dùng
                     </h2>
                     

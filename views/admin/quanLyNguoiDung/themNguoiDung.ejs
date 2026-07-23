@@ -11,8 +11,14 @@
     <link rel="stylesheet" href="/css/admin/style.css">
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/quanLyNguoiDung/themNguoiDung.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlynguoidung-themnguoidung-ejs-3 { background-color: var(--bg-light, #f4f6f9); }
+.csp-admin-quanlynguoidung-themnguoidung-ejs-2 { color: #1565c0; }
+</style>
 </head>
-<body style="background-color: var(--bg-light, #f4f6f9);">
+<body class="csp-admin-quanlynguoidung-themnguoidung-ejs-3">
     
     <div class="d-flex vh-100 overflow-hidden">
         <%- include('../sidebar') %>
@@ -21,7 +27,7 @@
             <div class="container card-box bg-white p-4 p-md-5 rounded shadow-sm">
                 
                 <div class="form-header mb-4 border-bottom pb-3">
-                    <h2 class="fw-bold" style="color: #1565c0;">
+                    <h2 class="fw-bold csp-admin-quanlynguoidung-themnguoidung-ejs-2">
                         Thêm Người Dùng Mới
                     </h2>
                     <p class="text-muted mb-0">Nhập thông tin chi tiết để tạo tài khoản mới vào hệ thống.</p>
@@ -131,7 +137,7 @@
                                     </div>
                                 </div>
 
-                                <div id="formNguoiQuanLy" style="display: none;">
+                                <div id="formNguoiQuanLy" class="d-none">
                                     <div class="mb-3">
                                         <label for="boPhan" class="form-label fw-semibold">Bộ phận công tác</label>
                                         <input type="text" id="boPhan" name="boPhan" class="form-control" 
@@ -170,12 +176,12 @@
 
                 if (selectVaiTro.value === "KhachHang") {
                     // Nếu là Khách hàng: Bật form khách hàng, Tắt form quản lý
-                    if(formKhachHang) formKhachHang.style.display = "block";
-                    if(formNguoiQuanLy) formNguoiQuanLy.style.display = "none";
+                    if (formKhachHang) formKhachHang.classList.remove('d-none');
+                    if (formNguoiQuanLy) formNguoiQuanLy.classList.add('d-none');
                 } else if (selectVaiTro.value === "NguoiQuanLy") {
                     // Nếu là Người quản lý: Tắt form khách hàng, Bật form quản lý
-                    if(formKhachHang) formKhachHang.style.display = "none";
-                    if(formNguoiQuanLy) formNguoiQuanLy.style.display = "block";
+                    if (formKhachHang) formKhachHang.classList.add('d-none');
+                    if (formNguoiQuanLy) formNguoiQuanLy.classList.remove('d-none');
                 }
             }
 

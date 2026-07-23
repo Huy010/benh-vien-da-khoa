@@ -11,10 +11,25 @@
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
     <link rel="stylesheet" href="/css/admin/quanLyBacSi/quanLyBacSi.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlybacsi-quanlybacsi-ejs-11 { background-color: #f4f6f9; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-10 { color: var(--primary-color, #2c3e50); }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-9 { width: 5%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-8 { width: 20%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-7 { width: 15%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-6 { width: 20%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-5 { width: 25%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-4 { width: 15%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-3 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-2 { max-width: 200px; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-1 { font-size: 48px; opacity: 0.2; }
+</style>
 </head>
 <body>
     
-    <div class="d-flex vh-100 overflow-hidden" style="background-color: #f4f6f9;"> 
+    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlybacsi-quanlybacsi-ejs-11"> 
         
         <%- include('../sidebar') %>
 
@@ -23,7 +38,7 @@
             <div class="card-box bg-white p-4 rounded shadow-sm border-0">
                 
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-2 border-bottom">
-                    <h2 class="mb-0 fw-bold" style="color: var(--primary-color, #2c3e50);">Quản Lý Danh Sách Bác Sĩ</h2>
+                    <h2 class="mb-0 fw-bold csp-admin-quanlybacsi-quanlybacsi-ejs-10">Quản Lý Danh Sách Bác Sĩ</h2>
                     
                     <a href="/admin/themBacSi" class="btn-add text-nowrap text-decoration-none">
                         <i class="fas fa-plus"></i> Thêm Bác Sĩ Mới
@@ -34,12 +49,12 @@
                     <table class="custom-table w-100">
                         <thead>
                             <tr>
-                                <th class="text-center" style="width: 5%;">STT</th>
-                                <th style="width: 20%;">Họ Tên</th>
-                                <th class="text-center" style="width: 15%;">Năm Tốt Nghiệp</th>
-                                <th style="width: 20%;">Chuyên Khoa</th>
-                                <th style="width: 25%;">Chi Tiết</th>
-                                <th class="text-center" style="width: 15%;">Thao Tác</th>
+                                <th class="text-center csp-admin-quanlybacsi-quanlybacsi-ejs-9">STT</th>
+                                <th class="csp-admin-quanlybacsi-quanlybacsi-ejs-8">Họ Tên</th>
+                                <th class="text-center csp-admin-quanlybacsi-quanlybacsi-ejs-7">Năm Tốt Nghiệp</th>
+                                <th class="csp-admin-quanlybacsi-quanlybacsi-ejs-6">Chuyên Khoa</th>
+                                <th class="csp-admin-quanlybacsi-quanlybacsi-ejs-5">Chi Tiết</th>
+                                <th class="text-center csp-admin-quanlybacsi-quanlybacsi-ejs-4">Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -50,11 +65,11 @@
                                         <td class="text-center"><%= (currentPage - 1) * 10 + (i++) %></td>
                                         <td><strong class="text-dark"><%= bacsi.hoTen %></strong></td>
                                         <td class="text-center"><%= bacsi.namTotNghiep %></td>
-                                        <td class="fw-semibold" style="color: var(--primary-color);">
+                                        <td class="fw-semibold csp-admin-quanlybacsi-quanlybacsi-ejs-3">
                                             <%= bacsi.tenChuyenKhoa ? bacsi.tenChuyenKhoa : 'Chưa phân khoa' %>
                                         </td>
                                         
-                                        <td title="<%= bacsi.chiTiet %>" class="text-muted text-truncate" style="max-width: 200px;">
+                                        <td title="<%= bacsi.chiTiet %>" class="text-muted text-truncate csp-admin-quanlybacsi-quanlybacsi-ejs-2">
                                             <%= bacsi.chiTiet %>
                                         </td>
                                         
@@ -77,7 +92,7 @@
                             <% } else { %>
                                 <tr>
                                     <td colspan="6" class="text-center py-5 text-muted">
-                                        <i class="fas fa-user-md mb-3" style="font-size: 48px; opacity: 0.2;"></i>
+                                        <i class="fas fa-user-md mb-3 csp-admin-quanlybacsi-quanlybacsi-ejs-1"></i>
                                         <p class="mb-0 fs-5">Chưa có dữ liệu bác sĩ nào.</p>
                                     </td>
                                 </tr>

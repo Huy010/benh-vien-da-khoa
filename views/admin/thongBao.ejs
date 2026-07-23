@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/dashboard.css">
     
-    <style>
+    <style nonce="<%= cspNonce %>">
         .hover-notification:hover { 
             background-color: #f8f9fa; 
             border-left: 4px solid #0d6efd; 
@@ -53,7 +53,13 @@
                 gap: 10px;
             }
         }
-    </style>
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-thongbao-ejs-4 { font-size: 2rem; }
+.csp-admin-thongbao-ejs-3 { font-size: 4rem; color: #dee2e6; }
+.csp-admin-thongbao-ejs-2 { font-size: 1.05rem; }
+.csp-admin-thongbao-ejs-1 { font-size: 1.05rem; }
+</style>
 </head>
 
 <body>
@@ -67,7 +73,7 @@
         <div class="main-content flex-grow-1 p-4 overflow-auto">
 
             <header class="mb-4 pb-3 border-bottom d-flex align-items-center">
-                <div class="text-warning me-3" style="font-size: 2rem;">
+                <div class="text-warning me-3 csp-admin-thongbao-ejs-4">
                     <i class="fas fa-bell"></i>
                 </div>
 
@@ -81,7 +87,7 @@
                         <% if (!thongBaoList || thongBaoList.length === 0) { %>
 
                             <div class="list-group-item text-center text-muted py-5 border-0">
-                                <i class="fas fa-box-open mb-3" style="font-size: 4rem; color: #dee2e6;"></i>
+                                <i class="fas fa-box-open mb-3 csp-admin-thongbao-ejs-3"></i>
                                 <h5 class="fw-bold text-secondary">Chưa có thông báo nào</h5>
                                 <p>Hộp thư của bạn hiện đang trống.</p>
                             </div>
@@ -117,8 +123,8 @@
 
                                         <p 
                                             id="noiDung-<%= tb.id_thongBao %>"
-                                            class="notification-content mb-0 <%= tb.trangThaiDoc ? 'text-muted' : 'text-dark fw-medium' %>" 
-                                            style="font-size: 1.05rem;"
+                                            class="notification-content mb-0 <%= tb.trangThaiDoc ? 'text-muted' : 'text-dark fw-medium' %> csp-admin-thongbao-ejs-2" 
+                                           
                                         >
                                             <%= tb.noiDung %>
                                         </p>
@@ -328,7 +334,7 @@
                 const ngayTruc = y.ngayDoiStr || y.ngayMuonDoiStr || 'Không rõ';
 
                 let thongTinChungHtml = `
-                    <div class="text-start p-3 bg-light rounded border mt-3" style="font-size: 1.05rem;">
+                    <div class="text-start p-3 bg-light rounded border mt-3 csp-admin-thongbao-ejs-1">
                         <p class="mb-2">
                             <b>Người xin đổi:</b> 
                             <span class="text-success fw-bold">${y.tenBsYeuCau || 'Không rõ'}</span>

@@ -16,10 +16,30 @@
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
     <link rel="stylesheet" href="/css/admin/quanLyCaKham/quanLyCaKham.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlycakham-quanlycakham-ejs-16 { background-color: #f4f6f9; }
+.csp-admin-quanlycakham-quanlycakham-ejs-15 { padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px; width: 140px; cursor: pointer; }
+.csp-admin-quanlycakham-quanlycakham-ejs-14 { color: #666; font-size: 11px; margin-top: 3px; display: block; text-align: center; }
+.csp-admin-quanlycakham-quanlycakham-ejs-13 { max-width: 200px; }
+.csp-admin-quanlycakham-quanlycakham-ejs-12 { width: 15%; }
+.csp-admin-quanlycakham-quanlycakham-ejs-11 { width: 25%; }
+.csp-admin-quanlycakham-quanlycakham-ejs-10 { width: 30%; }
+.csp-admin-quanlycakham-quanlycakham-ejs-9 { width: 15%; text-align: center; }
+.csp-admin-quanlycakham-quanlycakham-ejs-8 { font-weight: 600; vertical-align: middle; background-color: #f9f9f9; border-right: 2px solid #eee; }
+.csp-admin-quanlycakham-quanlycakham-ejs-7 { font-weight: bold; color: var(--primary-color); }
+.csp-admin-quanlycakham-quanlycakham-ejs-6 { color: #999; font-size: 12px; }
+.csp-admin-quanlycakham-quanlycakham-ejs-5 { text-align: center; padding: 30px; color: #888; }
+.csp-admin-quanlycakham-quanlycakham-ejs-4 { font-size: 18px; }
+.csp-admin-quanlycakham-quanlycakham-ejs-3 { background: #f5f5f5; }
+.csp-admin-quanlycakham-quanlycakham-ejs-2 { background: #f5f5f5; }
+.csp-admin-quanlycakham-quanlycakham-ejs-1 { color: #1565c0; }
+</style>
 </head>
 <body>
 
-    <div class="d-flex vh-100 overflow-hidden" style="background-color: #f4f6f9;">
+    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlycakham-quanlycakham-ejs-16">
         
         <%- include('../sidebar') %>
         
@@ -44,10 +64,10 @@
                             </div>
                             <input type="text" name="week" id="weekInput" 
                                    value="<%= typeof currentInputVal !== 'undefined' ? currentInputVal : '' %>" 
-                                   class="file-input-custom datepicker mx-auto d-block" 
-                                   style="padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px; width: 140px; cursor: pointer;" 
+                                   class="file-input-custom datepicker mx-auto d-block csp-admin-quanlycakham-quanlycakham-ejs-15" 
+                                   
                                    placeholder="Chọn ngày">
-                            <small style="color: #666; font-size: 11px; margin-top: 3px; display: block; text-align: center;">(Chọn ngày)</small>
+                            <small class="csp-admin-quanlycakham-quanlycakham-ejs-14">(Chọn ngày)</small>
                         </div>
 
                         <button type="button" class="btn-import js-change-week" data-week-offset="7">
@@ -56,7 +76,7 @@
                     </div>
 
                     <form action="/admin/importExcel" method="POST" enctype="multipart/form-data" class="upload-section m-0 w-100 w-lg-auto justify-content-center flex-nowrap">
-                         <input type="file" name="excelFile" class="file-input-custom flex-grow-1 flex-lg-grow-0" accept=".xlsx, .xls" required style="max-width: 200px;">
+                         <input type="file" name="excelFile" class="file-input-custom flex-grow-1 flex-lg-grow-0 csp-admin-quanlycakham-quanlycakham-ejs-13" accept=".xlsx, .xls" required>
                          <button type="submit" class="btn-import text-nowrap"><i class="fas fa-upload"></i> Import</button>
                     </form>
                 </div>
@@ -65,10 +85,10 @@
                     <table class="custom-table w-100">
                         <thead>
                             <tr>
-                                <th style="width: 15%;">NGÀY TRỰC</th>
-                                <th style="width: 25%;">CHUYÊN KHOA</th>
-                                <th style="width: 30%;">BÁC SĨ TRỰC</th>
-                                <th style="width: 15%; text-align: center;">THAO TÁC</th>
+                                <th class="csp-admin-quanlycakham-quanlycakham-ejs-12">NGÀY TRỰC</th>
+                                <th class="csp-admin-quanlycakham-quanlycakham-ejs-11">CHUYÊN KHOA</th>
+                                <th class="csp-admin-quanlycakham-quanlycakham-ejs-10">BÁC SĨ TRỰC</th>
+                                <th class="csp-admin-quanlycakham-quanlycakham-ejs-9">THAO TÁC</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,14 +97,14 @@
                                     <% dayGroup.shifts.forEach((shift, index) => { %>
                                         <tr>
                                             <% if (index === 0) { %>
-                                                <td rowspan="<%= dayGroup.shifts.length %>" style="font-weight: 600; vertical-align: middle; background-color: #f9f9f9; border-right: 2px solid #eee;">
+                                                <td rowspan="<%= dayGroup.shifts.length %>" class="csp-admin-quanlycakham-quanlycakham-ejs-8">
                                                     <i class="far fa-calendar-alt"></i> <br class="d-md-none"> <%= dayGroup.dateDisplay %>
                                                 </td>
                                             <% } %>
 
                                             <td><span class="badge-khoa"><%= shift.khoa %></span></td>
                                             
-                                            <td style="font-weight: bold; color: var(--primary-color);">
+                                            <td class="csp-admin-quanlycakham-quanlycakham-ejs-7">
                                                 <%= shift.tenBacSi %>
                                             </td>
 
@@ -108,7 +128,7 @@
                                                             <i class="fas fa-edit"></i> Sửa
                                                         </button>
                                                     <% } else { %>
-                                                        <span style="color: #999; font-size: 12px;"><i class="fas fa-lock"></i> Đã khóa</span>
+                                                        <span class="csp-admin-quanlycakham-quanlycakham-ejs-6"><i class="fas fa-lock"></i> Đã khóa</span>
                                                     <% } %>
                                                 </div>
                                             </td>
@@ -117,7 +137,7 @@
                                 <% }) %>
                             <% } else { %>
                                 <tr>
-                                    <td colspan="4" style="text-align: center; padding: 30px; color: #888;">
+                                    <td colspan="4" class="csp-admin-quanlycakham-quanlycakham-ejs-5">
                                         Không có lịch trực nào trong tuần này.
                                     </td>
                                 </tr>
@@ -133,7 +153,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold" id="editModalLabel" style="font-size: 18px;">Đổi Bác Sĩ Trực</h5>
+                    <h5 class="modal-title fw-bold csp-admin-quanlycakham-quanlycakham-ejs-4" id="editModalLabel">Đổi Bác Sĩ Trực</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="/admin/updateCaTruc" method="POST">
@@ -142,16 +162,16 @@
                         
                         <div class="form-group mb-3">
                             <label class="fw-bold mb-1">Chuyên khoa:</label>
-                            <input type="text" id="modalTenKhoa" class="form-control" style="background: #f5f5f5;" readonly>
+                            <input type="text" id="modalTenKhoa" class="form-control csp-admin-quanlycakham-quanlycakham-ejs-3" readonly>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="fw-bold mb-1">Bác sĩ hiện tại:</label>
-                            <input type="text" id="modalTenBacSiCu" class="form-control" style="background: #f5f5f5;" readonly>
+                            <input type="text" id="modalTenBacSiCu" class="form-control csp-admin-quanlycakham-quanlycakham-ejs-2" readonly>
                         </div>
 
                         <div class="form-group mb-3">
-                            <label class="fw-bold mb-1" style="color: #1565c0;">Chọn Bác sĩ thay thế:</label>
+                            <label class="fw-bold mb-1 csp-admin-quanlycakham-quanlycakham-ejs-1">Chọn Bác sĩ thay thế:</label>
                             <select name="id_bacSiMoi" id="modalSelectBacSi" class="form-select" required>
                                 <option value="">Đang tải danh sách...</option>
                             </select>

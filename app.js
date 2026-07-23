@@ -1,7 +1,6 @@
 // Đọc biến môi trường trước khi sử dụng
 require('dotenv').config();
 
-// Khởi tạo server
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
@@ -16,6 +15,16 @@ const isProduction =
     process.env.NODE_ENV === 'production';
 
 /*
+ * Kiểm tra biến môi trường quan trọng.
+ */
+if (!process.env.SESSION_SECRET) {
+    throw new Error(
+        'Thiếu biến môi trường SESSION_SECRET. ' +
+        'Hãy thêm SESSION_SECRET vào file .env và Render.'
+    );
+}
+
+/*
  * Render chạy phía sau reverse proxy.
  * Cần đặt trước express-session để Express nhận biết HTTPS.
  */
@@ -23,7 +32,7 @@ app.set('trust proxy', 1);
 
 /*
  * Không để Express tiết lộ công nghệ đang sử dụng
- * thông qua header X-Powered-By.
+ * qua header X-Powered-By.
  */
 app.disable('x-powered-by');
 
@@ -32,15 +41,18 @@ app.disable('x-powered-by');
  * TẠO CSP NONCE CHO MỖI PHẢN HỒI
  * =====================================================
  *
- * Mỗi lần người dùng tải một trang, server sẽ tạo
+ * Mỗi lần người dùng tải một trang, server tạo
  * một nonce ngẫu nhiên mới.
  *
- * Nonce được lưu vào res.locals nên tất cả file EJS
- * đều có thể sử dụng trực tiếp bằng:
+ * Sử dụng trong EJS:
  *
  * <script nonce="<%= cspNonce %>">
  *     // JavaScript nội tuyến
  * </script>
+ *
+ * <style nonce="<%= cspNonce %>">
+ *     // CSS nội tuyến
+ * </style>
  */
 app.use((req, res, next) => {
     res.locals.cspNonce = crypto
@@ -66,7 +78,7 @@ app.use(
 
             directives: {
                 /*
-                 * Mặc định, tài nguyên chỉ được tải
+                 * Mặc định chỉ cho phép tài nguyên
                  * từ chính website.
                  */
                 defaultSrc: [
@@ -76,11 +88,10 @@ app.use(
                 /*
                  * JavaScript chỉ được phép chạy khi:
                  *
-                 * 1. File JavaScript được tải từ chính website.
-                 * 2. Thẻ script nội tuyến có nonce hợp lệ.
+                 * 1. File được tải từ chính website.
+                 * 2. Thẻ <script> nội tuyến có nonce hợp lệ.
                  *
-                 * Đã loại bỏ 'unsafe-inline' để khắc phục:
-                 * CSP: script-src unsafe-inline.
+                 * Không còn 'unsafe-inline'.
                  */
                 scriptSrc: [
                     "'self'",
@@ -90,37 +101,59 @@ app.use(
                 ],
 
                 /*
-                 * Chặn hoàn toàn JavaScript đặt trong
-                 * thuộc tính HTML như:
+                 * Chặn JavaScript trong thuộc tính HTML:
                  *
                  * onclick=""
                  * onchange=""
                  * onsubmit=""
                  * onload=""
-                 *
-                 * Các thuộc tính này cần được chuyển thành
-                 * addEventListener hoặc thẻ <a href="">.
                  */
                 scriptSrcAttr: [
                     "'none'"
                 ],
 
                 /*
-                 * Hiện tại vẫn giữ unsafe-inline cho CSS
-                 * vì dự án còn nhiều:
+                 * CSS chỉ được phép khi:
                  *
-                 * <style>...</style>
-                 * style="..."
+                 * 1. File CSS được tải từ chính website.
+                 * 2. Thẻ <style> có nonce hợp lệ.
                  *
-                 * Phần này sẽ được xử lý riêng sau.
+                 * Không còn 'unsafe-inline'.
                  */
                 styleSrc: [
                     "'self'",
-                    "'unsafe-inline'"
+
+                    (req, res) =>
+                        `'nonce-${res.locals.cspNonce}'`
                 ],
 
                 /*
-                 * Font Awesome và các font nội bộ.
+                 * Áp dụng riêng cho:
+                 *
+                 * <style>...</style>
+                 * <link rel="stylesheet">
+                 */
+                styleSrcElem: [
+                    "'self'",
+
+                    (req, res) =>
+                        `'nonce-${res.locals.cspNonce}'`
+                ],
+
+                /*
+                 * Chặn thuộc tính:
+                 *
+                 * style="..."
+                 *
+                 * Các thuộc tính style phải được
+                 * chuyển thành class CSS.
+                 */
+                styleSrcAttr: [
+                    "'none'"
+                ],
+
+                /*
+                 * Cho phép font nội bộ và font data.
                  */
                 fontSrc: [
                     "'self'",
@@ -128,8 +161,8 @@ app.use(
                 ],
 
                 /*
-                 * Cho phép ảnh nội bộ, ảnh dạng data/blob
-                 * và dữ liệu hình ảnh bản đồ Goong.
+                 * Cho phép ảnh nội bộ, data, blob
+                 * và ảnh bản đồ Goong.
                  */
                 imgSrc: [
                     "'self'",
@@ -139,8 +172,11 @@ app.use(
                 ],
 
                 /*
-                 * Cho phép JavaScript kết nối đến chính website
-                 * và các dịch vụ bản đồ Goong.
+                 * Cho phép JavaScript kết nối tới:
+                 *
+                 * - Chính website.
+                 * - Dữ liệu bản đồ Goong.
+                 * - Goong REST API.
                  */
                 connectSrc: [
                     "'self'",
@@ -150,7 +186,7 @@ app.use(
 
                 /*
                  * MapLibre có thể tạo Web Worker
-                 * từ địa chỉ blob.
+                 * bằng địa chỉ blob.
                  */
                 workerSrc: [
                     "'self'",
@@ -158,23 +194,23 @@ app.use(
                 ],
 
                 /*
-                 * Không cho phép nội dung dạng object,
-                 * embed hoặc applet.
+                 * Không cho sử dụng object, embed,
+                 * applet hoặc plugin cũ.
                  */
                 objectSrc: [
                     "'none'"
                 ],
 
                 /*
-                 * Thẻ <base> chỉ được phép trỏ về
-                 * chính website.
+                 * Thẻ <base> chỉ được phép trỏ
+                 * về chính website.
                  */
                 baseUri: [
                     "'self'"
                 ],
 
                 /*
-                 * Các form chỉ được gửi dữ liệu
+                 * Form chỉ được gửi dữ liệu
                  * về chính website.
                  */
                 formAction: [
@@ -182,19 +218,19 @@ app.use(
                 ],
 
                 /*
-                 * Không cho website khác nhúng trang
-                 * vào iframe.
+                 * Không cho website khác nhúng
+                 * trang bằng iframe.
                  */
                 frameAncestors: [
                     "'none'"
                 ],
 
                 /*
-                 * Trên Render production:
-                 * tự động nâng tài nguyên HTTP thành HTTPS.
+                 * Production:
+                 * tự nâng tài nguyên HTTP lên HTTPS.
                  *
-                 * Trên localhost:
-                 * tắt để tránh ảnh hưởng quá trình phát triển.
+                 * Localhost:
+                 * tắt để không ảnh hưởng phát triển.
                  */
                 upgradeInsecureRequests:
                     isProduction
@@ -204,7 +240,7 @@ app.use(
         },
 
         /*
-         * Chỉ bật HSTS khi triển khai production bằng HTTPS.
+         * Chỉ bật HSTS trên Render production.
          */
         strictTransportSecurity:
             isProduction
@@ -216,16 +252,6 @@ app.use(
                 : false
     })
 );
-
-/*
- * Kiểm tra SESSION_SECRET.
- */
-if (!process.env.SESSION_SECRET) {
-    throw new Error(
-        'Thiếu biến môi trường SESSION_SECRET. ' +
-        'Hãy thêm SESSION_SECRET vào file .env và Render.'
-    );
-}
 
 /*
  * =====================================================
@@ -244,7 +270,7 @@ app.use(
 );
 
 /*
- * Đọc dữ liệu từ form POST.
+ * Đọc dữ liệu form POST.
  * Giới hạn tối đa 1 MB.
  */
 app.use(
@@ -258,38 +284,41 @@ app.use(
  * =====================================================
  * CẤU HÌNH SESSION
  * =====================================================
- *
- * proxy: true giúp express-session tin tưởng
- * X-Forwarded-Proto từ Render hoặc Cloudflare.
  */
 app.use(
     session({
+        /*
+         * Tên cookie chứa session ID.
+         */
         name: 'connect.sid',
 
         secret: process.env.SESSION_SECRET,
 
+        /*
+         * Tin tưởng thông tin HTTPS từ
+         * Render hoặc Cloudflare.
+         */
         proxy: true,
 
         resave: false,
-
         saveUninitialized: false,
 
         cookie: {
             /*
-             * JavaScript phía trình duyệt không thể
-             * đọc cookie session.
+             * JavaScript phía trình duyệt
+             * không được đọc cookie.
              */
             httpOnly: true,
 
             /*
-             * Render production dùng HTTPS nên secure = true.
-             * Localhost dùng HTTP nên secure = false.
+             * Production dùng HTTPS.
+             * Localhost dùng HTTP.
              */
             secure: isProduction,
 
             /*
-             * Hạn chế gửi cookie trong một số
-             * yêu cầu cross-site.
+             * Hạn chế gửi cookie trong
+             * một số yêu cầu cross-site.
              */
             sameSite: 'lax',
 
@@ -310,24 +339,22 @@ app.use(
 
 /*
  * =====================================================
- * KHÔNG LƯU CACHE CÁC TRANG NHẠY CẢM
+ * KHÔNG CACHE CÁC TRANG NHẠY CẢM
  * =====================================================
- *
- * Không cho trình duyệt hoặc Cloudflare lưu cache
- * những trang có chứa CSRF token và dữ liệu đăng nhập.
  */
-const noCachePaths = [
+const noCachePaths = new Set([
     '/login',
     '/logout',
     '/admin/login',
     '/bacSi/login',
+    '/bacsi/login',
     '/khachHangTaoTaiKhoan',
     '/thayDoiThongTin',
     '/capNhatThongTin'
-];
+]);
 
 app.use((req, res, next) => {
-    if (noCachePaths.includes(req.path)) {
+    if (noCachePaths.has(req.path)) {
         res.setHeader(
             'Cache-Control',
             'no-store, no-cache, must-revalidate, private'
@@ -343,9 +370,6 @@ app.use((req, res, next) => {
             '0'
         );
 
-        /*
-         * Hỗ trợ yêu cầu CDN không lưu cache.
-         */
         res.setHeader(
             'Surrogate-Control',
             'no-store'
@@ -361,8 +385,7 @@ app.use((req, res, next) => {
  * =====================================================
  *
  * CSP đã có frame-ancestors 'none'.
- * X-Frame-Options được giữ để hỗ trợ thêm
- * cho các trình duyệt cũ.
+ * Header này được giữ để hỗ trợ trình duyệt cũ.
  */
 app.use((req, res, next) => {
     res.setHeader(
@@ -379,13 +402,17 @@ app.use((req, res, next) => {
  * =====================================================
  */
 const limiter = rateLimit({
+    /*
+     * Khoảng thời gian 15 phút.
+     */
     windowMs:
         15 *
         60 *
         1000,
 
     /*
-     * Tối đa 10.000 request trong 15 phút.
+     * Tối đa 10.000 request
+     * trong 15 phút.
      */
     max: 10000,
 
@@ -394,7 +421,6 @@ const limiter = rateLimit({
         'vui lòng thử lại sau.',
 
     standardHeaders: true,
-
     legacyHeaders: false
 });
 
@@ -409,13 +435,14 @@ app.use(limiter);
 /*
  * Lưu file tải lên trong bộ nhớ.
  */
-const storage = multer.memoryStorage();
+const storage =
+    multer.memoryStorage();
 
 /*
- * Giới hạn kích thước file tải lên là 5 MB.
+ * Giới hạn kích thước file là 5 MB.
  */
 const upload = multer({
-    storage: storage,
+    storage,
 
     limits: {
         fileSize:
@@ -426,8 +453,8 @@ const upload = multer({
 });
 
 /*
- * Lưu cấu hình upload vào app.locals để route khác
- * có thể sử dụng thông qua:
+ * Cho phép controller hoặc route khác
+ * truy cập cấu hình Multer qua:
  *
  * req.app.locals.upload
  */
@@ -437,15 +464,18 @@ app.locals.upload = upload;
  * =====================================================
  * BIẾN DÙNG CHUNG CHO EJS
  * =====================================================
- *
- * Middleware tạo cspNonce đã chạy trước Helmet.
- * Vì vậy cspNonce đã có sẵn trong res.locals.
  */
 app.use((req, res, next) => {
     res.locals.user =
-        req.session.user || null;
+        req.session.user ||
+        null;
 
     res.locals.page = '';
+
+    /*
+     * cspNonce đã được tạo ở middleware
+     * phía trên và nằm trong res.locals.
+     */
 
     next();
 });
@@ -470,7 +500,7 @@ app.set(
 
 /*
  * =====================================================
- * PHỤC VỤ FILE TRONG THƯ MỤC PUBLIC
+ * PHỤC VỤ FILE TRONG PUBLIC
  * =====================================================
  */
 app.use(
@@ -488,12 +518,13 @@ app.use(
  * =====================================================
  *
  * Không công khai toàn bộ node_modules.
- * Chỉ công khai đúng thư mục của từng thư viện.
- *
- * Trình duyệt được phép cache thư viện trong 7 ngày
- * ở production.
+ * Chỉ công khai đúng thư mục cần thiết.
  */
 const vendorStaticOptions = {
+    /*
+     * Production lưu cache thư viện 7 ngày.
+     * Development không lưu cache lâu.
+     */
     maxAge:
         isProduction
             ? '7d'
@@ -505,6 +536,7 @@ const vendorStaticOptions = {
  */
 app.use(
     '/vendor/bootstrap',
+
     express.static(
         path.join(
             __dirname,
@@ -512,6 +544,7 @@ app.use(
             'bootstrap',
             'dist'
         ),
+
         vendorStaticOptions
     )
 );
@@ -521,6 +554,7 @@ app.use(
  */
 app.use(
     '/vendor/sweetalert2',
+
     express.static(
         path.join(
             __dirname,
@@ -528,6 +562,7 @@ app.use(
             'sweetalert2',
             'dist'
         ),
+
         vendorStaticOptions
     )
 );
@@ -537,6 +572,7 @@ app.use(
  */
 app.use(
     '/vendor/fontawesome',
+
     express.static(
         path.join(
             __dirname,
@@ -544,6 +580,7 @@ app.use(
             '@fortawesome',
             'fontawesome-free'
         ),
+
         vendorStaticOptions
     )
 );
@@ -553,6 +590,7 @@ app.use(
  */
 app.use(
     '/vendor/maplibre',
+
     express.static(
         path.join(
             __dirname,
@@ -560,6 +598,7 @@ app.use(
             'maplibre-gl',
             'dist'
         ),
+
         vendorStaticOptions
     )
 );
@@ -569,6 +608,7 @@ app.use(
  */
 app.use(
     '/vendor/polyline',
+
     express.static(
         path.join(
             __dirname,
@@ -577,6 +617,7 @@ app.use(
             'polyline',
             'src'
         ),
+
         vendorStaticOptions
     )
 );
@@ -586,6 +627,7 @@ app.use(
  */
 app.use(
     '/vendor/flatpickr',
+
     express.static(
         path.join(
             __dirname,
@@ -593,6 +635,7 @@ app.use(
             'flatpickr',
             'dist'
         ),
+
         vendorStaticOptions
     )
 );
@@ -602,6 +645,7 @@ app.use(
  */
 app.use(
     '/vendor/chartjs',
+
     express.static(
         path.join(
             __dirname,
@@ -609,6 +653,7 @@ app.use(
             'chart.js',
             'dist'
         ),
+
         vendorStaticOptions
     )
 );
@@ -618,6 +663,7 @@ app.use(
  */
 app.use(
     '/vendor/html2canvas',
+
     express.static(
         path.join(
             __dirname,
@@ -625,15 +671,18 @@ app.use(
             'html2canvas',
             'dist'
         ),
+
         vendorStaticOptions
     )
 );
 
 /*
- * Axios dành cho JavaScript chạy trong trình duyệt.
+ * Axios dành cho JavaScript
+ * chạy trong trình duyệt.
  */
 app.use(
     '/vendor/axios',
+
     express.static(
         path.join(
             __dirname,
@@ -641,6 +690,7 @@ app.use(
             'axios',
             'dist'
         ),
+
         vendorStaticOptions
     )
 );
@@ -657,21 +707,11 @@ app.use(
 const adminRoute =
     require('./routes/admin');
 
-app.use(
-    '/admin',
-    adminRoute
-);
-
 /*
  * Route chatbot Gemini.
  */
 const chatbotRoute =
     require('./routes/chatbot');
-
-app.use(
-    '/chatbot',
-    chatbotRoute
-);
 
 /*
  * Route khách hàng.
@@ -679,16 +719,26 @@ app.use(
 const homeRoute =
     require('./routes/khachHang');
 
-app.use(
-    '/',
-    homeRoute
-);
-
 /*
  * Route bác sĩ.
  */
 const bacSiRoute =
     require('./routes/bacSi');
+
+app.use(
+    '/admin',
+    adminRoute
+);
+
+app.use(
+    '/chatbot',
+    chatbotRoute
+);
+
+app.use(
+    '/',
+    homeRoute
+);
 
 app.use(
     '/bacSi',
@@ -710,7 +760,7 @@ app.use((req, res) => {
 
 /*
  * =====================================================
- * MIDDLEWARE XỬ LÝ LỖI CHUNG
+ * XỬ LÝ LỖI CHUNG
  * =====================================================
  */
 app.use((error, req, res, next) => {
@@ -757,6 +807,6 @@ app.listen(PORT, () => {
     );
 
     console.log(
-        'CSP nonce đã được bật.'
+        'CSP nonce cho script và style đã được bật.'
     );
 });

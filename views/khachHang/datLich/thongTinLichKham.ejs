@@ -11,13 +11,20 @@
 
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-datlich-thongtinlichkham-ejs-3 { padding-top: 100px; padding-bottom: 50px; }
+.csp-khachhang-datlich-thongtinlichkham-ejs-2 { max-width: 600px; padding: 20px; }
+.csp-khachhang-datlich-thongtinlichkham-ejs-1 { letter-spacing: 1px; }
+</style>
 </head>
 <body>
 
 <%- include('../header') %>
 
-<div class="wrapper" style="padding-top: 100px; padding-bottom: 50px;">
-    <div class="login-card datLich__content mx-auto" style="max-width: 600px; padding: 20px;">
+<div class="wrapper csp-khachhang-datlich-thongtinlichkham-ejs-3">
+    <div class="login-card datLich__content mx-auto csp-khachhang-datlich-thongtinlichkham-ejs-2">
         
         <div class="text-center mb-4">
             <h4 class="fw-bold text-success"><i class="fas fa-check-circle me-2"></i>Thanh Toán Thành Công</h4>
@@ -26,7 +33,7 @@
 
         <div id="ticket-container" class="ticket-wrapper mb-4">
             <div class="ticket-header">
-                <h5 class="mb-0 fw-bold text-uppercase" style="letter-spacing: 1px;">Vé Khám Bệnh Điện Tử</h5>
+                <h5 class="mb-0 fw-bold text-uppercase csp-khachhang-datlich-thongtinlichkham-ejs-1">Vé Khám Bệnh Điện Tử</h5>
                 <small class="opacity-75">Vui lòng xuất trình vé này tại quầy lễ tân</small>
             </div>
             

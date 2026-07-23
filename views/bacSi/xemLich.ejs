@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
-    <style>
+    <style nonce="<%= cspNonce %>">
         /* ép 7 cột luôn nằm 1 hàng trên màn hình lớn */
         .row-cols-7 > * {
             flex: 0 0 calc(100% / 7);
@@ -26,7 +26,12 @@
                 max-width: calc(100% / 2);
             }
         }
-    </style>
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-xemlich-ejs-3 { max-width: 200px; }
+.csp-bacsi-xemlich-ejs-2 { cursor: pointer; caret-color: transparent; }
+.csp-bacsi-xemlich-ejs-1 { background: transparent; border: none; box-shadow: none; }
+</style>
 </head>
 
 <body>
@@ -58,14 +63,14 @@
                 </h4>
 
                 <form id="goToMonthForm" action="/bacsi/xemLich" method="GET">
-                    <div class="input-group input-group-sm" style="max-width: 200px;">
+                    <div class="input-group input-group-sm csp-bacsi-xemlich-ejs-3">
                         <input 
                             type="month" 
                             name="date" 
                             id="monthInput"
-                            class="form-control text-center fw-bold text-primary" 
+                            class="form-control text-center fw-bold text-primary csp-bacsi-xemlich-ejs-2" 
                             value="<%= currentMonthInput %>"
-                            style="cursor: pointer; caret-color: transparent;"
+                           
                         >
                     </div>
                 </form>
@@ -92,7 +97,7 @@
                 <div class="col <%= day.isEmpty ? 'd-none d-md-block' : '' %>">
                     
                     <% if (day.isEmpty) { %>
-                        <div class="day-card" style="background: transparent; border: none; box-shadow: none;"></div>
+                        <div class="day-card csp-bacsi-xemlich-ejs-1"></div>
                     <% } else { %>
                         
                         <div class="day-card <%= day.hasLich ? 'active-day' : '' %>">

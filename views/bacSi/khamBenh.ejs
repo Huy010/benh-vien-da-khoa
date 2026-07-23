@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="/css/bacSi/khamBenh.css">
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-khambenh-ejs-2 { display: none; }
+.csp-bacsi-khambenh-ejs-1 { cursor: pointer; }
+</style>
 </head>
 <body>
 
@@ -62,7 +68,7 @@
         </div>
     </div>
 
-    <div id="patient-data" data-patients='<%- JSON.stringify(typeof danhSachCho !== "undefined" ? danhSachCho : []) %>' style="display: none;"></div>
+    <div id="patient-data" data-patients='<%- JSON.stringify(typeof danhSachCho !== "undefined" ? danhSachCho : []) %>' class="csp-bacsi-khambenh-ejs-2"></div>
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     
@@ -146,7 +152,7 @@
             let html = '';
             waitingQueue.forEach(p => {
                 html += `
-                    <div class="queue-item" style="cursor: pointer;" data-action="swap-patient" data-id-lich-hen="${p.id_lichHen}">
+                    <div class="queue-item csp-bacsi-khambenh-ejs-1" data-action="swap-patient" data-id-lich-hen="${p.id_lichHen}">
                         <div class="d-flex align-items-center">
                             <div class="queue-stt">${p.stt}</div>
                             <div class="queue-info">

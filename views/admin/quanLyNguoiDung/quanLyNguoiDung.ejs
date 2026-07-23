@@ -10,10 +10,24 @@
     
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-10 { background-color: #f4f6f9; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-9 { color: var(--primary-color, #2c3e50); }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-8 { width: 5%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-7 { width: 20%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-6 { width: 15%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-5 { width: 20%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-4 { width: 15%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-3 { width: 15%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-2 { width: 10%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-1 { font-size: 48px; opacity: 0.2; }
+</style>
 </head>
 <body>
     
-    <div class="d-flex vh-100 overflow-hidden" style="background-color: #f4f6f9;"> 
+    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlynguoidung-quanlynguoidung-ejs-10"> 
         
         <%- include('../sidebar') %>
 
@@ -22,7 +36,7 @@
             <div class="card-box bg-white p-4 rounded shadow-sm border-0">
                 
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-2 border-bottom">
-                    <h2 class="mb-0 fw-bold" style="color: var(--primary-color, #2c3e50);">Quản Lý Danh Sách Người Dùng</h2>
+                    <h2 class="mb-0 fw-bold csp-admin-quanlynguoidung-quanlynguoidung-ejs-9">Quản Lý Danh Sách Người Dùng</h2>
                     
                     <a href="/admin/themNguoiDung" class="btn-add text-nowrap text-decoration-none">
                         <i class="fas fa-plus"></i> Thêm Người Dùng Mới
@@ -38,13 +52,13 @@
                     <table class="custom-table w-100">
                         <thead>
                             <tr>
-                                <th class="text-center" style="width: 5%;">STT</th>
-                                <th style="width: 20%;">Họ Tên</th>
-                                <th style="width: 15%;">Tên Đăng Nhập</th>
-                                <th style="width: 20%;">Email</th>
-                                <th class="text-center" style="width: 15%;">Số Điện Thoại</th>
-                                <th class="text-center" style="width: 15%;">Vai Trò</th>
-                                <th class="text-center" style="width: 10%;">Thao Tác</th>
+                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-8">STT</th>
+                                <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-7">Họ Tên</th>
+                                <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-6">Tên Đăng Nhập</th>
+                                <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-5">Email</th>
+                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-4">Số Điện Thoại</th>
+                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-3">Vai Trò</th>
+                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-2">Thao Tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,7 +94,7 @@
                             <% } else { %>
                                 <tr>
                                     <td colspan="7" class="text-center py-5 text-muted">
-                                        <i class="fas fa-users mb-3" style="font-size: 48px; opacity: 0.2;"></i>
+                                        <i class="fas fa-users mb-3 csp-admin-quanlynguoidung-quanlynguoidung-ejs-1"></i>
                                         <p class="mb-0 fs-5">Chưa có dữ liệu người dùng nào.</p>
                                     </td>
                                 </tr>

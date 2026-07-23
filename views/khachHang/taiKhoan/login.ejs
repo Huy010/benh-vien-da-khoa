@@ -19,13 +19,18 @@
     <link rel="stylesheet" href="/css/khachHang/home.css">
 
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-taikhoan-login-ejs-1 { min-height: 90vh; }
+</style>
 </head>
 
 <body class="bg-gradient-primary">
 
     <%- include('../header') %>
 
-        <div class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+        <div class="container d-flex justify-content-center align-items-center csp-khachhang-taikhoan-login-ejs-1">
 
             <div class="card login-container border-0 shadow-lg">
 

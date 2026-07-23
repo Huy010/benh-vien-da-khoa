@@ -12,7 +12,7 @@
 
     <link rel="stylesheet" href="/css/khachHang/home.css">
 
-    <style>
+    <style nonce="<%= cspNonce %>">
         body {
             background-color: #f4f6f9;
         }
@@ -71,7 +71,12 @@
             color: #dc3545;
             font-weight: bold;
         }
-    </style>
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-datlich-datlichchuyengia-ejs-3 { width: 3rem; height: 3rem; }
+.csp-khachhang-datlich-datlichchuyengia-ejs-2 { width: 160px; height: 160px; object-fit: cover; }
+.csp-khachhang-datlich-datlichchuyengia-ejs-1 { width: 60px; margin: 15px auto; border-top: 3px solid #0d6efd; opacity: 1; }
+</style>
 </head>
 
 <body>
@@ -164,7 +169,7 @@
 
                     doctorContainer.innerHTML = `
                     <div class="col-12 text-center py-5">
-                        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
+                        <div class="spinner-border text-primary csp-khachhang-datlich-datlichchuyengia-ejs-3" role="status"></div>
                         <h5 class="mt-3 text-muted">Đang tìm kiếm bác sĩ...</h5>
                     </div>
                 `;
@@ -273,8 +278,8 @@
                             modalBody.innerHTML = `
                             <img 
                                 src="${data.anh}" 
-                                class="rounded-circle mb-3 border border-4 border-primary shadow-sm" 
-                                style="width: 160px; height: 160px; object-fit: cover;"
+                                class="rounded-circle mb-3 border border-4 border-primary shadow-sm csp-khachhang-datlich-datlichchuyengia-ejs-2" 
+                               
                             >
 
                             <h4 class="text-primary fw-bold mb-1">BS. ${data.ten}</h4>
@@ -283,7 +288,7 @@
                                 ${data.trinhDo}
                             </p>
 
-                            <hr style="width: 60px; margin: 15px auto; border-top: 3px solid #0d6efd; opacity: 1;">
+                            <hr class="csp-khachhang-datlich-datlichchuyengia-ejs-1">
 
                             <div class="text-start px-md-3 mt-4">
                                 <div class="mb-3">

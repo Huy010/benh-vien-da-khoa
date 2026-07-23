@@ -14,7 +14,7 @@
 
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
-    <style>
+    <style nonce="<%= cspNonce %>">
         .patient-info-list li {
             margin-bottom: 12px;
             color: #374151;
@@ -160,7 +160,10 @@
                 flex-direction: column;
             }
         }
-    </style>
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-chandoan-ejs-1 { white-space: pre-wrap; }
+</style>
 </head>
 
 <body>
@@ -438,7 +441,7 @@
                         </div>
 
                         <div class="history-mobile-label">Ghi chú / kết luận</div>
-                        <div class="history-mobile-value" style="white-space: pre-wrap;">
+                        <div class="history-mobile-value csp-bacsi-chandoan-ejs-1">
                             ${escapeHtml(item.ghiChu || 'Không có ghi chú')}
                         </div>
                     </div>
@@ -517,7 +520,7 @@
                 html: `
                     <div class="text-start">
                         <div class="mb-3">
-                            <span class=" fs-6">
+                            <span class="fs-6">
                                 Bệnh nhân: <%= patient.hoTen %>
                             </span>
                         </div>

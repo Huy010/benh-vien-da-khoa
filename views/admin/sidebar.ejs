@@ -17,7 +17,7 @@
                         <%= locals.soThongBaoChuaDoc %>
                     </span>
                 <% } else { %>
-                    <span class="badge bg-danger rounded-pill" id="so-thong-bao" style="display: none;">
+                    <span class="badge bg-danger rounded-pill d-none" id="so-thong-bao">
                         0
                     </span>
                 <% } %>
@@ -63,9 +63,9 @@
                 if (badge) {
                     if (data.count > 0) {
                         badge.innerText = data.count;
-                        badge.style.display = 'inline-block'; // Hiện chấm đỏ
+                        badge.classList.remove('d-none'); // Hiện chấm đỏ
                     } else {
-                        badge.style.display = 'none'; // Ẩn chấm đỏ nếu bằng 0
+                        badge.classList.add('d-none'); // Ẩn chấm đỏ nếu bằng 0
                     }
                 }
             }

@@ -1,6 +1,11 @@
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-sidebar-ejs-1 { font-size: 0.95rem; }
+</style>
 <div class="sidebar d-flex flex-column flex-shrink-0 bg-dark-custom">
     <div class="logo py-4 border-bottom border-secondary text-center">
-        <div class="mb-2 fw-medium" style="font-size: 0.95rem;">
+        <div class="mb-2 fw-medium csp-bacsi-sidebar-ejs-1">
             <%= typeof user !== 'undefined' ? user.tenChuyenKhoa : 'null' %>
         </div>
         <span class="m-0 fs-6 fw-bold text-white text-uppercase tracking-wide">

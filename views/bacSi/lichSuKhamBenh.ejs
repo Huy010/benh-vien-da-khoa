@@ -17,7 +17,7 @@
     <script src="/vendor/flatpickr/flatpickr.min.js"></script>
     <script src="/vendor/flatpickr/l10n/vn.js"></script>
 
-    <style>
+    <style nonce="<%= cspNonce %>">
         body {
             background-color: #f5f7fb;
         }
@@ -158,7 +158,10 @@
                 text-align: center;
             }
         }
-    </style>
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-lichsukhambenh-ejs-1 { min-height: 100px; white-space: pre-wrap; }
+</style>
 </head>
 
 <body>
@@ -468,7 +471,7 @@
 
                             <div class="col-12">
                                 <label class="fw-bold text-muted small">Kết luận / ghi chú của bác sĩ</label>
-                                <div class="form-control bg-light text-start" style="min-height: 100px; white-space: pre-wrap;">${escapeHtml(item.ghiChu)}</div>
+                                <div class="form-control bg-light text-start csp-bacsi-lichsukhambenh-ejs-1">${escapeHtml(item.ghiChu)}</div>
                             </div>
 
                         </div>

@@ -11,7 +11,7 @@
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
 
-    <style>
+    <style nonce="<%= cspNonce %>">
         .hover-notification:hover {
             background-color: #f8f9fa;
             border-left: 4px solid #0d6efd;
@@ -60,7 +60,12 @@
                 font-size: 14px;
             }
         }
-    </style>
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-thongbao-ejs-3 { font-size: 4rem; color: #dee2e6; }
+.csp-bacsi-thongbao-ejs-2 { max-width: 90%; }
+.csp-bacsi-thongbao-ejs-1 { font-size: 1.05rem; }
+</style>
 </head>
 
 <body>
@@ -82,7 +87,7 @@
                         <% if (!thongBaoList || thongBaoList.length === 0) { %>
 
                             <div class="list-group-item text-center text-muted py-5 border-0">
-                                <i class="fas fa-box-open mb-3" style="font-size: 4rem; color: #dee2e6;"></i>
+                                <i class="fas fa-box-open mb-3 csp-bacsi-thongbao-ejs-3"></i>
                                 <h5 class="fw-bold text-secondary">Chưa có thông báo nào</h5>
                             </div>
 
@@ -116,8 +121,8 @@
 
                                     <p
                                         id="noiDung-<%= tb.id_thongBao %>"
-                                        class="notification-content mb-1 text-truncate <%= tb.trangThaiDoc ? 'text-muted' : 'text-dark fw-medium' %>"
-                                        style="max-width: 90%;"
+                                        class="notification-content mb-1 text-truncate <%= tb.trangThaiDoc ? 'text-muted' : 'text-dark fw-medium' %> csp-bacsi-thongbao-ejs-2"
+                                       
                                     >
                                         <%= tb.noiDung %>
                                     </p>
@@ -377,7 +382,7 @@
                 const ngayTruc = y.ngayDoiStr || y.ngayMuonDoiStr || 'Không rõ';
 
                 let thongTinChungHtml = `
-                    <div class="text-start p-3 bg-light rounded border mt-3" style="font-size: 1.05rem;">
+                    <div class="text-start p-3 bg-light rounded border mt-3 csp-bacsi-thongbao-ejs-1">
                         <p class="mb-2">
                             <b>Người xin đổi:</b>
                             <span class="text-success fw-bold">${y.tenBsYeuCau || 'Không rõ'}</span>

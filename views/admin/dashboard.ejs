@@ -11,6 +11,15 @@
     <link rel="stylesheet" href="/css/admin/style.css">
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/dashboard.css">
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-dashboard-ejs-5 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-4 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-3 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-2 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-1 { font-size: 2.5rem; }
+</style>
 </head>
 <body>
 
@@ -28,7 +37,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4 d-flex flex-column">
-                            <div class="text-primary mb-3" style="font-size: 2.5rem;"><i class="fas fa-calendar-check"></i></div>
+                            <div class="text-primary mb-3 csp-admin-dashboard-ejs-5"><i class="fas fa-calendar-check"></i></div>
                             <h4 class="card-title fw-bold">Ca Khám</h4>
                             <p class="card-text text-muted mb-4">Sắp xếp và quản lý lịch khám</p>
                             <a href="/admin/quanLyCaKham" class="btn btn-outline-primary mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
@@ -39,7 +48,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4 d-flex flex-column">
-                            <div class="text-success mb-3" style="font-size: 2.5rem;"><i class="fas fa-clinic-medical"></i></div>
+                            <div class="text-success mb-3 csp-admin-dashboard-ejs-4"><i class="fas fa-clinic-medical"></i></div>
                             <h4 class="card-title fw-bold">Phòng Khám</h4>
                             <p class="card-text text-muted mb-4">Thông tin các phòng ban</p>
                             <a href="/admin/quanLyPhongKham" class="btn btn-outline-success mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
@@ -50,7 +59,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4 d-flex flex-column">
-                            <div class="text-info mb-3" style="font-size: 2.5rem;"><i class="fas fa-user-md"></i></div>
+                            <div class="text-info mb-3 csp-admin-dashboard-ejs-3"><i class="fas fa-user-md"></i></div>
                             <h4 class="card-title fw-bold">Bác Sĩ</h4>
                             <p class="card-text text-muted mb-4">Danh sách và thông tin bác sĩ</p>
                             <a href="/admin/quanLyBacSi" class="btn btn-outline-info mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
@@ -61,7 +70,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4 d-flex flex-column">
-                            <div class="text-warning mb-3" style="font-size: 2.5rem;"><i class="fas fa-users"></i></div>
+                            <div class="text-warning mb-3 csp-admin-dashboard-ejs-2"><i class="fas fa-users"></i></div>
                             <h4 class="card-title fw-bold">Người Dùng</h4>
                             <p class="card-text text-muted mb-4">Quản lý tài khoản bệnh nhân</p>
                             <a href="/admin/quanLyNguoiDung" class="btn btn-outline-warning mt-auto rounded-pill w-100 fw-medium">Truy cập</a>
@@ -71,7 +80,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="card h-100 border-0 shadow-sm hover-card">
                         <div class="card-body text-center p-4 d-flex flex-column">
-                            <div class="text-danger mb-3" style="font-size: 2.5rem;">
+                            <div class="text-danger mb-3 csp-admin-dashboard-ejs-1">
                                 <i class="fas fa-chart-line"></i>
                             </div>
                             <h4 class="card-title fw-bold">Thống Kê</h4>

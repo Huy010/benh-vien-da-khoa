@@ -11,10 +11,24 @@
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
     <link rel="stylesheet" href="/css/admin/quanLyPhongKham/quanLyPhongKham.css"> 
+
+<style nonce="<%= cspNonce %>">
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-10 { background-color: #f4f6f9; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-9 { width: 5%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-8 { width: 10%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-7 { width: 15%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-6 { width: 25%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-5 { width: 20%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-4 { width: 10%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-3 { color: var(--primary-color); }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-2 { color: #999; font-style: italic; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-1 { color: #ccc; }
+</style>
 </head>
 <body>
 
-    <div class="d-flex vh-100 overflow-hidden" style="background-color: #f4f6f9;">
+    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlyphongkham-quanlyphongkham-ejs-10">
         
         <%- include('../sidebar') %>
         
@@ -36,13 +50,13 @@
                     <table class="custom-table w-100">
                         <thead>
                             <tr>
-                                <th style="width: 5%;" class="text-center">STT</th>
-                                <th style="width: 10%;" class="text-center">TẦNG</th>
-                                <th style="width: 15%;" class="text-center">SỐ PHÒNG</th>
-                                <th style="width: 25%;">TÊN CHUYÊN KHOA</th>
-                                <th style="width: 20%;">MÔ TẢ</th>
+                                <th class="text-center csp-admin-quanlyphongkham-quanlyphongkham-ejs-9">STT</th>
+                                <th class="text-center csp-admin-quanlyphongkham-quanlyphongkham-ejs-8">TẦNG</th>
+                                <th class="text-center csp-admin-quanlyphongkham-quanlyphongkham-ejs-7">SỐ PHÒNG</th>
+                                <th class="csp-admin-quanlyphongkham-quanlyphongkham-ejs-6">TÊN CHUYÊN KHOA</th>
+                                <th class="csp-admin-quanlyphongkham-quanlyphongkham-ejs-5">MÔ TẢ</th>
                                 <th>GHI CHÚ</th>
-                                <th style="width: 10%;" class="text-center">THAO TÁC</th>
+                                <th class="text-center csp-admin-quanlyphongkham-quanlyphongkham-ejs-4">THAO TÁC</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -54,11 +68,11 @@
                                         <td class="text-center">
                                             <span class="badge-room"><%= item.soPhong %></span>
                                         </td>                                    
-                                        <td class="fw-bold" style="color: var(--primary-color);">
+                                        <td class="fw-bold csp-admin-quanlyphongkham-quanlyphongkham-ejs-3">
                                             <% if (item.tenChuyenKhoa) { %>
                                                 <%= item.tenChuyenKhoa %>
                                             <% } else { %>
-                                                <span style="color: #999; font-style: italic;">-- Chưa phân công --</span>
+                                                <span class="csp-admin-quanlyphongkham-quanlyphongkham-ejs-2">-- Chưa phân công --</span>
                                             <% } %>
                                         </td>
                                         <td class="text-muted"><%= item.moTa || "" %></td>
@@ -73,7 +87,7 @@
                                                         <i class="fas fa-trash fa-lg"></i>
                                                     </a>
                                                 <% } else { %>
-                                                    <span style="color: #ccc;">-</span>
+                                                    <span class="csp-admin-quanlyphongkham-quanlyphongkham-ejs-1">-</span>
                                                 <% } %>
                                             </div>
                                         </td>
