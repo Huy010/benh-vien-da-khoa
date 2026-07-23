@@ -91,7 +91,7 @@
                             <% thongBaoList.forEach(tb => { %>
 
                                 <a
-                                    href="javascript:void(0)"
+                                    href="#"
                                     id="thongbao-<%= tb.id_thongBao %>"
                                     class="js-thong-bao-item list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white' %>"
                                     data-id-thongbao="<%= tb.id_thongBao %>"
@@ -171,7 +171,7 @@
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
-    <script>
+    <script nonce="<%= cspNonce %>">
         let currentUnreadCount = document.querySelectorAll('[id^="badge-"]').length;
 
         // Mở khóa âm thanh sau khi người dùng tương tác với trang.
@@ -190,7 +190,8 @@
         document.addEventListener('touchstart', moKhoaAmThanhThongBao, { once: true });
 
         document.querySelectorAll('.js-thong-bao-item').forEach(function(item) {
-            item.addEventListener('click', function() {
+            item.addEventListener('click', function(event) {
+                event.preventDefault();
                 const idThongBao = this.getAttribute('data-id-thongbao') || '';
                 const idYeuCau = this.getAttribute('data-id-yeucau') || '';
                 const tieuDe = decodeSafe(this.getAttribute('data-tieude') || '');

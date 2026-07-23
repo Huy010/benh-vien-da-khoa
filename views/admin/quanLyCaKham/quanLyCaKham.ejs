@@ -34,7 +34,7 @@
                 <div class="week-navigator d-flex flex-column flex-lg-row align-items-center justify-content-between gap-3 mb-4 p-3 border rounded">
                     
                     <div class="week-controls d-flex align-items-center justify-content-center gap-2 w-100 w-lg-auto">
-                        <button type="button" class="btn-import" onclick="changeWeek(-7)">
+                        <button type="button" class="btn-import js-change-week" data-week-offset="-7">
                             <i class="fas fa-chevron-left"></i> <span class="d-none d-sm-inline">Tuần trước</span>
                         </button>
                         
@@ -50,7 +50,7 @@
                             <small style="color: #666; font-size: 11px; margin-top: 3px; display: block; text-align: center;">(Chọn ngày)</small>
                         </div>
 
-                        <button type="button" class="btn-import" onclick="changeWeek(7)">
+                        <button type="button" class="btn-import js-change-week" data-week-offset="7">
                             <span class="d-none d-sm-inline">Tuần sau</span> <i class="fas fa-chevron-right"></i>
                         </button>
                     </div>
@@ -98,9 +98,13 @@
                                                     %>
 
                                                     <% if (shiftDate >= today) { %>
-                                                        <button type="button" class="btn-edit-icon" 
-                                                                data-bs-toggle="modal" data-bs-target="#editModal"
-                                                                onclick="prepareEditModal('<%= shift.id %>', '<%= shift.idKhoa %>', '<%= shift.tenBacSi %>', '<%= shift.khoa %>')">
+                                                        <button type="button" class="btn-edit-icon js-prepare-edit-modal"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#editModal"
+                                                                data-id-ca-kham="<%= shift.id %>"
+                                                                data-id-khoa="<%= shift.idKhoa || '' %>"
+                                                                data-ten-bac-si="<%= shift.tenBacSi %>"
+                                                                data-ten-khoa="<%= shift.khoa %>">
                                                             <i class="fas fa-edit"></i> Sửa
                                                         </button>
                                                     <% } else { %>
@@ -164,8 +168,25 @@
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <script>
+    <script nonce="<%= cspNonce %>">
         document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.js-change-week').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    changeWeek(Number(this.dataset.weekOffset || 0));
+                });
+            });
+
+            document.querySelectorAll('.js-prepare-edit-modal').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    prepareEditModal(
+                        this.dataset.idCaKham || '',
+                        this.dataset.idKhoa || '',
+                        this.dataset.tenBacSi || '',
+                        this.dataset.tenKhoa || ''
+                    );
+                });
+            });
+
             flatpickr(".datepicker", {
                 locale: "vn",
                 dateFormat: "Y-m-d",
@@ -234,7 +255,7 @@
     </script>
 
     <% if (typeof msg !== 'undefined' && msg) { %>
-        <script>
+        <script nonce="<%= cspNonce %>">
             document.addEventListener("DOMContentLoaded", function() {
                 var messageContent = decodeURIComponent("<%= msg %>");
                 var isError = messageContent.toLowerCase().includes("lỗi") || 

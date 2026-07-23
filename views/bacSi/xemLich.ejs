@@ -41,7 +41,7 @@
                 <p class="text-muted ms-3 mb-0">Theo dõi lịch trực và danh sách bệnh nhân theo tháng.</p>
             </div>
             
-            <button class="btn btn-warning fw-bold text-dark shadow-sm px-4" onclick="moPopupDoiLich()">
+            <button type="button" id="btnMoPopupDoiLich" class="btn btn-warning fw-bold text-dark shadow-sm px-4">
                 <i class="fa-solid fa-calendar-plus"></i> Đăng ký đổi lịch
             </button>
         </div>
@@ -65,8 +65,6 @@
                             id="monthInput"
                             class="form-control text-center fw-bold text-primary" 
                             value="<%= currentMonthInput %>"
-                            onchange="document.getElementById('goToMonthForm').submit();"
-                            onclick="this.showPicker();" 
                             style="cursor: pointer; caret-color: transparent;"
                         >
                     </div>
@@ -122,7 +120,22 @@
     </div>
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script>
+    <script nonce="<%= cspNonce %>">
+        document.getElementById('btnMoPopupDoiLich')?.addEventListener('click', moPopupDoiLich);
+
+        const monthInput = document.getElementById('monthInput');
+        const goToMonthForm = document.getElementById('goToMonthForm');
+
+        monthInput?.addEventListener('change', function () {
+            goToMonthForm?.submit();
+        });
+
+        monthInput?.addEventListener('click', function () {
+            if (typeof this.showPicker === 'function') {
+                this.showPicker();
+            }
+        });
+
         async function moPopupDoiLich() {
             // 1. Hiện loading và gọi API lấy data
             Swal.fire({ title: 'Đang tải dữ liệu...', didOpen: () => { Swal.showLoading(); } });

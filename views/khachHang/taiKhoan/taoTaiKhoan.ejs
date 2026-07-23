@@ -126,7 +126,7 @@
 
 
         <% if (typeof msg !=='undefined' && msg) { %>
-            <script>
+            <script nonce="<%= cspNonce %>">
                 Swal.fire({
                     icon: 'error',
                     title: 'Thông báo',

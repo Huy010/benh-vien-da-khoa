@@ -244,7 +244,7 @@
     data-msg="<%= typeof msg !== 'undefined' ? msg : '' %>">
   </div>
 
-  <script>
+  <script nonce="<%= cspNonce %>">
     const alertData = document.getElementById('alert-data');
 
     const statusMessage = alertData.dataset.status;
@@ -262,7 +262,7 @@
     }
   </script>
 
-  <script>
+  <script nonce="<%= cspNonce %>">
     const ngaySinhInput = document.getElementById('ngaySinh');
 
     if (ngaySinhInput) {

@@ -90,10 +90,12 @@
                             
                             <% thongBaoList.forEach(tb => { %>
 
-                                <a 
-                                    onclick="xemChiTietYeuCau('<%= tb.id_yeuCau %>', '<%= tb.id_thongBao %>')" 
+                                <a
+                                    href="#"
                                     id="thongbao-<%= tb.id_thongBao %>"
-                                    class="list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white' %>"
+                                    class="js-admin-thong-bao-item list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white' %>"
+                                    data-id-yeu-cau="<%= tb.id_yeuCau || '' %>"
+                                    data-id-thong-bao="<%= tb.id_thongBao %>"
                                 >
                                     <div class="notification-header d-flex w-100 justify-content-between align-items-center mb-2">
 
@@ -171,8 +173,18 @@
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
     
-    <script>
+    <script nonce="<%= cspNonce %>">
         let currentAdminUnreadCount = document.querySelectorAll('[id^="badge-"]').length;
+
+        document.querySelectorAll('.js-admin-thong-bao-item').forEach(function (item) {
+            item.addEventListener('click', function (event) {
+                event.preventDefault();
+                xemChiTietYeuCau(
+                    this.dataset.idYeuCau || '',
+                    this.dataset.idThongBao || ''
+                );
+            });
+        });
 
         document.addEventListener('click', function () {
             const audio = document.getElementById('sound-notification');

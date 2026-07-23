@@ -52,7 +52,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="<%= cspNonce %>">
     async function capNhatSoThongBao() {
         try {
             const res = await fetch('/bacsi/thongBao/demChuaDoc');

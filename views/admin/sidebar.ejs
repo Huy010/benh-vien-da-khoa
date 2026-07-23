@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<script>
+<script nonce="<%= cspNonce %>">
     async function kiemTraThongBaoNgam() {
         try {
             const res = await fetch('/admin/thongBao/api-dem-moi');

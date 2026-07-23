@@ -39,7 +39,7 @@
 
     <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
-    <script>
+    <script nonce="<%= cspNonce %>">
         // Lấy message từ server gửi sang (nếu có)
         const serverMessage = "<%= typeof message !== 'undefined' ? message : '' %>";
         

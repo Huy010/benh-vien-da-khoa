@@ -265,7 +265,7 @@
 
   </main>
 
-  <script>
+  <script nonce="<%= cspNonce %>">
     const header = document.querySelector(".header");
 
     function keepHeaderColored() {
@@ -285,7 +285,7 @@
     });
   </script>
 
-  <script>
+  <script nonce="<%= cspNonce %>">
     const mapKey = "<%= goongMapKey %>";
     const apiKey = "<%= goongApiKey %>";
 

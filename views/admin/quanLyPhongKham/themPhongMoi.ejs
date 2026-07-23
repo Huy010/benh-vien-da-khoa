@@ -85,7 +85,7 @@
     </div>
 
     <% if (typeof msg !== 'undefined' && msg) { %>
-        <script>
+        <script nonce="<%= cspNonce %>">
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'error',

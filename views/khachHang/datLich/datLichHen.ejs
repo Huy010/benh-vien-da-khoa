@@ -46,7 +46,7 @@
                 <% if(chuyenKhoa && chuyenKhoa.length> 0) { %>
                   <% chuyenKhoa.forEach(ck=> { %>
                     <li>
-                      <a class="dropdown-item dropdown-item-custom select-khoa-item" href="javascript:void(0)"
+                      <a class="dropdown-item dropdown-item-custom select-khoa-item" href="#"
                         data-id="<%= ck.id_chuyenKhoa %>" data-name="<%= ck.tenChuyenKhoa %>">
                         <div class="fw-bold text-primary mb-1">
                           <%= ck.tenChuyenKhoa %>
@@ -103,7 +103,7 @@
     </div>
 
 
-    <script>
+    <script nonce="<%= cspNonce %>">
       document.addEventListener('DOMContentLoaded', () => {
         const hiddenKhoa = document.getElementById('hiddenKhoa');
         const textChonKhoa = document.getElementById('textChonKhoa');
@@ -186,7 +186,8 @@
 
         /* ========== Handle Chọn Chuyên Khoa ========== */
         khoaItems.forEach(item => {
-          item.addEventListener('click', function () {
+          item.addEventListener('click', function (event) {
+            event.preventDefault();
             const idKhoa = this.getAttribute('data-id');
             const tenKhoa = this.getAttribute('data-name');
 
@@ -324,7 +325,7 @@
     </script>
 
     <% if (typeof msg !=='undefined' && msg) { %>
-      <script>
+      <script nonce="<%= cspNonce %>">
         Swal.fire({
           icon: 'error',
           title: 'Thông báo',

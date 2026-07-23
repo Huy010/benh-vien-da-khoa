@@ -140,7 +140,7 @@
         <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
         <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
-        <script>
+        <script nonce="<%= cspNonce %>">
             document.addEventListener('DOMContentLoaded', () => {
                 const specialtyBtns = document.querySelectorAll('.specialty-btn');
                 const doctorContainer = document.getElementById('doctor-list-container');
@@ -201,8 +201,7 @@
                                     <img 
                                         src="${hinhAnh}" 
                                         class="card-img-top doctor-img" 
-                                        alt="Bác sĩ ${tenBs}" 
-                                        onerror="this.src='/BacSi/nam.webp'"
+                                        alt="Bác sĩ ${tenBs}"
                                     >
 
                                     <div class="card-body d-flex flex-column">

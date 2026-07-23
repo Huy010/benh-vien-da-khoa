@@ -56,7 +56,7 @@
 <!-- SweetAlert -->
 <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
 
-<script>
+<script nonce="<%= cspNonce %>">
     // Nhận message từ server
     const serverMessage = "<%= typeof message !== 'undefined' ? message : '' %>";
 

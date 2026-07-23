@@ -229,7 +229,7 @@
                             <button 
                                 type="button" 
                                 class="btn btn-success history-btn px-4"
-                                onclick="moLichSuKham()"
+                                id="btnMoLichSuKham"
                             >
                                 <i class="fa-solid fa-clock-rotate-left me-1"></i>
                                 Xem lịch sử khám
@@ -327,13 +327,13 @@
 
     </div>
 
-    <script id="dataLichSuKham" type="application/json">
+    <script nonce="<%= cspNonce %>" id="dataLichSuKham" type="application/json">
         <%- JSON.stringify(lichSu || []) %>
     </script>
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-    <script>
+    <script nonce="<%= cspNonce %>">
         const lichSuKham = JSON.parse(
             document.getElementById('dataLichSuKham').textContent || '[]'
         );
@@ -470,9 +470,9 @@
 
             let pageButtons = `
                 <button 
-                    class="history-page-btn" 
-                    ${page <= 1 ? 'disabled' : ''} 
-                    onclick="renderLichSuPage(${page - 1})"
+                    class="history-page-btn"
+                    ${page <= 1 ? 'disabled' : ''}
+                    data-page="${page - 1}"
                 >
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
@@ -481,8 +481,8 @@
             for (let i = 1; i <= totalPages; i++) {
                 pageButtons += `
                     <button 
-                        class="history-page-btn ${i === page ? 'active' : ''}" 
-                        onclick="renderLichSuPage(${i})"
+                        class="history-page-btn ${i === page ? 'active' : ''}"
+                        data-page="${i}"
                     >
                         ${i}
                     </button>
@@ -491,9 +491,9 @@
 
             pageButtons += `
                 <button 
-                    class="history-page-btn" 
-                    ${page >= totalPages ? 'disabled' : ''} 
-                    onclick="renderLichSuPage(${page + 1})"
+                    class="history-page-btn"
+                    ${page >= totalPages ? 'disabled' : ''}
+                    data-page="${page + 1}"
                 >
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
@@ -501,6 +501,14 @@
 
             pagination.innerHTML = pageButtons;
         }
+
+        document.getElementById('btnMoLichSuKham')?.addEventListener('click', moLichSuKham);
+
+        document.addEventListener('click', function (event) {
+            const pageButton = event.target.closest('.history-page-btn[data-page]');
+            if (!pageButton || pageButton.disabled) return;
+            renderLichSuPage(Number(pageButton.dataset.page || 1));
+        });
 
         function moLichSuKham() {
             Swal.fire({

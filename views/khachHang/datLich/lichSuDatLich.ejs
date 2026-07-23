@@ -83,19 +83,28 @@
                             <div class="d-flex justify-content-center gap-2 align-items-center">
                               
                               <% if (item.trangThai === 'HoanThanh') { %>
-                                <button class="btn btn-sm btn-info text-white" 
-                                        onclick="xemChiTiet('<%= item.id_lichHen %>', '<%= item.tenChuyenKhoa %>', '<%= item.ngay %>', '<%= item.gioHen %>', '<%= item.tenBacSi || `Chưa cập nhật` %>', '<%= item.ghiChu || `Không có ghi chú` %>')">
+                                <button type="button"
+                                        class="btn btn-sm btn-info text-white js-xem-chi-tiet"
+                                        data-id-lich-hen="<%= item.id_lichHen %>"
+                                        data-khoa="<%= encodeURIComponent(item.tenChuyenKhoa || '') %>"
+                                        data-ngay="<%= encodeURIComponent(item.ngay || '') %>"
+                                        data-gio="<%= encodeURIComponent(item.gioHen || '') %>"
+                                        data-bac-si="<%= encodeURIComponent(item.tenBacSi || 'Chưa cập nhật') %>"
+                                        data-ghi-chu="<%= encodeURIComponent(item.ghiChu || 'Không có ghi chú') %>">
                                   <i class="fa-solid fa-eye me-1"></i> Xem chi tiết
                                 </button>
                               
                               <% } else if (item.trangThai !== 'Huy' && item.trangThaiThanhToan === 'ChuaThanhToan') { %>
-                                <button class="btn btn-sm btn-primary btn-thanh-toan" 
-                                        onclick="thanhToanLai('<%= item.id_lichHen %>', '<%= item.donGia %>', '<%= item.id_chuyenKhoa %>')">
+                                <button type="button"
+                                        class="btn btn-sm btn-primary btn-thanh-toan js-thanh-toan-lai"
+                                        data-id-lich-hen="<%= item.id_lichHen %>"
+                                        data-don-gia="<%= item.donGia %>"
+                                        data-id-chuyen-khoa="<%= item.id_chuyenKhoa %>">
                                   <i class="bi bi-credit-card"></i> Thanh toán
                                 </button>
 
                                 <% if (item.coTheHuy) { %>
-                                  <button class="btn btn-sm btn-outline-danger" onclick="huyLich('<%= item.id_lichHen %>')">
+                                  <button type="button" class="btn btn-sm btn-outline-danger js-huy-lich" data-id-lich-hen="<%= item.id_lichHen %>">
                                     <i class="bi bi-trash"></i> Hủy lịch
                                   </button>
                                 <% } %>
@@ -108,7 +117,7 @@
                                 <% } %>
 
                                 <% if (item.coTheHuy) { %>
-                                  <button class="btn btn-sm btn-outline-danger" onclick="huyLich('<%= item.id_lichHen %>')">
+                                  <button type="button" class="btn btn-sm btn-outline-danger js-huy-lich" data-id-lich-hen="<%= item.id_lichHen %>">
                                     <i class="bi bi-trash"></i> Hủy lịch
                                   </button>
                                 <% } %>
@@ -121,7 +130,7 @@
                     <% } else { %>
                       <tr>
                         <td colspan="6" class="text-center py-5">
-                          <img src="/images/khachHang/empty-calendar.svg" alt="Trống" width="120" class="mb-3 opacity-50" onerror="this.style.display='none'">
+                          <img src="/images/khachHang/empty-calendar.svg" alt="Trống" width="120" class="mb-3 opacity-50 js-hide-on-error">
                           <h5 class="text-muted">Bạn chưa có lịch hẹn nào</h5>
                           <a href="/datLichHen" class="btn btn-outline-primary mt-2">Đặt lịch ngay</a>
                         </td>
@@ -209,7 +218,50 @@
       </div>
       <%- include('../footer') %>
     </main>
-    <script>
+    <script nonce="<%= cspNonce %>">
+      function decodeData(value) {
+        try {
+          return decodeURIComponent(value || '');
+        } catch (error) {
+          return value || '';
+        }
+      }
+
+      document.querySelectorAll('.js-xem-chi-tiet').forEach(function (button) {
+        button.addEventListener('click', function () {
+          xemChiTiet(
+            this.dataset.idLichHen || '',
+            decodeData(this.dataset.khoa),
+            decodeData(this.dataset.ngay),
+            decodeData(this.dataset.gio),
+            decodeData(this.dataset.bacSi),
+            decodeData(this.dataset.ghiChu)
+          );
+        });
+      });
+
+      document.querySelectorAll('.js-thanh-toan-lai').forEach(function (button) {
+        button.addEventListener('click', function () {
+          thanhToanLai(
+            this.dataset.idLichHen || '',
+            this.dataset.donGia || '',
+            this.dataset.idChuyenKhoa || ''
+          );
+        });
+      });
+
+      document.querySelectorAll('.js-huy-lich').forEach(function (button) {
+        button.addEventListener('click', function () {
+          huyLich(this.dataset.idLichHen || '');
+        });
+      });
+
+      document.querySelectorAll('.js-hide-on-error').forEach(function (image) {
+        image.addEventListener('error', function () {
+          this.style.display = 'none';
+        });
+      });
+
       // Hàm xử lý khi bấm nút Thanh toán
       async function thanhToanLai(id_lichHen, donGia, id_chuyenKhoa) {
         try {

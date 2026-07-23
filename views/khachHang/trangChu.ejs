@@ -74,7 +74,7 @@
         <%- include('./footer') %>
       </div>
     </main>
-    <script>
+    <script nonce="<%= cspNonce %>">
       const header = document.querySelector(".header");
 
       function handleScroll() {

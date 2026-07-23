@@ -91,7 +91,7 @@
 
         </div>
 
-        <script>
+        <script nonce="<%= cspNonce %>">
             const serverMessage = JSON.parse(
                 '<%- JSON.stringify(typeof msg !== "undefined" ? msg : "") %>'
             );

@@ -589,23 +589,23 @@
         </div>
     </div>
 
-    <script id="dataThongKeLuotKham" type="application/json">
+    <script nonce="<%= cspNonce %>" id="dataThongKeLuotKham" type="application/json">
         <%- JSON.stringify(thongKeLuotKham || []) %>
     </script>
 
-    <script id="dataThongKeDoanhThu" type="application/json">
+    <script nonce="<%= cspNonce %>" id="dataThongKeDoanhThu" type="application/json">
         <%- JSON.stringify(thongKeDoanhThu || []) %>
     </script>
 
-    <script id="dataThongKeKhachTheoTuan" type="application/json">
+    <script nonce="<%= cspNonce %>" id="dataThongKeKhachTheoTuan" type="application/json">
         <%- JSON.stringify(thongKeKhachTheoTuan || []) %>
     </script>
 
-    <script id="dataThongKeKhachTheoGio" type="application/json">
+    <script nonce="<%= cspNonce %>" id="dataThongKeKhachTheoGio" type="application/json">
         <%- JSON.stringify(thongKeKhachTheoGio || []) %>
     </script>
 
-    <script>
+    <script nonce="<%= cspNonce %>">
         const thongKeLuotKham = JSON.parse(
             document.getElementById('dataThongKeLuotKham').textContent || '[]'
         );

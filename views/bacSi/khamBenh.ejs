@@ -66,7 +66,7 @@
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     
-    <script>
+    <script nonce="<%= cspNonce %>">
         const patientDataElem = document.getElementById('patient-data');
         let allPatients = JSON.parse(patientDataElem.dataset.patients || "[]");
         
@@ -130,7 +130,7 @@
                     <a href="/bacsi/khamBenh/chiTiet/${currentPatient.id_lichHen}" class="btn btn-primary btn-lg px-4 fw-bold shadow-sm">
                         <i class="fa-solid fa-stethoscope me-2"></i> Bắt đầu khám
                     </a>
-                    <button onclick="markAbsent()" class="btn btn-danger btn-lg px-4 fw-bold shadow-sm">
+                    <button type="button" data-action="mark-absent" class="btn btn-danger btn-lg px-4 fw-bold shadow-sm">
                         <i class="fa-solid fa-user-xmark me-2"></i> Vắng mặt
                     </button>
                 </div>
@@ -146,7 +146,7 @@
             let html = '';
             waitingQueue.forEach(p => {
                 html += `
-                    <div class="queue-item" style="cursor: pointer;" onclick="swapPatient(${p.id_lichHen})">
+                    <div class="queue-item" style="cursor: pointer;" data-action="swap-patient" data-id-lich-hen="${p.id_lichHen}">
                         <div class="d-flex align-items-center">
                             <div class="queue-stt">${p.stt}</div>
                             <div class="queue-info">
@@ -177,7 +177,7 @@
                                 <small>Mã LH-${p.id_lichHen}</small>
                             </div>
                         </div>
-                        <button onclick="callAgain(${p.id_lichHen})" class="btn btn-sm btn-outline-danger">Gọi lại</button>
+                        <button type="button" data-action="call-again" data-id-lich-hen="${p.id_lichHen}" class="btn btn-sm btn-outline-danger">Gọi lại</button>
                     </div>
                 `;
             });
@@ -261,6 +261,22 @@
                 })
                 .catch(err => console.error("Lỗi tự cập nhật hàng đợi:", err));
         }
+
+        document.addEventListener('click', function (event) {
+            const actionElement = event.target.closest('[data-action]');
+            if (!actionElement) return;
+
+            const action = actionElement.dataset.action;
+            const idLichHen = Number(actionElement.dataset.idLichHen || 0);
+
+            if (action === 'mark-absent') {
+                markAbsent();
+            } else if (action === 'swap-patient' && idLichHen) {
+                swapPatient(idLichHen);
+            } else if (action === 'call-again' && idLichHen) {
+                callAgain(idLichHen);
+            }
+        });
 
         // AJAX Polling: Cứ mỗi 5 giây (5000ms), gọi API lấy danh sách mới. 
         setInterval(fetchLatestQueue, 5000);        
