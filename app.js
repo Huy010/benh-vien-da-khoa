@@ -41,9 +41,6 @@ app.disable('x-powered-by');
  * TẠO CSP NONCE CHO MỖI PHẢN HỒI
  * =====================================================
  *
- * Mỗi lần người dùng tải một trang, server tạo
- * một nonce ngẫu nhiên mới.
- *
  * Sử dụng trong EJS:
  *
  * <script nonce="<%= cspNonce %>">
@@ -67,181 +64,94 @@ app.use((req, res, next) => {
  * CẤU HÌNH HTTP SECURITY HEADERS
  * =====================================================
  *
- * Các thư viện Bootstrap, Font Awesome, SweetAlert2,
- * MapLibre, Polyline, Chart.js, Flatpickr, html2canvas
- * và Axios được phục vụ từ chính website qua /vendor.
+ * useDefaults: false để Helmet không tự bổ sung
+ * style-src 'unsafe-inline' từ chính sách mặc định.
  */
 app.use(
     helmet({
         contentSecurityPolicy: {
-            useDefaults: true,
+            useDefaults: false,
 
             directives: {
-                /*
-                 * Mặc định chỉ cho phép tài nguyên
-                 * từ chính website.
-                 */
-                defaultSrc: [
+                'default-src': [
                     "'self'"
                 ],
 
-                /*
-                 * JavaScript chỉ được phép chạy khi:
-                 *
-                 * 1. File được tải từ chính website.
-                 * 2. Thẻ <script> nội tuyến có nonce hợp lệ.
-                 *
-                 * Không còn 'unsafe-inline'.
-                 */
-                scriptSrc: [
+                'script-src': [
                     "'self'",
 
                     (req, res) =>
                         `'nonce-${res.locals.cspNonce}'`
                 ],
 
-                /*
-                 * Chặn JavaScript trong thuộc tính HTML:
-                 *
-                 * onclick=""
-                 * onchange=""
-                 * onsubmit=""
-                 * onload=""
-                 */
-                scriptSrcAttr: [
+                'script-src-attr': [
                     "'none'"
                 ],
 
-                /*
-                 * CSS chỉ được phép khi:
-                 *
-                 * 1. File CSS được tải từ chính website.
-                 * 2. Thẻ <style> có nonce hợp lệ.
-                 *
-                 * Không còn 'unsafe-inline'.
-                 */
-                styleSrc: [
+                'style-src': [
                     "'self'",
 
                     (req, res) =>
                         `'nonce-${res.locals.cspNonce}'`
                 ],
 
-                /*
-                 * Áp dụng riêng cho:
-                 *
-                 * <style>...</style>
-                 * <link rel="stylesheet">
-                 */
-                styleSrcElem: [
+                'style-src-elem': [
                     "'self'",
 
                     (req, res) =>
                         `'nonce-${res.locals.cspNonce}'`
                 ],
 
-                /*
-                 * Chặn thuộc tính:
-                 *
-                 * style="..."
-                 *
-                 * Các thuộc tính style phải được
-                 * chuyển thành class CSS.
-                 */
-                styleSrcAttr: [
+                'style-src-attr': [
                     "'none'"
                 ],
 
-                /*
-                 * Cho phép font nội bộ và font data.
-                 */
-                fontSrc: [
+                'font-src': [
                     "'self'",
                     'data:'
                 ],
 
-                /*
-                 * Cho phép ảnh nội bộ, data, blob
-                 * và ảnh bản đồ Goong.
-                 */
-                imgSrc: [
+                'img-src': [
                     "'self'",
                     'data:',
                     'blob:',
                     'https://tiles.goong.io'
                 ],
 
-                /*
-                 * Cho phép JavaScript kết nối tới:
-                 *
-                 * - Chính website.
-                 * - Dữ liệu bản đồ Goong.
-                 * - Goong REST API.
-                 */
-                connectSrc: [
+                'connect-src': [
                     "'self'",
                     'https://tiles.goong.io',
                     'https://rsapi.goong.io'
                 ],
 
-                /*
-                 * MapLibre có thể tạo Web Worker
-                 * bằng địa chỉ blob.
-                 */
-                workerSrc: [
+                'worker-src': [
                     "'self'",
                     'blob:'
                 ],
 
-                /*
-                 * Không cho sử dụng object, embed,
-                 * applet hoặc plugin cũ.
-                 */
-                objectSrc: [
+                'object-src': [
                     "'none'"
                 ],
 
-                /*
-                 * Thẻ <base> chỉ được phép trỏ
-                 * về chính website.
-                 */
-                baseUri: [
+                'base-uri': [
                     "'self'"
                 ],
 
-                /*
-                 * Form chỉ được gửi dữ liệu
-                 * về chính website.
-                 */
-                formAction: [
+                'form-action': [
                     "'self'"
                 ],
 
-                /*
-                 * Không cho website khác nhúng
-                 * trang bằng iframe.
-                 */
-                frameAncestors: [
+                'frame-ancestors': [
                     "'none'"
                 ],
 
-                /*
-                 * Production:
-                 * tự nâng tài nguyên HTTP lên HTTPS.
-                 *
-                 * Localhost:
-                 * tắt để không ảnh hưởng phát triển.
-                 */
-                upgradeInsecureRequests:
+                'upgrade-insecure-requests':
                     isProduction
                         ? []
                         : null
             }
         },
 
-        /*
-         * Chỉ bật HSTS trên Render production.
-         */
         strictTransportSecurity:
             isProduction
                 ? {
@@ -255,13 +165,40 @@ app.use(
 
 /*
  * =====================================================
- * ĐỌC DỮ LIỆU REQUEST
+ * CHỐNG MIME SNIFFING
  * =====================================================
+ *
+ * Buộc mọi phản hồi có header:
+ *
+ * X-Content-Type-Options: nosniff
+ *
+ * Helmet mặc định đã thiết lập header này.
+ * Khai báo riêng để bảo đảm nó vẫn được áp dụng
+ * nếu cấu hình Helmet thay đổi về sau.
  */
+app.use(
+    helmet.xContentTypeOptions()
+);
 
 /*
- * Đọc dữ liệu JSON.
- * Giới hạn tối đa 1 MB.
+ * Header tạm dùng để xác nhận Render đang chạy
+ * đúng bản app.js này.
+ *
+ * Sau khi kiểm tra xong có thể xóa middleware này.
+ */
+app.use((req, res, next) => {
+    res.setHeader(
+        'X-CSP-Build',
+        'strict-style-v3'
+    );
+
+    next();
+});
+
+/*
+ * =====================================================
+ * ĐỌC DỮ LIỆU REQUEST
+ * =====================================================
  */
 app.use(
     express.json({
@@ -269,10 +206,6 @@ app.use(
     })
 );
 
-/*
- * Đọc dữ liệu form POST.
- * Giới hạn tối đa 1 MB.
- */
 app.use(
     express.urlencoded({
         extended: true,
@@ -287,46 +220,25 @@ app.use(
  */
 app.use(
     session({
-        /*
-         * Tên cookie chứa session ID.
-         */
         name: 'connect.sid',
 
         secret: process.env.SESSION_SECRET,
 
-        /*
-         * Tin tưởng thông tin HTTPS từ
-         * Render hoặc Cloudflare.
-         */
         proxy: true,
 
         resave: false,
+
         saveUninitialized: false,
 
         cookie: {
-            /*
-             * JavaScript phía trình duyệt
-             * không được đọc cookie.
-             */
             httpOnly: true,
 
-            /*
-             * Production dùng HTTPS.
-             * Localhost dùng HTTP.
-             */
             secure: isProduction,
 
-            /*
-             * Hạn chế gửi cookie trong
-             * một số yêu cầu cross-site.
-             */
             sameSite: 'lax',
 
             path: '/',
 
-            /*
-             * Session tồn tại tối đa 7 ngày.
-             */
             maxAge:
                 1000 *
                 60 *
@@ -350,7 +262,8 @@ const noCachePaths = new Set([
     '/bacsi/login',
     '/khachHangTaoTaiKhoan',
     '/thayDoiThongTin',
-    '/capNhatThongTin'
+    '/capNhatThongTin',
+    '/sitemap.xml'
 ]);
 
 app.use((req, res, next) => {
@@ -383,9 +296,6 @@ app.use((req, res, next) => {
  * =====================================================
  * CHỐNG CLICKJACKING
  * =====================================================
- *
- * CSP đã có frame-ancestors 'none'.
- * Header này được giữ để hỗ trợ trình duyệt cũ.
  */
 app.use((req, res, next) => {
     res.setHeader(
@@ -402,25 +312,28 @@ app.use((req, res, next) => {
  * =====================================================
  */
 const limiter = rateLimit({
-    /*
-     * Khoảng thời gian 15 phút.
-     */
     windowMs:
         15 *
         60 *
         1000,
 
-    /*
-     * Tối đa 10.000 request
-     * trong 15 phút.
-     */
     max: 10000,
 
-    message:
-        'Bạn gửi quá nhiều yêu cầu, ' +
-        'vui lòng thử lại sau.',
+    /*
+     * Đặt rõ Content-Type cho phản hồi 429.
+     */
+    handler: (req, res) => {
+        return res
+            .status(429)
+            .type('text/plain')
+            .send(
+                'Bạn gửi quá nhiều yêu cầu, ' +
+                'vui lòng thử lại sau.'
+            );
+    },
 
     standardHeaders: true,
+
     legacyHeaders: false
 });
 
@@ -431,16 +344,9 @@ app.use(limiter);
  * CẤU HÌNH MULTER
  * =====================================================
  */
-
-/*
- * Lưu file tải lên trong bộ nhớ.
- */
 const storage =
     multer.memoryStorage();
 
-/*
- * Giới hạn kích thước file là 5 MB.
- */
 const upload = multer({
     storage,
 
@@ -452,12 +358,6 @@ const upload = multer({
     }
 });
 
-/*
- * Cho phép controller hoặc route khác
- * truy cập cấu hình Multer qua:
- *
- * req.app.locals.upload
- */
 app.locals.upload = upload;
 
 /*
@@ -471,11 +371,6 @@ app.use((req, res, next) => {
         null;
 
     res.locals.page = '';
-
-    /*
-     * cspNonce đã được tạo ở middleware
-     * phía trên và nằm trong res.locals.
-     */
 
     next();
 });
@@ -500,6 +395,23 @@ app.set(
 
 /*
  * =====================================================
+ * HEADER CHO FILE TĨNH
+ * =====================================================
+ *
+ * express.static tự xác định Content-Type dựa trên
+ * phần mở rộng của file.
+ *
+ * Middleware này bổ sung nosniff cho mọi file tĩnh.
+ */
+const secureStaticHeaders = (res) => {
+    res.setHeader(
+        'X-Content-Type-Options',
+        'nosniff'
+    );
+};
+
+/*
+ * =====================================================
  * PHỤC VỤ FILE TRONG PUBLIC
  * =====================================================
  */
@@ -508,7 +420,11 @@ app.use(
         path.join(
             __dirname,
             'Public'
-        )
+        ),
+        {
+            setHeaders:
+                secureStaticHeaders
+        }
     )
 );
 
@@ -516,23 +432,19 @@ app.use(
  * =====================================================
  * PHỤC VỤ THƯ VIỆN NỘI BỘ
  * =====================================================
- *
- * Không công khai toàn bộ node_modules.
- * Chỉ công khai đúng thư mục cần thiết.
  */
 const vendorStaticOptions = {
-    /*
-     * Production lưu cache thư viện 7 ngày.
-     * Development không lưu cache lâu.
-     */
     maxAge:
         isProduction
             ? '7d'
-            : 0
+            : 0,
+
+    setHeaders:
+        secureStaticHeaders
 };
 
 /*
- * Bootstrap.
+ * Bootstrap
  */
 app.use(
     '/vendor/bootstrap',
@@ -550,7 +462,7 @@ app.use(
 );
 
 /*
- * SweetAlert2.
+ * SweetAlert2
  */
 app.use(
     '/vendor/sweetalert2',
@@ -568,7 +480,7 @@ app.use(
 );
 
 /*
- * Font Awesome.
+ * Font Awesome
  */
 app.use(
     '/vendor/fontawesome',
@@ -586,7 +498,7 @@ app.use(
 );
 
 /*
- * MapLibre GL.
+ * MapLibre GL
  */
 app.use(
     '/vendor/maplibre',
@@ -604,7 +516,7 @@ app.use(
 );
 
 /*
- * Mapbox Polyline.
+ * Mapbox Polyline
  */
 app.use(
     '/vendor/polyline',
@@ -623,7 +535,7 @@ app.use(
 );
 
 /*
- * Flatpickr.
+ * Flatpickr
  */
 app.use(
     '/vendor/flatpickr',
@@ -641,7 +553,7 @@ app.use(
 );
 
 /*
- * Chart.js.
+ * Chart.js
  */
 app.use(
     '/vendor/chartjs',
@@ -659,7 +571,7 @@ app.use(
 );
 
 /*
- * html2canvas.
+ * html2canvas
  */
 app.use(
     '/vendor/html2canvas',
@@ -677,8 +589,7 @@ app.use(
 );
 
 /*
- * Axios dành cho JavaScript
- * chạy trong trình duyệt.
+ * Axios dành cho JavaScript trình duyệt
  */
 app.use(
     '/vendor/axios',
@@ -700,28 +611,15 @@ app.use(
  * KHAI BÁO ROUTER
  * =====================================================
  */
-
-/*
- * Route admin.
- */
 const adminRoute =
     require('./routes/admin');
 
-/*
- * Route chatbot Gemini.
- */
 const chatbotRoute =
     require('./routes/chatbot');
 
-/*
- * Route khách hàng.
- */
 const homeRoute =
     require('./routes/khachHang');
 
-/*
- * Route bác sĩ.
- */
 const bacSiRoute =
     require('./routes/bacSi');
 
@@ -749,10 +647,13 @@ app.use(
  * =====================================================
  * XỬ LÝ ROUTE KHÔNG TỒN TẠI
  * =====================================================
+ *
+ * Đặt rõ Content-Type là text/plain.
  */
 app.use((req, res) => {
     return res
         .status(404)
+        .type('text/plain')
         .send(
             'Không tìm thấy trang.'
         );
@@ -762,6 +663,8 @@ app.use((req, res) => {
  * =====================================================
  * XỬ LÝ LỖI CHUNG
  * =====================================================
+ *
+ * Đặt rõ Content-Type là text/plain.
  */
 app.use((error, req, res, next) => {
     console.error(
@@ -775,6 +678,7 @@ app.use((error, req, res, next) => {
 
     return res
         .status(500)
+        .type('text/plain')
         .send(
             'Lỗi Server. ' +
             'Vui lòng thử lại sau.'
@@ -807,6 +711,6 @@ app.listen(PORT, () => {
     );
 
     console.log(
-        'CSP nonce cho script và style đã được bật.'
+        'CSP strict-style-v3 và MIME nosniff đã được bật.'
     );
 });
